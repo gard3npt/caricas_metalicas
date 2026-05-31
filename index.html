@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Coleção de Caricas</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #121212a2;
+    color: white;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#contador {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+#pesquisa {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 25px auto;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.galeria {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.carica {
+    background: #1e1e1e;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.carica:hover {
+    transform: translateY(-3px);
+}
+
+.carica img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #555;
+    box-shadow: 0 0 15px rgba(255,255,255,0.15);
+}
+
+.numero {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+#lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🍺 Coleção de Caricas</h1>
+    <div id="contador">0 caricas catalogadas</div>
+
+    <input
+        type="text"
+        id="pesquisa"
+        placeholder="🔍 Procurar número da carica..."
+    >
+</header>
+
+<div class="galeria" id="galeria"></div>
+
+<div id="lightbox">
+    <img id="lightbox-img">
+</div>
+
+<script>
+
+const totalCaricas = 5000;
+
+const galeria = document.getElementById("galeria");
+const contador = document.getElementById("contador");
+
+const caricas = [];
+
+for (let i = 1; i <= totalCaricas; i++) {
+
+    const numero = String(i).padStart(4, "0");
+
+    const img = new Image();
+    img.src = `caricas/${numero}.jpg`;
+
+    img.onload = () => {
+
+        caricas.push(numero);
+
+        atualizarGaleria();
+    };
+}
+
+function atualizarGaleria() {
+
+    caricas.sort();
+
+    galeria.innerHTML = "";
+
+    caricas.forEach(numero => {
+
+        const card = document.createElement("div");
+        card.className = "carica";
+        card.dataset.numero = numero;
+
+        card.innerHTML = `
+            <img src="caricas/${numero}.jpg" alt="${numero}">
+            <div class="numero">#${numero}</div>
+        `;
+
+        card.querySelector("img").addEventListener("click", () => {
+
+            document.getElementById("lightbox-img").src =
+                `caricas/${numero}.jpg`;
+
+            document.getElementById("lightbox").style.display =
+                "flex";
+        });
+
+        galeria.appendChild(card);
+    });
+
+    contador.textContent =
+        `${caricas.length} caricas na coleção`;
+}
+
+document.getElementById("lightbox")
+.addEventListener("click", () => {
+    document.getElementById("lightbox").style.display = "none";
+});
+
+document.getElementById("pesquisa")
+.addEventListener("input", function() {
+
+    const texto = this.value.toLowerCase();
+
+    document.querySelectorAll(".carica").forEach(card => {
+
+        card.style.display =
+            card.dataset.numero.includes(texto)
+            ? ""
+            : "none";
+    });
+});
+
+
+</script>
+
+</body>
+</html>
