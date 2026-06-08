@@ -92,6 +92,40 @@ h1 {
     border-radius: 15px;
 }
 
+.instagram-float {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: linear-gradient(
+        45deg,
+        #833AB4,
+        #C13584,
+        #E1306C,
+        #FD1D1D,
+        #FCAF45
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    z-index: 10000;
+    transition: transform 0.3s ease;
+}
+
+.instagram-float:hover {
+    transform: scale(1.12);
+}
+
+.instagram-float svg {
+    width: 34px;
+    height: 34px;
+}
+
 </style>
 </head>
 
@@ -99,13 +133,26 @@ h1 {
 
 <header>
     <h1>🍺 Coleção de Caricas</h1>
-    <div id="contador">0 caricas catalogadas</div>
+
+<div id="contador">0 caricas catalogadas</div>
 
     <input
         type="text"
         id="pesquisa"
-        placeholder="🔍 Procurar número da carica..."
-    >
+        placeholder="🔍 Procurar número da carica...">
+
+
+<a href="https://www.instagram.com/caricas_metalicas/"
+   target="_blank"
+   class="instagram-float"
+   aria-label="Instagram">
+
+    <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/>
+    </svg>
+
+</a>
+
 </header>
 
 <div class="galeria" id="galeria"></div>
@@ -123,21 +170,6 @@ const contador = document.getElementById("contador");
 
 const caricas = [];
 
-for (let i = 1; i <= totalCaricas; i++) {
-
-    const numero = String(i).padStart(4, "0");
-
-    const img = new Image();
-    img.src = `caricas/${numero}.jpg`;
-
-    img.onload = () => {
-
-        caricas.push(numero);
-
-        atualizarGaleria();
-    };
-}
-
 function atualizarGaleria() {
 
     caricas.sort();
@@ -151,14 +183,14 @@ function atualizarGaleria() {
         card.dataset.numero = numero;
 
         card.innerHTML = `
-            <img src="caricas/${numero}.jpg" alt="${numero}">
+            <img src="caricas/${obterPasta(numero)}/${numero}.jpg" alt="${numero}">
             <div class="numero">#${numero}</div>
         `;
 
         card.querySelector("img").addEventListener("click", () => {
 
             document.getElementById("lightbox-img").src =
-                `caricas/${numero}.jpg`;
+                `caricas/${obterPasta(numero)}/${numero}.jpg`;
 
             document.getElementById("lightbox").style.display =
                 "flex";
@@ -190,6 +222,43 @@ document.getElementById("pesquisa")
     });
 });
 
+function obterPasta(numero) {
+
+    const n = parseInt(numero);
+
+    const inicio = Math.floor((n - 1) / 100) * 100 + 1;
+    const fim = inicio + 99;
+
+    return `${String(inicio).padStart(4, "0")}-${String(fim).padStart(4, "0")}`;
+}
+
+let carregadas = 0;
+
+for (let i = 1; i <= totalCaricas; i++) {
+
+    const numero = String(i).padStart(4, "0");
+
+    const img = new Image();
+    img.src = `caricas/${obterPasta(numero)}/${numero}.jpg`;
+
+    img.onload = () => {
+        caricas.push(numero);
+
+        carregadas++;
+
+        if (carregadas === totalCaricas) {
+            atualizarGaleria();
+        }
+    };
+
+    img.onerror = () => {
+        carregadas++;
+
+        if (carregadas === totalCaricas) {
+            atualizarGaleria();
+        }
+    };
+}
 
 </script>
 
