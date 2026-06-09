@@ -163,7 +163,7 @@ h1 {
 
 <script>
 
-const totalCaricas = 5000;
+const totalCaricas = 1000;
 
 const galeria = document.getElementById("galeria");
 const contador = document.getElementById("contador");
@@ -222,12 +222,17 @@ document.getElementById("pesquisa")
     });
 });
 
+const TAMANHO_PASTA = 50;
+
 function obterPasta(numero) {
 
     const n = parseInt(numero);
 
-    const inicio = Math.floor((n - 1) / 100) * 100 + 1;
-    const fim = inicio + 99;
+    const inicio =
+        Math.floor((n - 1) / TAMANHO_PASTA) * TAMANHO_PASTA + 1;
+
+    const fim =
+        inicio + TAMANHO_PASTA - 1;
 
     return `${String(inicio).padStart(4, "0")}-${String(fim).padStart(4, "0")}`;
 }
