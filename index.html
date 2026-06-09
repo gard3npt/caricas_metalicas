@@ -163,8 +163,6 @@ h1 {
 
 <script>
 
-const totalCaricas = 1000;
-
 const galeria = document.getElementById("galeria");
 const contador = document.getElementById("contador");
 
@@ -237,33 +235,17 @@ function obterPasta(numero) {
     return `${String(inicio).padStart(4, "0")}-${String(fim).padStart(4, "0")}`;
 }
 
-let carregadas = 0;
+fetch("caricas.json")
+    .then(response => response.json())
+    .then(lista => {
 
-for (let i = 1; i <= totalCaricas; i++) {
+        caricas.push(...lista);
 
-    const numero = String(i).padStart(4, "0");
-
-    const img = new Image();
-    img.src = `caricas/${obterPasta(numero)}/${numero}.jpg`;
-
-    img.onload = () => {
-        caricas.push(numero);
-
-        carregadas++;
-
-        if (carregadas === totalCaricas) {
-            atualizarGaleria();
-        }
-    };
-
-    img.onerror = () => {
-        carregadas++;
-
-        if (carregadas === totalCaricas) {
-            atualizarGaleria();
-        }
-    };
-}
+        atualizarGaleria();
+    })
+    .catch(error => {
+        console.error("Erro ao carregar caricas.json:", error);
+    });
 
 </script>
 
