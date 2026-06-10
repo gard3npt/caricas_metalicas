@@ -180,33 +180,44 @@ footer{
 
 @media (max-width: 600px) {
 
-    .topo-info{
-        flex-direction: column;
-        gap: 10px;
+    header{
+        padding: 10px 15px;
+        min-height: 85px;
+    }
+
+    body{
+        padding: 150px 10px 70px 10px;
     }
 
     h1{
-        font-size: 2rem;
+        font-size: 1.6rem;
+        margin-bottom: 5px;
     }
 
-    .instagram-float{
-        width: 55px;
-        height: 55px;
+    .topo-info{
+        gap: 5px;
+        margin-bottom: 10px;
     }
 
-    .galeria{
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+    #pesquisa{
+        padding: 6px;
+        font-size: 13px;
     }
 
-    .carica{
-        padding: 10px;
+    .instagram-float,
+    .sobre-float{
+        width: 45px;
+        height: 45px;
+        top: 20px;
     }
 
-    .carica img{
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1/1;
+    .instagram-float svg{
+        width: 26px;
+        height: 26px;
+    }
+
+    .sobre-float{
+        font-size: 11px;
     }
 }
 
