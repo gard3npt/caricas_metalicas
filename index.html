@@ -8,38 +8,54 @@
 
 <style>
 
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(18,18,18,0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    z-index: 1000;
+    padding: 15px 20px;
+    min-height: 110px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
 * {
     box-sizing: border-box;
 }
 
-body {
+body{
     margin: 0;
-    padding: 20px;
+    padding: 200px 20px 70px 20px;
     font-family: Arial, sans-serif;
     background: #121212a2;
-    color: white;
+    color: rgba(255, 255, 255, 0.623);
 }
 
 h1 {
     text-align: center;
     margin-bottom: 10px;
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #FCAF45;
+    text-shadow: 0 0 10px rgba(252, 175, 69, 0.4);
 }
 
-#contador {
-    text-align: center;
-    color: #aaa;
-    margin-bottom: 20px;
+#contador{
+    color: #b6d7eca9;
+    font-weight: bold;
+    margin: 0;
 }
 
-#pesquisa {
-    display: block;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto 25px auto;
-    padding: 12px;
+#pesquisa{
+    width: 120px;
+    padding: 8px;
     border: none;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 14px;
+    text-align: center;
 }
 
 .galeria {
@@ -93,8 +109,8 @@ h1 {
 }
 
 .instagram-float {
-    position: fixed;
-    top: 25px;
+    position: absolute;
+    top: 35px;
     right: 25px;
     width: 65px;
     height: 65px;
@@ -126,21 +142,114 @@ h1 {
     height: 34px;
 }
 
+footer{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:50px;
+
+    background:rgba(0,0,0,0.85); /* mais escuro */
+
+    backdrop-filter:blur(10px);
+    color:#ffffff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:0.9rem;
+
+    border-top:1px solid rgba(255,255,255,0.15);
+
+    z-index:1000;
+}
+
+.topo-info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+
+    .topo-info{
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    h1{
+        font-size: 2rem;
+    }
+
+    .instagram-float{
+        width: 55px;
+        height: 55px;
+    }
+}
+
+.sobre-float {
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    position: absolute;
+    top: 35px;
+    left: 25px;
+
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+
+    background: linear-gradient(
+        45deg,
+        #833AB4,
+        #C13584,
+        #E1306C,
+        #FD1D1D,
+        #FCAF45
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    text-decoration: none;
+   
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    z-index: 10000;
+
+    transition: transform 0.3s ease;
+}
+
+.sobre-float:hover {
+    transform: scale(1.12);
+}
+
 </style>
 </head>
 
 <body>
 
 <header>
-    <h1>🍺 Coleção de Caricas</h1>
+    <h1>🍺 Caricas_Metalicas</h1>
 
-<div id="contador">0 caricas catalogadas</div>
+ <div class="topo-info">
+    <div id="contador">0 caricas catalogadas</div>
 
     <input
         type="text"
         id="pesquisa"
-        placeholder="🔍 Procurar número da carica...">
+        placeholder="🔍 Nº da carica">
+</div>
 
+<a href="#"
+   class="sobre-float"
+   aria-label="Sobre">
+    Sobre:
+</a>
 
 <a href="https://www.instagram.com/caricas_metalicas/"
    target="_blank"
@@ -161,6 +270,12 @@ h1 {
     <img id="lightbox-img">
 </div>
 
+<!-- Rodapé -->
+
+<footer>
+    © 2026 Caricas Metálicas | Atualizado a 10.06.2026
+</footer>
+
 <script>
 
 const galeria = document.getElementById("galeria");
@@ -170,7 +285,7 @@ const caricas = [];
 
 function atualizarGaleria() {
 
-    caricas.sort();
+    caricas.sort((a, b) => Number(a) - Number(b));
 
     galeria.innerHTML = "";
 
