@@ -70,9 +70,58 @@ h1 {
 }
 
 @media (max-width: 768px) {
-    .galeria {
-        grid-template-columns: repeat(2, 1fr);
+
+    header{
+        padding: 8px 10px;
+        min-height: 80px;
+    }
+
+    body{
+        padding: 110px 5px 60px 5px;
+    }
+
+    h1{
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+
+    .topo-info{
+        margin-bottom: 8px;
         gap: 8px;
+    }
+
+    .galeria{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .carica{
+        padding: 5px;
+    }
+
+    .carica img{
+        width: 100%;
+        max-width: none;
+    }
+
+    .numero{
+        font-size: 14px;
+    }
+
+    .instagram-float,
+    .sobre-float{
+        width: 42px;
+        height: 42px;
+        top: 18px;
+    }
+
+    .instagram-float svg{
+        width: 22px;
+        height: 22px;
+    }
+
+    .sobre-float{
+        font-size: 10px;
     }
 }
 
@@ -194,11 +243,6 @@ footer{
 }
 
 @media (max-width: 768px) {
-
-    .galeria {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
-    }
 
     .carica {
         padding: 6px;
