@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Coleção: @caricas_metalicas</title>
+<meta name="description" content="Coleção de caricas metálicas catalogada por número. Pesquisa e vê cada carica em @caricas_metalicas.">
+<meta name="theme-color" content="#121212">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Coleção: @caricas_metalicas">
+<meta property="og:description" content="Coleção de caricas metálicas catalogada por número.">
+<link rel="canonical" href="https://gard3npt.github.io/caricas_metalicas/">
+<meta property="og:url" content="https://gard3npt.github.io/caricas_metalicas/">
+<meta property="og:image" content="https://gard3npt.github.io/caricas_metalicas/favicon.png">
+<meta property="og:image:alt" content="Carica dourada de @caricas_metalicas">
+<meta property="og:locale" content="pt_PT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gard3npt.github.io/caricas_metalicas/favicon.png">
 
 <link rel="icon" type="image/png" href="favicon.png">
 
@@ -241,13 +253,51 @@ main {
     align-items: center;
     z-index: 9999;
     cursor: pointer;
+    touch-action: pan-y;
+}
+
+.lb-fig {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    max-width: 92%;
+    cursor: default;
 }
 
 #lightbox img {
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 100%;
+    max-height: calc(100vh - 120px);
     border-radius: 15px;
 }
+
+#lbNum { color: #FCAF45; font-weight: bold; font-size: 16px; }
+
+.lb-btn {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(252,175,69,0.4);
+    background: rgba(30,30,30,0.85);
+    color: #FCAF45;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+.lb-btn:hover { background: rgba(252,175,69,0.2); }
+.lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
+.lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
+.lb-close { top: 12px; right: 12px; }
+.lb-btn[hidden] { display: none; }
+
+.carica img:focus-visible { outline: 3px solid #FCAF45; outline-offset: 3px; }
+body.com-cookies { padding-bottom: 170px; }
 
 footer {
     position: static;
@@ -531,6 +581,7 @@ footer {
 
 <main>
     <div class="galeria" id="galeria"></div>
+    <div class="erro" id="semRes" hidden data-i18n="semRes">Nenhuma carica encontrada.</div>
 </main>
 
 <div id="modalPrivacidade" class="modal">
@@ -551,7 +602,13 @@ footer {
 </div>
 
 <div id="lightbox" role="dialog" aria-modal="true">
-    <img id="lightbox-img" alt="Carica Grande">
+    <button type="button" class="lb-btn lb-close" id="lbClose" aria-label="Fechar" data-i18n-attr="aria-label:fechar">&times;</button>
+    <button type="button" class="lb-btn lb-prev" id="lbPrev" aria-label="Anterior" data-i18n-attr="aria-label:anterior">&#8249;</button>
+    <figure class="lb-fig">
+        <img id="lightbox-img" alt="Carica Grande">
+        <figcaption id="lbNum"></figcaption>
+    </figure>
+    <button type="button" class="lb-btn lb-next" id="lbNext" aria-label="Seguinte" data-i18n-attr="aria-label:seguinte">&#8250;</button>
 </div>
 
 <footer>
@@ -564,6 +621,7 @@ footer {
 
 <script>
 const galeria = document.getElementById("galeria");
+const semRes = document.getElementById("semRes");
 const modalSobre = document.getElementById("modalSobre");
 const contador = document.getElementById("contador");
 const fmt = n => n.toLocaleString("pt-PT");
@@ -572,7 +630,7 @@ const TAMANHO_PASTA = 50;
 
 // ANÚNCIO: preencher o ID do bloco criado no AdSense (ex.: "1234567890")
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
-const ADSENSE_SLOT = "";
+const ADSENSE_SLOT = "8572050117";
 const POSICAO_ANUNCIO = 3;
 const ULTIMA_ATUALIZACAO = "2026-10-07";
 
@@ -585,6 +643,13 @@ function obterPasta(numero) {
 
 function caminho(numero) {
     return `caricas/${obterPasta(numero)}/${numero}.jpg`;
+}
+
+// Miniaturas (~300 px) para a grelha: coloca-as em caricas/mini/<pasta>/<n>.jpg e muda para true.
+// Se uma miniatura faltar, usa-se a imagem original.
+const USAR_MINIATURAS = false;
+function caminhoMini(numero) {
+    return USAR_MINIATURAS ? `caricas/mini/${obterPasta(numero)}/${numero}.jpg` : caminho(numero);
 }
 
 // Consentimento + carregamento do AdSense
@@ -607,9 +672,13 @@ function carregarAds() {
 function lerConsentimento() {
     try { return localStorage.getItem("cookies"); } catch (e) { return null; }
 }
+function bannerCookies(mostrar) {
+    document.getElementById("cookies").style.display = mostrar ? "block" : "none";
+    document.body.classList.toggle("com-cookies", mostrar);
+}
 function guardarConsentimento(v) {
     try { localStorage.setItem("cookies", v); } catch (e) {}
-    document.getElementById("cookies").style.display = "none";
+    bannerCookies(false);
     if (caricas.length) atualizarGaleria();
 }
 
@@ -644,15 +713,23 @@ function atualizarGaleria() {
         card.dataset.numero = numero;
 
         const img = document.createElement("img");
-        img.src = caminho(numero);
-        img.alt = `${t("altImg")} ${numero}`;
+        img.width = 180;
+        img.height = 180;
+        img.decoding = "async";
         img.loading = "lazy";
-        img.onerror = () => { img.style.opacity = "0.25"; img.alt = `${t("altImg")} ${numero} (${t("falta")})`; };
-        img.addEventListener("click", () => {
-            document.getElementById("lightbox-img").src = caminho(numero);
-            document.getElementById("lightbox-img").alt = `${t("altImg")} ${numero}`;
-            document.getElementById("lightbox").style.display = "flex";
-            document.body.style.overflow = "hidden";
+        img.tabIndex = 0;
+        img.setAttribute("role", "button");
+        let triedOriginal = !USAR_MINIATURAS;
+        img.onerror = () => {
+            if (!triedOriginal) { triedOriginal = true; img.src = caminho(numero); return; }
+            img.style.opacity = "0.25";
+            img.alt = `${t("altImg")} ${numero} (${t("falta")})`;
+        };
+        img.src = caminhoMini(numero);
+        img.alt = `${t("altImg")} ${numero}`;
+        img.addEventListener("click", () => abrirLightbox(numero));
+        img.addEventListener("keydown", e => {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirLightbox(numero); }
         });
 
         const num = document.createElement("div");
@@ -670,8 +747,54 @@ function atualizarGaleria() {
     if (mostrarAnuncio) carregarAds();
 }
 
+// ===== Lightbox com navegação =====
+const lightbox = document.getElementById("lightbox");
+let lbLista = [];
+let lbIndice = -1;
+
+function lbAberto() { return lightbox.style.display === "flex"; }
+
+function listaVisivel() {
+    return [...document.querySelectorAll(".carica")]
+        .filter(c => c.style.display !== "none")
+        .map(c => c.dataset.numero);
+}
+
+function mostrarLb() {
+    const n = lbLista[lbIndice];
+    const img = document.getElementById("lightbox-img");
+    img.src = caminho(n);
+    img.alt = `${t("altImg")} ${n}`;
+    document.getElementById("lbNum").textContent = `Nº ${n}`;
+    const varias = lbLista.length > 1;
+    document.getElementById("lbPrev").hidden = !varias;
+    document.getElementById("lbNext").hidden = !varias;
+    try { history.replaceState(null, "", "#" + n); } catch (e) {}
+}
+
+function abrirLightbox(numero) {
+    lbLista = listaVisivel();
+    lbIndice = lbLista.indexOf(String(numero));
+    if (lbIndice < 0) { lbLista = [String(numero)]; lbIndice = 0; }
+    mostrarLb();
+    lightbox.style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+
+function navegarLb(d) {
+    if (lbLista.length < 2) return;
+    lbIndice = (lbIndice + d + lbLista.length) % lbLista.length;
+    mostrarLb();
+}
+
+function abrirPorHash() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (/^\d+$/.test(h) && caricas.some(c => String(c) === h)) abrirLightbox(h);
+}
+
 function fecharTudo() {
     document.getElementById("langMenu").hidden = true;
+    if (location.hash) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
     document.getElementById("lightbox").style.display = "none";
     document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
     document.body.style.overflow = "";
@@ -684,29 +807,51 @@ function ajustarPadding() {
 window.addEventListener("resize", ajustarPadding);
 window.addEventListener("load", ajustarPadding);
 
-document.addEventListener("keydown", e => { if (e.key === "Escape") fecharTudo(); });
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") fecharTudo();
+    else if (lbAberto() && e.key === "ArrowLeft") navegarLb(-1);
+    else if (lbAberto() && e.key === "ArrowRight") navegarLb(1);
+});
 
-document.getElementById("lightbox").addEventListener("click", fecharTudo);
+lightbox.addEventListener("click", e => { if (e.target === lightbox) fecharTudo(); });
+document.getElementById("lbClose").addEventListener("click", fecharTudo);
+document.getElementById("lbPrev").addEventListener("click", () => navegarLb(-1));
+document.getElementById("lbNext").addEventListener("click", () => navegarLb(1));
+
+let toqueX = null;
+lightbox.addEventListener("touchstart", e => { toqueX = e.touches[0].clientX; }, { passive: true });
+lightbox.addEventListener("touchend", e => {
+    if (toqueX === null) return;
+    const dx = e.changedTouches[0].clientX - toqueX;
+    toqueX = null;
+    if (Math.abs(dx) > 50) navegarLb(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+window.addEventListener("hashchange", () => { if (!lbAberto()) abrirPorHash(); });
 
 // Pesquisa (esconde o anúncio enquanto há pesquisa ativa)
 const campo = document.getElementById("pesquisa");
 const limpar = document.getElementById("limpar");
 
 function filtrar() {
-    const texto = campo.value.replace(/\D/g, "").replace(/^0+/, "");
-    limpar.style.display = campo.value.trim() ? "block" : "none";
+    const bruto = campo.value.trim();
+    const ativo = bruto !== "";
+    const texto = bruto.replace(/\D/g, "").replace(/^0+/, "");
+    limpar.style.display = ativo ? "block" : "none";
 
     const adBlock = document.querySelector(".anuncio-card");
-    if (adBlock) adBlock.style.display = texto === "" ? "" : "none";
+    if (adBlock) adBlock.style.display = ativo ? "none" : "";
 
     let visiveis = 0;
     document.querySelectorAll(".carica").forEach(card => {
-        const ok = String(parseInt(card.dataset.numero, 10)).startsWith(texto);
+        const ok = !ativo || (texto !== "" && String(parseInt(card.dataset.numero, 10)).startsWith(texto));
         card.style.display = ok ? "" : "none";
         if (ok) visiveis++;
     });
 
-    contador.textContent = texto
+    semRes.hidden = !(ativo && visiveis === 0);
+
+    contador.textContent = ativo
         ? `${fmt(visiveis)} ${visiveis === 1 ? t("res1") : t("resN")}`
         : `${fmt(caricas.length)} ${t("cariPal")}`;
 }
@@ -734,13 +879,15 @@ const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr" };
 const PT = {
     cariPal: "caricas", res1: "resultado", resN: "resultados", pub: "Publicidade",
     altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
-    erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde."
+    erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde.",
+    semRes: "Nenhuma carica encontrada.", anterior: "Anterior", seguinte: "Seguinte"
 };
 const T = {
     en: {
         cariPal: "bottle caps", res1: "result", resN: "results", pub: "Advertisement",
         altImg: "Bottle cap no.", falta: "image missing", upd: "Last updated: ",
         erro: "The collection could not be loaded. Please try again later.",
+        semRes: "No bottle cap found.", anterior: "Previous", seguinte: "Next",
         colecao: "Collection catalogued by number.", total: "Total:", oferta: "🫶 Donations welcome.",
         sobre: "About", inicio: "Home", ph: "Search no.…", pesqAria: "Search bottle cap number",
         limpar: "Clear search", fechar: "Close", idioma: "Language",
@@ -755,6 +902,7 @@ const T = {
         cariPal: "chapas", res1: "resultado", resN: "resultados", pub: "Publicidad",
         altImg: "Chapa nº", falta: "imagen no disponible", upd: "Última actualización: ",
         erro: "No se pudo cargar la colección. Inténtalo de nuevo más tarde.",
+        semRes: "No se encontró ninguna chapa.", anterior: "Anterior", seguinte: "Siguiente",
         colecao: "Colección catalogada por número.", total: "Total:", oferta: "🫶 Acepto donaciones.",
         sobre: "Acerca de", inicio: "Inicio", ph: "Buscar nº…", pesqAria: "Buscar número de chapa",
         limpar: "Borrar búsqueda", fechar: "Cerrar", idioma: "Idioma",
@@ -769,6 +917,7 @@ const T = {
         cariPal: "capsules", res1: "résultat", resN: "résultats", pub: "Publicité",
         altImg: "Capsule n°", falta: "image manquante", upd: "Dernière mise à jour : ",
         erro: "Impossible de charger la collection. Réessayez plus tard.",
+        semRes: "Aucune capsule trouvée.", anterior: "Précédent", seguinte: "Suivant",
         colecao: "Collection cataloguée par numéro.", total: "Total :", oferta: "🫶 J'accepte les dons.",
         sobre: "À propos", inicio: "Accueil", ph: "Rechercher n°…", pesqAria: "Rechercher le numéro de la capsule",
         limpar: "Effacer la recherche", fechar: "Fermer", idioma: "Langue",
@@ -782,7 +931,8 @@ const T = {
 };
 
 let lang = "pt";
-try { lang = localStorage.getItem("lang") || "pt"; } catch (e) {}
+try { lang = localStorage.getItem("lang"); } catch (e) {}
+if (!lang) lang = (navigator.language || "pt").slice(0, 2).toLowerCase();
 if (!LANGS[lang]) lang = "pt";
 
 function t(k) { return (T[lang] && T[lang][k]) || PT[k] || ""; }
@@ -850,6 +1000,7 @@ fetch("caricas.json")
     .then(lista => {
         caricas.push(...lista);
         atualizarGaleria();
+        abrirPorHash();
     })
     .catch(error => {
         console.error("Erro ao carregar caricas.json:", error);
@@ -893,12 +1044,12 @@ document.getElementById("abrirPrivacidade").addEventListener("click", e => {
 });
 document.getElementById("abrirCookies").addEventListener("click", e => {
     e.preventDefault();
-    document.getElementById("cookies").style.display = "block";
+    bannerCookies(true);
 });
 
 document.getElementById("cookieSim").addEventListener("click", () => guardarConsentimento("sim"));
 document.getElementById("cookieNao").addEventListener("click", () => guardarConsentimento("nao"));
-if (!lerConsentimento()) document.getElementById("cookies").style.display = "block";
+if (!lerConsentimento()) bannerCookies(true);
 </script>
 
 </body>
