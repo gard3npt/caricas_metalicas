@@ -693,15 +693,15 @@ const campo = document.getElementById("pesquisa");
 const limpar = document.getElementById("limpar");
 
 function filtrar() {
-    const texto = campo.value.trim().toLowerCase();
-    limpar.style.display = texto ? "block" : "none";
+    const texto = campo.value.replace(/\D/g, "").replace(/^0+/, "");
+    limpar.style.display = campo.value.trim() ? "block" : "none";
 
     const adBlock = document.querySelector(".anuncio-card");
     if (adBlock) adBlock.style.display = texto === "" ? "" : "none";
 
     let visiveis = 0;
     document.querySelectorAll(".carica").forEach(card => {
-        const ok = card.dataset.numero.startsWith(texto);
+        const ok = String(parseInt(card.dataset.numero, 10)).startsWith(texto);
         card.style.display = ok ? "" : "none";
         if (ok) visiveis++;
     });
@@ -877,11 +877,11 @@ document.getElementById("ano").textContent = new Date().getFullYear();
 
 let toastTimer = null;
 document.getElementById("nomeRodape").addEventListener("click", () => {
-    const t = document.getElementById("toast");
-    t.textContent = t("upd") + dataAtual.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
-    t.classList.add("show");
+    const toast = document.getElementById("toast");
+    toast.textContent = t("upd") + dataAtual.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
+    toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), 4000);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 4000);
 });
 
 const modalPrivacidade = document.getElementById("modalPrivacidade");
