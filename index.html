@@ -6,12 +6,7 @@
 
 <title>Coleção: @caricas_metalicas</title>
 
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4094039418988922" crossorigin="anonymous"></script>
+<link rel="icon" type="image/png" href="favicon.png">
 
 <style>
 * {
@@ -20,7 +15,7 @@
 
 body {
     margin: 0;
-    padding: 110px 20px 20px 20px;
+    padding: 70px 20px 20px 20px;
     font-family: Arial, sans-serif;
     background: #121212;
     color: rgba(255, 255, 255, 0.623);
@@ -34,97 +29,150 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    background: rgba(18,18,18,0.98);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    background: rgba(18,18,18,0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(252,175,69,0.35);
     z-index: 1000;
-    padding: 10px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 8px 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    transition: transform 0.3s ease;
+}
+
+header.oculto { transform: translateY(-100%); }
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-right: auto;
+}
+
+.marca img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }
 
 h1 {
-    text-align: center;
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.15rem;
     font-weight: bold;
     color: #FCAF45;
-    text-shadow: 0 0 10px rgba(252, 175, 69, 0.4);
-    flex: 1;
+    white-space: nowrap;
 }
 
-.topo-botoes {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: flex-start;
-}
+.pilulas { display: flex; gap: 6px; }
 
-.topo-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-}
-
-#contador {
-    color: #b6d7eca9;
+.pilula {
+    background: rgba(252,175,69,0.12);
+    border: 1px solid rgba(252,175,69,0.35);
+    color: #FCAF45;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
     font-weight: bold;
-    margin: 0;
+    white-space: nowrap;
+}
+
+.pesq { position: relative; width: 220px; }
+
+.pesq .lupa {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+    pointer-events: none;
     font-size: 13px;
 }
 
 #pesquisa {
-    width: 130px;
-    padding: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    font-size: 13px;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.05);
+    width: 100%;
+    padding: 8px 30px 8px 34px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    font-size: 14px;
+    background: rgba(255,255,255,0.06);
     color: white;
 }
 
-#pesquisa:focus {
-    outline: none;
-    border-color: #FCAF45;
+#pesquisa:focus { outline: none; border-color: #FCAF45; }
+
+#limpar {
+    display: none;
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
 }
 
-.btn-topo {
-    width: 75px;
-    height: 26px;
-    border-radius: 13px;
+.marca { order: 1; }
+.pesq { order: 2; }
+.pilulas { order: 3; }
+.acoes { display: flex; gap: 8px; order: 4; }
+
+.icone-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     text-decoration: none;
-    font-size: 11px;
-    font-weight: bold;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    background: #2a2a2a;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 16px;
     transition: transform 0.2s ease;
 }
 
-.btn-topo:hover {
-    transform: scale(1.05);
+.icone-btn:hover { transform: scale(1.08); }
+.icone-btn.insta { background: linear-gradient(45deg, #833AB4, #C13584, #E1306C, #FD1D1D, #FCAF45); border: 0; }
+.icone-btn svg { width: 18px; height: 18px; }
+.quebra { display: none; }
+.lang { position: relative; }
+#langBtn { padding: 0; cursor: pointer; }
+.flag { width: 22px; height: 15px; border-radius: 3px; display: block; box-shadow: 0 0 0 1px rgba(255,255,255,0.25); }
+.lang-menu button { display: flex; align-items: center; gap: 10px; }
+.lang-menu {
+    position: absolute;
+    top: 44px;
+    right: 0;
+    background: #1e1e1e;
+    border: 1px solid rgba(252,175,69,0.4);
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    min-width: 130px;
+    z-index: 1100;
 }
-
-.btn-sobre {
-    background: #2a2a2a;
-    border: 1px solid rgba(255,255,255,0.1);
+.lang-menu[hidden] { display: none; }
+.lang-menu button {
+    background: none;
+    border: 0;
+    color: #fff;
+    text-align: left;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
 }
-
-.btn-instagram {
-    background: linear-gradient(45deg, #833AB4, #C13584, #E1306C, #FD1D1D, #FCAF45);
-    gap: 4px;
-}
-
-.btn-instagram svg {
-    width: 14px;
-    height: 14px;
-}
+.lang-menu button:hover, .lang-menu button.sel { background: rgba(252,175,69,0.18); color: #FCAF45; }
 
 main {
     flex: 1;
@@ -202,19 +250,96 @@ main {
 }
 
 footer {
-    margin-top: 40px;
+    position: static;
     width: 100%;
-    height: 50px;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(10px);
-    color: #ffffff;
+    min-height: 60px;
+    margin-top: 32px;
+    border-radius: 12px;
+    background: #222;
+    color: #94a3b8;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
-    border-top: 1px solid rgba(255,255,255,0.15);
-    z-index: 1000;
+    gap: 16px;
+    font-size: 12px;
+    flex-wrap: wrap;
+    padding: 8px;
 }
+.footer-link {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #94a3b8;
+    font: inherit;
+    font-size: 11px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+.footer-link:hover { color: #cbd5e1; }
+.footer-brand { font-size: inherit; text-decoration: none; font-weight: 700; letter-spacing: .04em; }
+.footer-brand:hover { text-decoration: underline; text-underline-offset: 2px; }
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 76px;
+    transform: translateX(-50%) translateY(10px);
+    max-width: calc(100% - 24px);
+    padding: 12px 16px;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s, transform .2s, visibility .2s;
+    z-index: 25000;
+}
+.toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+.priv-card {
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-top: 12px;
+}
+.priv-card h4 { color: #fff; font-size: 14px; margin: 0 0 4px; }
+.priv-card p { font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0; }
+
+.anuncio-card { position: relative; }
+.anuncio-card small { position: absolute; top: 6px; left: 10px; font-size: 10px; opacity: .6; }
+.erro { grid-column: 1 / -1; text-align: center; padding: 30px; color: #ff8a80; }
+
+#cookies {
+    display: none;
+    position: fixed;
+    left: 10px; right: 10px; bottom: 10px;
+    max-width: 560px;
+    margin: 0 auto;
+    background: #1e1e1e;
+    border: 1px solid rgba(252,175,69,0.4);
+    border-radius: 14px;
+    padding: 14px;
+    z-index: 30000;
+    font-size: 13px;
+    color: #fff;
+    text-align: center;
+}
+#cookies button {
+    margin: 8px 4px 0;
+    padding: 7px 16px;
+    border: 0;
+    border-radius: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+#cookies .sim { background: #FCAF45; color: #121212; }
+#cookies .nao { background: #333; color: #fff; }
+
+.modal-content.texto { text-align: left; font-size: 14px; max-height: 85vh; overflow-y: auto; }
+.modal-content.texto h2 { text-align: center; }
 
 /* Modal Sobre */
 .modal {
@@ -238,6 +363,48 @@ footer {
     box-shadow: 0 0 30px rgba(252,175,69,0.3);
     position: relative;
 }
+
+.sobre-logo {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 3px solid #FCAF45;
+    box-shadow: 0 0 22px rgba(252,175,69,0.35);
+}
+.tagline { margin: 4px 0 18px; opacity: 0.75; font-size: 14px; }
+.stats { display: flex; justify-content: center; gap: 10px; margin-bottom: 18px; }
+.stat {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    opacity: 0.95;
+}
+.stat strong { font-size: 1.6rem; color: #FCAF45; line-height: 1.1; display: flex; align-items: center; min-height: 28px; }
+.stat .flag { width: 34px; height: 23px; }
+.modal-content a.btn-insta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    background: linear-gradient(45deg, #833AB4, #C13584, #E1306C, #FD1D1D, #FCAF45);
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+.modal-content a.btn-insta:hover { transform: scale(1.04); text-decoration: none; }
+.btn-insta svg { width: 18px; height: 18px; }
+.oferta { margin: 16px 0 0; font-size: 13px; opacity: 0.7; }
 
 .modal-content h2 {
     color: #FCAF45;
@@ -265,50 +432,25 @@ footer {
 /* Responsividade Mobile */
 @media (max-width: 768px) {
     header {
-        padding: 10px;
+        padding: 8px 10px;
         flex-wrap: wrap;
         gap: 8px;
     }
 
     body {
-        padding: 110px 5px 20px 5px;
+        padding: 100px 5px 20px 5px;
     }
 
-    h1 {
-        font-size: 1.4rem;
-        width: 100%;
-        order: 1;
-        margin-bottom: 2px;
-    }
-
-    .topo-botoes {
-        order: 2;
-        flex-direction: row;
-        flex: 1;
-        gap: 6px;
-    }
-
-    .topo-info {
-        order: 3;
-        flex: 1;
-        align-items: flex-end;
-    }
-
-    .btn-topo {
-        width: 70px;
-        height: 25px;
-        font-size: 10px;
-    }
-
-    #pesquisa {
-        width: 100px;
-        padding: 4px;
-        font-size: 12px;
-    }
-
-    #contador {
-        font-size: 11px;
-    }
+    .marca { order: 1; flex: 1; }
+    .acoes { order: 2; }
+    .quebra { display: block; order: 3; flex-basis: 100%; height: 0; }
+    .pesq { order: 4; flex: 1; width: auto; }
+    .pilulas { order: 5; }
+    h1 { font-size: 0.95rem; }
+    .marca { gap: 8px; }
+    .marca img { width: 34px; height: 34px; }
+    .acoes { gap: 6px; }
+    .icone-btn { width: 34px; height: 34px; }
 
     .galeria {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -334,36 +476,56 @@ footer {
 
 <div id="modalSobre" class="modal">
     <div class="modal-content">
-        <span class="fechar-modal">&times;</span>
-        <h2>🍺 Caricas_Metalicas</h2>
-        <p>Coleção catalogada por número.</p>
-        <p>📍 From: Portugal 🇵🇹</p>
-        <p><strong>Total:</strong> <span id="totalModal">0</span> caricas</p>
-        <p>
-            <strong>Instagram:</strong><br>
-            <a href="https://www.instagram.com/caricas_metalicas/" target="_blank">@caricas_metalicas</a>
-        </p>
-        <p>🫶 Aceito ofertas.</p>
-        <p>Última atualização: 16.06.2026</p>
+        <span class="fechar-modal" role="button" aria-label="Fechar" data-i18n-attr="aria-label:fechar">&times;</span>
+        <img src="favicon.png" alt="" class="sobre-logo">
+        <h2>Caricas_Metalicas</h2>
+        <p class="tagline" data-i18n="colecao">Coleção catalogada por número.</p>
+        <div class="stats">
+            <div class="stat"><strong id="totalModal">0</strong><span data-i18n="cariPal">caricas</span></div>
+            <div class="stat"><strong id="sobreBandeira"></strong><span>Portugal</span></div>
+        </div>
+        <a class="btn-insta" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg>
+            @caricas_metalicas
+        </a>
+        <p class="oferta" data-i18n="oferta">🫶 Aceito ofertas.</p>
     </div>
 </div>
 
-<header>
-    <div class="topo-botoes">
-        <a href="#" id="abrirSobre" class="btn-topo btn-sobre" aria-label="Sobre">Sobre</a>
-        <a href="https://www.instagram.com/caricas_metalicas/" target="_blank" class="btn-topo btn-instagram" aria-label="Instagram">
+<header id="topo">
+    <a href="#" class="marca" aria-label="Início" data-i18n-attr="aria-label:inicio">
+        <img src="favicon.png" alt="">
+        <h1>Caricas_Metalicas</h1>
+    </a>
+
+    <div class="acoes">
+        <a href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener" class="icone-btn insta" aria-label="Instagram">
             <svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/>
             </svg>
-            Insta
         </a>
+        <a href="#" id="abrirSobre" role="button" class="icone-btn" aria-label="Sobre" title="Sobre" data-i18n-attr="aria-label:sobre;title:sobre">ℹ️</a>
+        <div class="lang">
+            <button type="button" id="langBtn" class="icone-btn" aria-label="Idioma" title="Idioma" data-i18n-attr="aria-label:idioma;title:idioma"></button>
+            <div class="lang-menu" id="langMenu" hidden>
+                <button type="button" data-lang="pt">Português</button>
+                <button type="button" data-lang="en">English</button>
+                <button type="button" data-lang="es">Español</button>
+                <button type="button" data-lang="fr">Français</button>
+            </div>
+        </div>
     </div>
 
-    <h1>🍺 Caricas_Metalicas</h1>
+    <div class="quebra"></div>
 
-    <div class="topo-info">
-        <div id="contador">0 caricas catalogadas</div>
-        <input type="text" id="pesquisa" placeholder="🔍 Nº da carica">
+    <div class="pesq">
+        <span class="lupa" aria-hidden="true">🔍</span>
+        <input type="text" id="pesquisa" inputmode="numeric" placeholder="Pesquisar nº…" aria-label="Pesquisar nº da carica" data-i18n-attr="placeholder:ph;aria-label:pesqAria" autocomplete="off">
+        <button type="button" id="limpar" aria-label="Limpar pesquisa" data-i18n-attr="aria-label:limpar">×</button>
+    </div>
+
+    <div class="pilulas">
+        <span class="pilula" id="contador" aria-live="polite">0 caricas</span>
     </div>
 </header>
 
@@ -371,19 +533,48 @@ footer {
     <div class="galeria" id="galeria"></div>
 </main>
 
-<div id="lightbox">
+<div id="modalPrivacidade" class="modal">
+    <div class="modal-content texto">
+        <span class="fechar-modal" role="button" aria-label="Fechar" data-i18n-attr="aria-label:fechar">&times;</span>
+        <h2 data-i18n="privTitulo">🔒 Privacidade e Cookies</h2>
+        <div class="priv-card"><h4 data-i18n="p1h">Que dados recolhe este site</h4><p data-i18n="p1">Este site não tem contas de utilizador, formulários nem comentários, e não recolhe diretamente dados pessoais.</p></div>
+        <div class="priv-card"><h4 data-i18n="p2h">Publicidade (Google AdSense)</h4><p data-i18n="p2">O site pode mostrar anúncios do Google AdSense. Só depois de aceitar é que o código de anúncios é carregado, e o Google pode então usar cookies e identificadores para mostrar e medir anúncios. Se recusar, esse código não é carregado. Pode mudar de ideias a qualquer momento em “Cookies”, no rodapé. Mais informação em <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">policies.google.com/technologies/ads</a>.</p></div>
+        <div class="priv-card"><h4 data-i18n="p3h">Armazenamento no seu navegador</h4><p data-i18n="p3">Guardamos apenas, no armazenamento local do navegador, a sua escolha sobre cookies. Estes dados não saem do seu dispositivo.</p></div>
+        <div class="priv-card"><h4 data-i18n="p4h">Contacto e direitos</h4><p data-i18n="p4">Para qualquer questão, contacte via <a href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener">Instagram</a>. Ao abrigo do RGPD, tem direito de acesso, retificação, apagamento e oposição, bem como o direito de reclamação à CNPD (cnpd.pt).</p></div>
+    </div>
+</div>
+
+<div id="cookies" role="dialog" aria-label="Cookies">
+    <span data-i18n="cookiesTxt">Este site usa cookies de publicidade (Google AdSense). Aceitas?<br></span>
+    <button class="sim" id="cookieSim" data-i18n="aceitar">Aceitar</button>
+    <button class="nao" id="cookieNao" data-i18n="recusar">Recusar</button>
+</div>
+
+<div id="lightbox" role="dialog" aria-modal="true">
     <img id="lightbox-img" alt="Carica Grande">
 </div>
 
 <footer>
-    © 2026 | @caricas_metalicas
+    <span>© <span id="ano">2026</span> <button type="button" class="footer-link footer-brand" id="nomeRodape" title="Ver última atualização" aria-label="Ver data da última atualização" data-i18n-attr="title:ultAtual;aria-label:ultAtualAria">AGAJOTA</button></span>
+    <button type="button" class="footer-link" id="abrirPrivacidade" data-i18n="priv">Privacidade</button>
+    <button type="button" class="footer-link" id="abrirCookies" data-i18n="cook">Cookies</button>
 </footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const galeria = document.getElementById("galeria");
+const modalSobre = document.getElementById("modalSobre");
 const contador = document.getElementById("contador");
+const fmt = n => n.toLocaleString("pt-PT");
 const caricas = [];
 const TAMANHO_PASTA = 50;
+
+// ANÚNCIO: preencher o ID do bloco criado no AdSense (ex.: "1234567890")
+const ADSENSE_CLIENT = "ca-pub-4094039418988922";
+const ADSENSE_SLOT = "";
+const POSICAO_ANUNCIO = 3;
+const ULTIMA_ATUALIZACAO = "2026-10-07";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -392,109 +583,322 @@ function obterPasta(numero) {
     return `${String(inicio).padStart(4, "0")}-${String(fim).padStart(4, "0")}`;
 }
 
+function caminho(numero) {
+    return `caricas/${obterPasta(numero)}/${numero}.jpg`;
+}
+
+// Consentimento + carregamento do AdSense
+let adsCarregado = false;
+function carregarAds() {
+    if (adsCarregado || !ADSENSE_SLOT) return;
+    adsCarregado = true;
+    const sc = document.createElement("script");
+    sc.async = true;
+    sc.crossOrigin = "anonymous";
+    sc.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + ADSENSE_CLIENT;
+    sc.onload = () => {
+        document.querySelectorAll("ins.adsbygoogle").forEach(() => {
+            try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        });
+    };
+    document.head.appendChild(sc);
+}
+
+function lerConsentimento() {
+    try { return localStorage.getItem("cookies"); } catch (e) { return null; }
+}
+function guardarConsentimento(v) {
+    try { localStorage.setItem("cookies", v); } catch (e) {}
+    document.getElementById("cookies").style.display = "none";
+    if (caricas.length) atualizarGaleria();
+}
+
+function criarAnuncio() {
+    const adCard = document.createElement("div");
+    adCard.className = "anuncio-card";
+    adCard.innerHTML = `
+        <small>${t("pub")}</small>
+        <div class="anuncio-container">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="${ADSENSE_CLIENT}"
+                 data-ad-slot="${ADSENSE_SLOT}"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>`;
+    return adCard;
+}
+
 function atualizarGaleria() {
     caricas.sort((a, b) => Number(a) - Number(b));
     galeria.innerHTML = "";
 
-    // CONFIGURAÇÃO DO ANÚNCIO: Defina em que posição da grelha ele deve aparecer (Ex: 3º lugar)
-    const POSICAO_ANUNCIO = 3; 
+    const mostrarAnuncio = ADSENSE_SLOT && lerConsentimento() === "sim";
+    const posAd = Math.min(POSICAO_ANUNCIO - 1, caricas.length);
 
     caricas.forEach((numero, index) => {
-        
-        // Inserção do Anúncio dinamicamente no meio da listagem
-        if (index === (POSICAO_ANUNCIO - 1)) {
-            const adCard = document.createElement("div");
-            adCard.className = "anuncio-card";
-            adCard.innerHTML = `
-                <div class="anuncio-container">
-                    <ins class="adsbygoogle"
-                         style="display:block; width:100%; height:100%;"
-                         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                         data-ad-slot="YYYYYYYYYY"
-                         data-ad-format="fluid"
-                         data-matched-content-ui-type="image_stacked"
-                         data-matched-content-rows-num="1"
-                         data-matched-content-columns-num="1"></ins>
-                </div>
-            `;
-            galeria.appendChild(adCard);
-            
-            // Ativa o anúncio injetado
-            try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-        }
+        if (mostrarAnuncio && index === posAd) galeria.appendChild(criarAnuncio());
 
-        // Inserção normal das Caricas
         const card = document.createElement("div");
         card.className = "carica";
         card.dataset.numero = numero;
 
-        card.innerHTML = `
-            <img src="caricas/${obterPasta(numero)}/${numero}.jpg" alt="${numero}">
-            <div class="numero">Nº ${numero}</div>
-        `;
-
-        card.querySelector("img").addEventListener("click", () => {
-            document.getElementById("lightbox-img").src = `caricas/${obterPasta(numero)}/${numero}.jpg`;
+        const img = document.createElement("img");
+        img.src = caminho(numero);
+        img.alt = `${t("altImg")} ${numero}`;
+        img.loading = "lazy";
+        img.onerror = () => { img.style.opacity = "0.25"; img.alt = `${t("altImg")} ${numero} (${t("falta")})`; };
+        img.addEventListener("click", () => {
+            document.getElementById("lightbox-img").src = caminho(numero);
+            document.getElementById("lightbox-img").alt = `${t("altImg")} ${numero}`;
             document.getElementById("lightbox").style.display = "flex";
             document.body.style.overflow = "hidden";
         });
 
+        const num = document.createElement("div");
+        num.className = "numero";
+        num.textContent = `Nº ${numero}`;
+
+        card.append(img, num);
         galeria.appendChild(card);
     });
 
-    contador.textContent = `${caricas.length} caricas na coleção:`;
+    if (mostrarAnuncio && caricas.length <= posAd) galeria.appendChild(criarAnuncio());
+
+    contador.textContent = `${fmt(caricas.length)} ${t("cariPal")}`;
+    filtrar();
+    if (mostrarAnuncio) carregarAds();
 }
 
-document.getElementById("lightbox").addEventListener("click", () => {
+function fecharTudo() {
+    document.getElementById("langMenu").hidden = true;
     document.getElementById("lightbox").style.display = "none";
+    document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
     document.body.style.overflow = "";
-});
+}
 
-// Sistema de Pesquisa (Ignora o bloco de anúncio para não quebrar a pesquisa)
-document.getElementById("pesquisa").addEventListener("input", function() {
-    const texto = this.value.trim().toLowerCase();
-    
-    // Oculta ou mostra o anúncio se houver pesquisa ativa
+// Espaço para o cabeçalho fixo (varia no mobile)
+function ajustarPadding() {
+    document.body.style.paddingTop = (document.querySelector("header").offsetHeight + 12) + "px";
+}
+window.addEventListener("resize", ajustarPadding);
+window.addEventListener("load", ajustarPadding);
+
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharTudo(); });
+
+document.getElementById("lightbox").addEventListener("click", fecharTudo);
+
+// Pesquisa (esconde o anúncio enquanto há pesquisa ativa)
+const campo = document.getElementById("pesquisa");
+const limpar = document.getElementById("limpar");
+
+function filtrar() {
+    const texto = campo.value.trim().toLowerCase();
+    limpar.style.display = texto ? "block" : "none";
+
     const adBlock = document.querySelector(".anuncio-card");
     if (adBlock) adBlock.style.display = texto === "" ? "" : "none";
 
+    let visiveis = 0;
     document.querySelectorAll(".carica").forEach(card => {
-        card.style.display = card.dataset.numero.includes(texto) ? "" : "none";
+        const ok = card.dataset.numero.startsWith(texto);
+        card.style.display = ok ? "" : "none";
+        if (ok) visiveis++;
+    });
+
+    contador.textContent = texto
+        ? `${fmt(visiveis)} ${visiveis === 1 ? t("res1") : t("resN")}`
+        : `${fmt(caricas.length)} ${t("cariPal")}`;
+}
+
+campo.addEventListener("input", filtrar);
+limpar.addEventListener("click", () => { campo.value = ""; filtrar(); campo.focus(); });
+
+// Cabeçalho: esconde ao descer, mostra ao subir
+const cabecalho = document.getElementById("topo");
+let ultimoY = 0;
+window.addEventListener("scroll", () => {
+    const y = window.scrollY;
+    if (y > ultimoY && y > 80 && document.activeElement !== campo) cabecalho.classList.add("oculto");
+    else if (y < ultimoY) cabecalho.classList.remove("oculto");
+    ultimoY = y;
+}, { passive: true });
+campo.addEventListener("focus", () => cabecalho.classList.remove("oculto"));
+document.querySelector(".marca").addEventListener("click", e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// ===== Idiomas =====
+const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr" };
+const PT = {
+    cariPal: "caricas", res1: "resultado", resN: "resultados", pub: "Publicidade",
+    altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
+    erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde."
+};
+const T = {
+    en: {
+        cariPal: "bottle caps", res1: "result", resN: "results", pub: "Advertisement",
+        altImg: "Bottle cap no.", falta: "image missing", upd: "Last updated: ",
+        erro: "The collection could not be loaded. Please try again later.",
+        colecao: "Collection catalogued by number.", total: "Total:", oferta: "🫶 Donations welcome.",
+        sobre: "About", inicio: "Home", ph: "Search no.…", pesqAria: "Search bottle cap number",
+        limpar: "Clear search", fechar: "Close", idioma: "Language",
+        privTitulo: "🔒 Privacy and Cookies", priv: "Privacy", cook: "Cookies", ultAtual: "See last update", ultAtualAria: "See the date of the last update",
+        p1h: "What data this site collects", p1: "This site has no user accounts, forms or comments, and does not directly collect personal data.",
+        p2h: "Advertising (Google AdSense)", p2: "The site may show Google AdSense ads. The ad code is only loaded after you accept, and Google may then use cookies and identifiers to show and measure ads. If you decline, that code is not loaded. You can change your mind at any time via “Cookies” in the footer. More information at <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
+        p3h: "Storage in your browser", p3: "We only store your cookie choice and language in the browser's local storage. This data never leaves your device.",
+        p4h: "Contact and rights", p4: "For any question, contact us via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Under the GDPR you have the right of access, rectification, erasure and objection, as well as the right to lodge a complaint with the Portuguese data protection authority (cnpd.pt).",
+        cookiesTxt: "This site uses advertising cookies (Google AdSense). Do you accept?<br>", aceitar: "Accept", recusar: "Decline"
+    },
+    es: {
+        cariPal: "chapas", res1: "resultado", resN: "resultados", pub: "Publicidad",
+        altImg: "Chapa nº", falta: "imagen no disponible", upd: "Última actualización: ",
+        erro: "No se pudo cargar la colección. Inténtalo de nuevo más tarde.",
+        colecao: "Colección catalogada por número.", total: "Total:", oferta: "🫶 Acepto donaciones.",
+        sobre: "Acerca de", inicio: "Inicio", ph: "Buscar nº…", pesqAria: "Buscar número de chapa",
+        limpar: "Borrar búsqueda", fechar: "Cerrar", idioma: "Idioma",
+        privTitulo: "🔒 Privacidad y Cookies", priv: "Privacidad", cook: "Cookies", ultAtual: "Ver última actualización", ultAtualAria: "Ver la fecha de la última actualización",
+        p1h: "Qué datos recoge este sitio", p1: "Este sitio no tiene cuentas de usuario, formularios ni comentarios, y no recoge directamente datos personales.",
+        p2h: "Publicidad (Google AdSense)", p2: "El sitio puede mostrar anuncios de Google AdSense. El código de anuncios solo se carga después de aceptar, y Google puede entonces usar cookies e identificadores para mostrar y medir anuncios. Si rechazas, ese código no se carga. Puedes cambiar de opinión en cualquier momento en “Cookies”, en el pie de página. Más información en <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
+        p3h: "Almacenamiento en tu navegador", p3: "Solo guardamos en el almacenamiento local del navegador tu elección sobre cookies y el idioma. Estos datos no salen de tu dispositivo.",
+        p4h: "Contacto y derechos", p4: "Para cualquier cuestión, contacta por <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Según el RGPD tienes derecho de acceso, rectificación, supresión y oposición, así como a presentar una reclamación ante la autoridad portuguesa de protección de datos (cnpd.pt).",
+        cookiesTxt: "Este sitio usa cookies de publicidad (Google AdSense). ¿Aceptas?<br>", aceitar: "Aceptar", recusar: "Rechazar"
+    },
+    fr: {
+        cariPal: "capsules", res1: "résultat", resN: "résultats", pub: "Publicité",
+        altImg: "Capsule n°", falta: "image manquante", upd: "Dernière mise à jour : ",
+        erro: "Impossible de charger la collection. Réessayez plus tard.",
+        colecao: "Collection cataloguée par numéro.", total: "Total :", oferta: "🫶 J'accepte les dons.",
+        sobre: "À propos", inicio: "Accueil", ph: "Rechercher n°…", pesqAria: "Rechercher le numéro de la capsule",
+        limpar: "Effacer la recherche", fechar: "Fermer", idioma: "Langue",
+        privTitulo: "🔒 Confidentialité et Cookies", priv: "Confidentialité", cook: "Cookies", ultAtual: "Voir la dernière mise à jour", ultAtualAria: "Voir la date de la dernière mise à jour",
+        p1h: "Quelles données ce site collecte", p1: "Ce site n'a ni comptes utilisateur, ni formulaires, ni commentaires, et ne collecte pas directement de données personnelles.",
+        p2h: "Publicité (Google AdSense)", p2: "Le site peut afficher des annonces Google AdSense. Le code publicitaire n'est chargé qu'après votre acceptation, et Google peut alors utiliser des cookies et des identifiants pour afficher et mesurer les annonces. Si vous refusez, ce code n'est pas chargé. Vous pouvez changer d'avis à tout moment via « Cookies », en bas de page. Plus d'informations sur <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
+        p3h: "Stockage dans votre navigateur", p3: "Nous conservons uniquement, dans le stockage local du navigateur, votre choix sur les cookies et la langue. Ces données ne quittent pas votre appareil.",
+        p4h: "Contact et droits", p4: "Pour toute question, contactez-nous via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. En vertu du RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition, ainsi que du droit d'introduire une réclamation auprès de l'autorité portugaise de protection des données (cnpd.pt).",
+        cookiesTxt: "Ce site utilise des cookies publicitaires (Google AdSense). Acceptez-vous ?<br>", aceitar: "Accepter", recusar: "Refuser"
+    }
+};
+
+let lang = "pt";
+try { lang = localStorage.getItem("lang") || "pt"; } catch (e) {}
+if (!LANGS[lang]) lang = "pt";
+
+function t(k) { return (T[lang] && T[lang][k]) || PT[k] || ""; }
+
+document.querySelectorAll("[data-i18n]").forEach(el => { el._pt = el.innerHTML; });
+document.querySelectorAll("[data-i18n-attr]").forEach(el => {
+    el._ptAttr = {};
+    el.dataset.i18nAttr.split(";").forEach(par => {
+        const a = par.split(":")[0];
+        el._ptAttr[a] = el.getAttribute(a);
     });
 });
 
+const SVG = {
+    pt: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="12" height="20" fill="#060"/><rect x="12" width="18" height="20" fill="#f00"/><circle cx="12" cy="10" r="4.5" fill="#ff0"/><circle cx="12" cy="10" r="2.6" fill="#fff" stroke="#f00" stroke-width="1"/></svg>',
+    en: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="c"><path d="M30 15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0 0l60 30m0-30l-60 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30l-60 30" clip-path="url(#c)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30m-30-15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30m-30-15h60" stroke="#C8102E" stroke-width="6"/></svg>',
+    es: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg>',
+    fr: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/></svg>'
+};
+function bandeira(l) {
+    return '<img class="flag" alt="" src="data:image/svg+xml,' + encodeURIComponent(SVG[l]) + '">';
+}
+const NOMES = { pt: "Português", en: "English", es: "Español", fr: "Français" };
+document.querySelectorAll("#langMenu button").forEach(b => { b.innerHTML = bandeira(b.dataset.lang) + "<span>" + NOMES[b.dataset.lang] + "</span>"; });
+
+function aplicarIdioma() {
+    document.documentElement.lang = LANGS[lang];
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        el.innerHTML = lang === "pt" ? el._pt : (T[lang][el.dataset.i18n] || el._pt);
+    });
+    document.querySelectorAll("[data-i18n-attr]").forEach(el => {
+        el.dataset.i18nAttr.split(";").forEach(par => {
+            const [a, k] = par.split(":");
+            el.setAttribute(a, lang === "pt" ? el._ptAttr[a] : (T[lang][k] || el._ptAttr[a]));
+        });
+    });
+    document.getElementById("langBtn").innerHTML = bandeira(lang);
+    document.querySelectorAll("#langMenu button").forEach(b => b.classList.toggle("sel", b.dataset.lang === lang));
+    if (caricas.length) atualizarGaleria();
+    else filtrar();
+}
+
+const langMenu = document.getElementById("langMenu");
+document.getElementById("langBtn").addEventListener("click", e => {
+    e.stopPropagation();
+    langMenu.hidden = !langMenu.hidden;
+});
+langMenu.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem("lang", lang); } catch (e) {}
+    langMenu.hidden = true;
+    aplicarIdioma();
+}));
+document.addEventListener("click", () => { langMenu.hidden = true; });
+
+document.getElementById("sobreBandeira").innerHTML = bandeira("pt");
+document.getElementById("langBtn").innerHTML = bandeira(lang);
+if (lang !== "pt") aplicarIdioma();
+
 fetch("caricas.json")
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error(response.status);
+        return response.json();
+    })
     .then(lista => {
         caricas.push(...lista);
         atualizarGaleria();
     })
     .catch(error => {
         console.error("Erro ao carregar caricas.json:", error);
+        galeria.innerHTML = '<div class="erro">'+t("erro")+'</div>';
     });
 
-const modalSobre = document.getElementById("modalSobre");
+
 const abrirSobre = document.getElementById("abrirSobre");
-const fecharModal = document.querySelector(".fechar-modal");
 
 abrirSobre.addEventListener("click", (e) => {
     e.preventDefault();
-    document.getElementById("totalModal").textContent = caricas.length;
+    document.getElementById("totalModal").textContent = fmt(caricas.length);
     modalSobre.style.display = "flex";
     document.body.style.overflow = "hidden";
 });
 
-fecharModal.addEventListener("click", () => {
-    modalSobre.style.display = "none";
-    document.body.style.overflow = "";
-});
+document.querySelectorAll(".fechar-modal").forEach(b => b.addEventListener("click", fecharTudo));
 
 modalSobre.addEventListener("click", (e) => {
-    if (e.target === modalSobre) {
-        modalSobre.style.display = "none";
-        document.body.style.overflow = "";
-    }
+    if (e.target === modalSobre) fecharTudo();
 });
+
+const dataAtual = new Date(ULTIMA_ATUALIZACAO + "T12:00:00");
+document.getElementById("ano").textContent = new Date().getFullYear();
+
+let toastTimer = null;
+document.getElementById("nomeRodape").addEventListener("click", () => {
+    const t = document.getElementById("toast");
+    t.textContent = t("upd") + dataAtual.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 4000);
+});
+
+const modalPrivacidade = document.getElementById("modalPrivacidade");
+modalPrivacidade.addEventListener("click", e => { if (e.target === modalPrivacidade) fecharTudo(); });
+document.getElementById("abrirPrivacidade").addEventListener("click", e => {
+    e.preventDefault();
+    modalPrivacidade.style.display = "flex";
+    document.body.style.overflow = "hidden";
+});
+document.getElementById("abrirCookies").addEventListener("click", e => {
+    e.preventDefault();
+    document.getElementById("cookies").style.display = "block";
+});
+
+document.getElementById("cookieSim").addEventListener("click", () => guardarConsentimento("sim"));
+document.getElementById("cookieNao").addEventListener("click", () => guardarConsentimento("nao"));
+if (!lerConsentimento()) document.getElementById("cookies").style.display = "block";
 </script>
 
 </body>
