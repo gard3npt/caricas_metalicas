@@ -50,57 +50,47 @@
     function lembrada() {
         try { return localStorage.getItem(CHAVE) === '1'; } catch (e) { return false; }
     }
-    /* «© ano» no rodapé: mostra sempre o estado da app (instalar / já instalada / instruções) */
+    /* Estado da app: texto, se oferece o botão «Instalar» e quanto tempo fica visível */
+    function estado() {
+        if (emApp() || (!pedido && lembrada())) return { msg: t('instOk'), botao: false, tempo: 6000 };
+        if (pedido) return { msg: t('instPed'), botao: true, tempo: 12000 };
+        return { msg: '📲 ' + t(chave()), botao: false, tempo: 14000 };
+    }
+    function desenhar(el, est, aoInstalar) {
+        el.textContent = '';
+        var m = document.createElement('span'); m.textContent = est.msg; el.appendChild(m);
+        if (est.botao) {
+            var b = document.createElement('button');
+            b.type = 'button'; b.textContent = t('instAcao'); b.onclick = aoInstalar;
+            el.appendChild(b);
+        }
+    }
+    /* «© ano» no rodapé: mostra sempre o estado da app no aviso */
     window.mostrarEstadoApp = function () {
         var el = document.getElementById('toast');
         if (!el || typeof t !== 'function') return;
-        var tempo = 6000;
-        var msg = document.createElement('span');
-        var botao = false;
-        if (emApp() || (!pedido && lembrada())) {
-            msg.textContent = t('instOk');
-        } else if (pedido) {
-            msg.textContent = t('instPed'); botao = true; tempo = 12000;
-        } else {
-            msg.textContent = '📲 ' + t(chave()); tempo = 14000;
-        }
-        el.textContent = '';
-        el.appendChild(msg);
-        if (botao) {
-            var b = document.createElement('button');
-            b.type = 'button'; b.textContent = t('instAcao');
-            b.onclick = function () { el.classList.remove('show'); window.instalarApp(); };
-            el.appendChild(b);
-        }
+        var est = estado();
+        desenhar(el, est, function () { el.classList.remove('show'); window.instalarApp(); });
         el.classList.add('show');
         clearTimeout(window._toastTimer);
-        window._toastTimer = setTimeout(function () { el.classList.remove('show'); }, tempo);
+        window._toastTimer = setTimeout(function () { el.classList.remove('show'); }, est.tempo);
+    };
+    /* Botão «Instalar app» da janela Sobre: o botão fica sempre visível e a resposta aparece dentro da janela */
+    window.estadoAppDoSobre = function () {
+        var h = document.getElementById('ajudaInstalar');
+        if (!h || typeof t !== 'function') return;
+        desenhar(h, estado(), function () { h.hidden = true; window.instalarApp(); });
+        h.hidden = false;
     };
     window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedido = e; lembrar(false); });
-    window.addEventListener('appinstalled', function () {
-        pedido = null;
-        lembrar(true);
-        var b = document.getElementById('btnInstalar'); if (b) b.style.display = 'none';
-        var h = document.getElementById('ajudaInstalar'); if (h) h.hidden = true;
-    });
+    window.addEventListener('appinstalled', function () { pedido = null; lembrar(true); });
     window.instalarApp = function () {
-        var h = document.getElementById('ajudaInstalar');
-        if (pedido) {
-            var p = pedido; pedido = null;
-            if (h) h.hidden = true;
-            p.prompt();
-            if (p.userChoice) p.userChoice.then(function (r) { if (r && r.outcome === 'accepted') lembrar(true); });
-            if (typeof fecharTudo === 'function') fecharTudo();
-            return;
-        }
-        if (!h) return;
-        var estavaVisivel = !h.hidden;
-        h.textContent = (typeof t === 'function') ? t(chave()) : '';
-        h.hidden = estavaVisivel;
+        if (!pedido) return;
+        var p = pedido; pedido = null;
+        p.prompt();
+        if (p.userChoice) p.userChoice.then(function (r) { if (r && r.outcome === 'accepted') lembrar(true); });
     };
-    document.addEventListener('DOMContentLoaded', function () {
-        if (emApp()) { lembrar(true); var b = document.getElementById('btnInstalar'); if (b) b.style.display = 'none'; }
-    });
+    document.addEventListener('DOMContentLoaded', function () { if (emApp()) lembrar(true); });
 })();
 </script>
 
@@ -569,6 +559,7 @@ footer {
     text-align: left;
 }
 .ajuda-instalar[hidden] { display: none; }
+.ajuda-instalar button { display: block; margin-top: 8px; background: none; border: 0; color: #93c5fd; font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; padding: 4px 0; }
 .oferta { margin: 16px 0 0; font-size: 13px; opacity: 0.7; }
 
 .modal-content h2 {
@@ -655,7 +646,7 @@ footer {
             @caricas_metalicas
         </a>
         <div>
-            <button type="button" class="btn-instalar" id="btnInstalar" onclick="instalarApp()"><span aria-hidden="true">📲</span><span data-i18n="instalar">Instalar app</span></button>
+            <button type="button" class="btn-instalar" id="btnInstalar" onclick="estadoAppDoSobre()"><span aria-hidden="true">📲</span><span data-i18n="instalar">Instalar app</span></button>
         </div>
         <p class="ajuda-instalar" id="ajudaInstalar" role="status" hidden></p>
         <p class="oferta" data-i18n="oferta">🫶 Aceito ofertas.</p>
