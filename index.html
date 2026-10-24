@@ -29,6 +29,46 @@
 <link rel="shortcut icon" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
+<!-- Instalar app: usa o pedido do browser quando existe; senão mostra instruções -->
+<script>
+(function () {
+    var pedido = null;
+    function emApp() {
+        try { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
+        catch (e) { return false; }
+    }
+    function chave() {
+        var ua = navigator.userAgent;
+        if (/FBAN|FBAV|Instagram|Line\/|MicroMessenger|Snapchat|TikTok|; wv\)/.test(ua)) return 'ajApp';
+        if (/iPhone|iPad|iPod/.test(ua)) return 'ajIos';
+        return 'ajOutro';
+    }
+    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedido = e; });
+    window.addEventListener('appinstalled', function () {
+        pedido = null;
+        var b = document.getElementById('btnInstalar'); if (b) b.style.display = 'none';
+        var h = document.getElementById('ajudaInstalar'); if (h) h.hidden = true;
+    });
+    window.instalarApp = function () {
+        var h = document.getElementById('ajudaInstalar');
+        if (pedido) {
+            var p = pedido; pedido = null;
+            if (h) h.hidden = true;
+            p.prompt();
+            if (typeof fecharTudo === 'function') fecharTudo();
+            return;
+        }
+        if (!h) return;
+        var estavaVisivel = !h.hidden;
+        h.textContent = (typeof t === 'function') ? t(chave()) : '';
+        h.hidden = estavaVisivel;
+    };
+    document.addEventListener('DOMContentLoaded', function () {
+        if (emApp()) { var b = document.getElementById('btnInstalar'); if (b) b.style.display = 'none'; }
+    });
+})();
+</script>
+
 <style>
 * {
     box-sizing: border-box;
@@ -463,6 +503,34 @@ footer {
 }
 .modal-content a.btn-insta:hover { transform: scale(1.04); text-decoration: none; }
 .btn-insta svg { width: 18px; height: 18px; }
+.btn-instalar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 9px 20px;
+    border-radius: 999px;
+    border: 1px solid #FCAF45;
+    background: transparent;
+    color: #FCAF45;
+    font: inherit;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-instalar:hover { background: #FCAF45; color: #121212; }
+.ajuda-instalar {
+    margin: 12px 0 0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: left;
+}
+.ajuda-instalar[hidden] { display: none; }
 .oferta { margin: 16px 0 0; font-size: 13px; opacity: 0.7; }
 
 .modal-content h2 {
@@ -548,6 +616,10 @@ footer {
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg>
             @caricas_metalicas
         </a>
+        <div>
+            <button type="button" class="btn-instalar" id="btnInstalar" onclick="instalarApp()"><span aria-hidden="true">📲</span><span data-i18n="instalar">Instalar app</span></button>
+        </div>
+        <p class="ajuda-instalar" id="ajudaInstalar" role="status" hidden></p>
         <p class="oferta" data-i18n="oferta">🫶 Aceito ofertas.</p>
     </div>
 </div>
@@ -917,7 +989,10 @@ const PT = {
     cariPal: "caricas", res1: "resultado", resN: "resultados", pub: "Publicidade",
     altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
     erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde.",
-    semRes: "Nenhuma carica encontrada.", anterior: "Anterior", seguinte: "Seguinte"
+    semRes: "Nenhuma carica encontrada.", anterior: "Anterior", seguinte: "Seguinte",
+    ajApp: "Esta página está aberta dentro de outra aplicação, que não permite instalar. Abra o endereço diretamente no Chrome (ou no Safari, no iPhone).",
+    ajIos: "No iPhone/iPad: toque em Partilhar (o quadrado com a seta) na barra do Safari e escolha «Adicionar ao ecrã principal».",
+    ajOutro: "Abra o menu do browser (⋮) e escolha «Instalar aplicação» ou «Adicionar ao ecrã principal». No computador, use o ícone de instalar na barra de endereço. Se aparecer «Abrir» com o nome da app, já está instalada: procure o ícone no ecrã ou na lista de aplicações."
 };
 const T = {
     en: {
@@ -933,7 +1008,11 @@ const T = {
         p2h: "Advertising (Google AdSense)", p2: "The site may show Google AdSense ads. The ad code is only loaded after you accept, and Google may then use cookies and identifiers to show and measure ads. If you decline, that code is not loaded. You can change your mind at any time via “Cookies” in the footer. More information at <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
         p3h: "Storage in your browser", p3: "We only store your cookie choice and language in the browser's local storage. This data never leaves your device.",
         p4h: "Contact and rights", p4: "For any question, contact us via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Under the GDPR you have the right of access, rectification, erasure and objection, as well as the right to lodge a complaint with the Portuguese data protection authority (cnpd.pt).",
-        cookiesTxt: "This site uses advertising cookies (Google AdSense). Do you accept?<br>", aceitar: "Accept", recusar: "Decline"
+        cookiesTxt: "This site uses advertising cookies (Google AdSense). Do you accept?<br>", aceitar: "Accept", recusar: "Decline",
+        instalar: "Install app",
+        ajApp: "This page is open inside another app, which does not allow installing. Open the address directly in Chrome (or Safari on iPhone).",
+        ajIos: "On iPhone/iPad: tap Share (the square with an arrow) in Safari and choose “Add to Home Screen”.",
+        ajOutro: "Open the browser menu (⋮) and choose “Install app” or “Add to Home screen”. On a computer, use the install icon in the address bar. If you see “Open” with the app name, it is already installed: look for its icon on your home screen or in your app list."
     },
     es: {
         cariPal: "chapas", res1: "resultado", resN: "resultados", pub: "Publicidad",
@@ -948,7 +1027,11 @@ const T = {
         p2h: "Publicidad (Google AdSense)", p2: "El sitio puede mostrar anuncios de Google AdSense. El código de anuncios solo se carga después de aceptar, y Google puede entonces usar cookies e identificadores para mostrar y medir anuncios. Si rechazas, ese código no se carga. Puedes cambiar de opinión en cualquier momento en “Cookies”, en el pie de página. Más información en <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
         p3h: "Almacenamiento en tu navegador", p3: "Solo guardamos en el almacenamiento local del navegador tu elección sobre cookies y el idioma. Estos datos no salen de tu dispositivo.",
         p4h: "Contacto y derechos", p4: "Para cualquier cuestión, contacta por <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Según el RGPD tienes derecho de acceso, rectificación, supresión y oposición, así como a presentar una reclamación ante la autoridad portuguesa de protección de datos (cnpd.pt).",
-        cookiesTxt: "Este sitio usa cookies de publicidad (Google AdSense). ¿Aceptas?<br>", aceitar: "Aceptar", recusar: "Rechazar"
+        cookiesTxt: "Este sitio usa cookies de publicidad (Google AdSense). ¿Aceptas?<br>", aceitar: "Aceptar", recusar: "Rechazar",
+        instalar: "Instalar app",
+        ajApp: "Esta página está abierta dentro de otra aplicación, que no permite instalar. Abre la dirección directamente en Chrome (o en Safari, en iPhone).",
+        ajIos: "En iPhone/iPad: toca Compartir (el cuadrado con la flecha) en Safari y elige «Añadir a pantalla de inicio».",
+        ajOutro: "Abre el menú del navegador (⋮) y elige «Instalar aplicación» o «Añadir a la pantalla de inicio». En el ordenador, usa el icono de instalación de la barra de direcciones. Si aparece «Abrir» con el nombre de la app, ya está instalada: busca su icono en la pantalla de inicio o en la lista de aplicaciones."
     },
     fr: {
         cariPal: "capsules", res1: "résultat", resN: "résultats", pub: "Publicité",
@@ -963,7 +1046,11 @@ const T = {
         p2h: "Publicité (Google AdSense)", p2: "Le site peut afficher des annonces Google AdSense. Le code publicitaire n'est chargé qu'après votre acceptation, et Google peut alors utiliser des cookies et des identifiants pour afficher et mesurer les annonces. Si vous refusez, ce code n'est pas chargé. Vous pouvez changer d'avis à tout moment via « Cookies », en bas de page. Plus d'informations sur <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
         p3h: "Stockage dans votre navigateur", p3: "Nous conservons uniquement, dans le stockage local du navigateur, votre choix sur les cookies et la langue. Ces données ne quittent pas votre appareil.",
         p4h: "Contact et droits", p4: "Pour toute question, contactez-nous via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. En vertu du RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition, ainsi que du droit d'introduire une réclamation auprès de l'autorité portugaise de protection des données (cnpd.pt).",
-        cookiesTxt: "Ce site utilise des cookies publicitaires (Google AdSense). Acceptez-vous ?<br>", aceitar: "Accepter", recusar: "Refuser"
+        cookiesTxt: "Ce site utilise des cookies publicitaires (Google AdSense). Acceptez-vous ?<br>", aceitar: "Accepter", recusar: "Refuser",
+        instalar: "Installer l’app",
+        ajApp: "Cette page est ouverte dans une autre application, qui ne permet pas l’installation. Ouvrez l’adresse directement dans Chrome (ou Safari sur iPhone).",
+        ajIos: "Sur iPhone/iPad : touchez Partager (le carré avec la flèche) dans Safari et choisissez « Sur l’écran d’accueil ».",
+        ajOutro: "Ouvrez le menu du navigateur (⋮) et choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ». Sur ordinateur, utilisez l’icône d’installation dans la barre d’adresse. Si vous voyez « Ouvrir » avec le nom de l’app, elle est déjà installée : cherchez son icône sur l’écran d’accueil ou dans la liste des applications."
     }
 };
 
