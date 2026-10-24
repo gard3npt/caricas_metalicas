@@ -43,9 +43,43 @@
         if (/iPhone|iPad|iPod/.test(ua)) return 'ajIos';
         return 'ajOutro';
     }
-    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedido = e; });
+    var CHAVE = 'caricas-app-instalada';
+    function lembrar(v) {
+        try { if (v) localStorage.setItem(CHAVE, '1'); else localStorage.removeItem(CHAVE); } catch (e) {}
+    }
+    function lembrada() {
+        try { return localStorage.getItem(CHAVE) === '1'; } catch (e) { return false; }
+    }
+    /* «© ano» no rodapé: mostra sempre o estado da app (instalar / já instalada / instruções) */
+    window.mostrarEstadoApp = function () {
+        var el = document.getElementById('toast');
+        if (!el || typeof t !== 'function') return;
+        var tempo = 6000;
+        var msg = document.createElement('span');
+        var botao = false;
+        if (emApp() || (!pedido && lembrada())) {
+            msg.textContent = t('instOk');
+        } else if (pedido) {
+            msg.textContent = t('instPed'); botao = true; tempo = 12000;
+        } else {
+            msg.textContent = '📲 ' + t(chave()); tempo = 14000;
+        }
+        el.textContent = '';
+        el.appendChild(msg);
+        if (botao) {
+            var b = document.createElement('button');
+            b.type = 'button'; b.textContent = t('instAcao');
+            b.onclick = function () { el.classList.remove('show'); window.instalarApp(); };
+            el.appendChild(b);
+        }
+        el.classList.add('show');
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(function () { el.classList.remove('show'); }, tempo);
+    };
+    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedido = e; lembrar(false); });
     window.addEventListener('appinstalled', function () {
         pedido = null;
+        lembrar(true);
         var b = document.getElementById('btnInstalar'); if (b) b.style.display = 'none';
         var h = document.getElementById('ajudaInstalar'); if (h) h.hidden = true;
     });
@@ -55,6 +89,7 @@
             var p = pedido; pedido = null;
             if (h) h.hidden = true;
             p.prompt();
+            if (p.userChoice) p.userChoice.then(function (r) { if (r && r.outcome === 'accepted') lembrar(true); });
             if (typeof fecharTudo === 'function') fecharTudo();
             return;
         }
@@ -64,7 +99,7 @@
         h.hidden = estavaVisivel;
     };
     document.addEventListener('DOMContentLoaded', function () {
-        if (emApp()) { var b = document.getElementById('btnInstalar'); if (b) b.style.display = 'none'; }
+        if (emApp()) { lembrar(true); var b = document.getElementById('btnInstalar'); if (b) b.style.display = 'none'; }
     });
 })();
 </script>
@@ -375,6 +410,8 @@ footer {
     cursor: pointer;
 }
 .footer-link:hover { color: #cbd5e1; }
+.footer-copy { font-size: inherit; text-decoration: none; }
+.footer-copy:hover { text-decoration: underline; text-underline-offset: 2px; }
 .footer-brand { font-size: inherit; text-decoration: none; font-weight: 700; letter-spacing: .04em; }
 .footer-brand:hover { text-decoration: underline; text-underline-offset: 2px; }
 .toast {
@@ -396,6 +433,7 @@ footer {
     z-index: 25000;
 }
 .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+.toast button { background: none; border: 0; color: #93c5fd; font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; padding: 4px; margin-left: 10px; }
 .priv-card {
     background: rgba(2, 6, 23, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -694,7 +732,7 @@ footer {
 </div>
 
 <footer>
-    <span>© <span id="ano">2026</span> <button type="button" class="footer-link footer-brand" id="nomeRodape" title="Ver última atualização" aria-label="Ver data da última atualização" data-i18n-attr="title:ultAtual;aria-label:ultAtualAria">AGAJOTA</button></span>
+    <span><button type="button" class="footer-link footer-copy" id="copiaRodape" onclick="mostrarEstadoApp()" title="Instalar app" aria-label="Instalar app" data-i18n-attr="title:instalar;aria-label:instalar">© <span id="ano">2026</span></button> <button type="button" class="footer-link footer-brand" id="nomeRodape" title="Ver última atualização" aria-label="Ver data da última atualização" data-i18n-attr="title:ultAtual;aria-label:ultAtualAria">AGAJOTA</button></span>
     <button type="button" class="footer-link" id="abrirPrivacidade" data-i18n="priv">Privacidade</button>
     <button type="button" class="footer-link" id="abrirCookies" data-i18n="cook">Cookies</button>
 </footer>
@@ -990,6 +1028,7 @@ const PT = {
     altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
     erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde.",
     semRes: "Nenhuma carica encontrada.", anterior: "Anterior", seguinte: "Seguinte",
+    instOk: "✅ App já instalada. Procure o ícone no ecrã ou na lista de aplicações.", instPed: "📲 Instale a app no ecrã principal.", instAcao: "Instalar",
     ajApp: "Esta página está aberta dentro de outra aplicação, que não permite instalar. Abra o endereço diretamente no Chrome (ou no Safari, no iPhone).",
     ajIos: "No iPhone/iPad: toque em Partilhar (o quadrado com a seta) na barra do Safari e escolha «Adicionar ao ecrã principal».",
     ajOutro: "Abra o menu do browser (⋮) e escolha «Instalar aplicação» ou «Adicionar ao ecrã principal». No computador, use o ícone de instalar na barra de endereço. Se aparecer «Abrir» com o nome da app, já está instalada: procure o ícone no ecrã ou na lista de aplicações."
@@ -1010,6 +1049,7 @@ const T = {
         p4h: "Contact and rights", p4: "For any question, contact us via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Under the GDPR you have the right of access, rectification, erasure and objection, as well as the right to lodge a complaint with the Portuguese data protection authority (cnpd.pt).",
         cookiesTxt: "This site uses advertising cookies (Google AdSense). Do you accept?<br>", aceitar: "Accept", recusar: "Decline",
         instalar: "Install app",
+        instOk: "✅ App already installed. Look for the icon on your screen or in your app list.", instPed: "📲 Install the app on your home screen.", instAcao: "Install",
         ajApp: "This page is open inside another app, which does not allow installing. Open the address directly in Chrome (or Safari on iPhone).",
         ajIos: "On iPhone/iPad: tap Share (the square with an arrow) in Safari and choose “Add to Home Screen”.",
         ajOutro: "Open the browser menu (⋮) and choose “Install app” or “Add to Home screen”. On a computer, use the install icon in the address bar. If you see “Open” with the app name, it is already installed: look for its icon on your home screen or in your app list."
@@ -1029,6 +1069,7 @@ const T = {
         p4h: "Contacto y derechos", p4: "Para cualquier cuestión, contacta por <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Según el RGPD tienes derecho de acceso, rectificación, supresión y oposición, así como a presentar una reclamación ante la autoridad portuguesa de protección de datos (cnpd.pt).",
         cookiesTxt: "Este sitio usa cookies de publicidad (Google AdSense). ¿Aceptas?<br>", aceitar: "Aceptar", recusar: "Rechazar",
         instalar: "Instalar app",
+        instOk: "✅ App ya instalada. Busca el icono en la pantalla o en la lista de aplicaciones.", instPed: "📲 Instala la app en la pantalla de inicio.", instAcao: "Instalar",
         ajApp: "Esta página está abierta dentro de otra aplicación, que no permite instalar. Abre la dirección directamente en Chrome (o en Safari, en iPhone).",
         ajIos: "En iPhone/iPad: toca Compartir (el cuadrado con la flecha) en Safari y elige «Añadir a pantalla de inicio».",
         ajOutro: "Abre el menú del navegador (⋮) y elige «Instalar aplicación» o «Añadir a la pantalla de inicio». En el ordenador, usa el icono de instalación de la barra de direcciones. Si aparece «Abrir» con el nombre de la app, ya está instalada: busca su icono en la pantalla de inicio o en la lista de aplicaciones."
@@ -1048,6 +1089,7 @@ const T = {
         p4h: "Contact et droits", p4: "Pour toute question, contactez-nous via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. En vertu du RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition, ainsi que du droit d'introduire une réclamation auprès de l'autorité portugaise de protection des données (cnpd.pt).",
         cookiesTxt: "Ce site utilise des cookies publicitaires (Google AdSense). Acceptez-vous ?<br>", aceitar: "Accepter", recusar: "Refuser",
         instalar: "Installer l’app",
+        instOk: "✅ App déjà installée. Cherchez l’icône sur l’écran ou dans la liste des applications.", instPed: "📲 Installez l’app sur l’écran d’accueil.", instAcao: "Installer",
         ajApp: "Cette page est ouverte dans une autre application, qui ne permet pas l’installation. Ouvrez l’adresse directement dans Chrome (ou Safari sur iPhone).",
         ajIos: "Sur iPhone/iPad : touchez Partager (le carré avec la flèche) dans Safari et choisissez « Sur l’écran d’accueil ».",
         ajOutro: "Ouvrez le menu du navigateur (⋮) et choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ». Sur ordinateur, utilisez l’icône d’installation dans la barre d’adresse. Si vous voyez « Ouvrir » avec le nom de l’app, elle est déjà installée : cherchez son icône sur l’écran d’accueil ou dans la liste des applications."
@@ -1150,13 +1192,12 @@ modalSobre.addEventListener("click", (e) => {
 const dataAtual = new Date(ULTIMA_ATUALIZACAO + "T12:00:00");
 document.getElementById("ano").textContent = new Date().getFullYear();
 
-let toastTimer = null;
 document.getElementById("nomeRodape").addEventListener("click", () => {
     const toast = document.getElementById("toast");
     toast.textContent = t("upd") + dataAtual.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
     toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("show"), 4000);
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => toast.classList.remove("show"), 4000);
 });
 
 const modalPrivacidade = document.getElementById("modalPrivacidade");
