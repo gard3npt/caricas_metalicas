@@ -47,12 +47,20 @@
     function lembrar(v) {
         try { if (v) localStorage.setItem(CHAVE, '1'); else localStorage.removeItem(CHAVE); } catch (e) {}
     }
+    /* Chrome/Edge/Samsung só disparam o pedido de instalação quando a app NÃO está instalada:
+       passados uns segundos sem pedido, assume-se que já está instalada (a não ser que o visitante tenha recusado) */
+    var inicio = Date.now(), recusou = false;
+    function provavel() {
+        if (!('BeforeInstallPromptEvent' in window)) return false;
+        if (/FBAN|FBAV|Instagram|Line\/|MicroMessenger|Snapchat|TikTok|; wv\)/.test(navigator.userAgent)) return false;
+        return !pedido && !recusou && (Date.now() - inicio > 4000);
+    }
     function lembrada() {
         try { return localStorage.getItem(CHAVE) === '1'; } catch (e) { return false; }
     }
     /* Estado da app: texto, se oferece o botão «Instalar» e quanto tempo fica visível */
     function estado() {
-        if (emApp() || (!pedido && lembrada())) return { msg: t('instOk'), botao: false, tempo: 6000 };
+        if (emApp() || (!pedido && (lembrada() || provavel()))) return { msg: t('instOk'), botao: false, tempo: 6000 };
         if (pedido) return { msg: t('instPed'), botao: true, tempo: 12000 };
         return { msg: '📲 ' + t(chave()), botao: false, tempo: 14000 };
     }
@@ -88,7 +96,7 @@
         if (!pedido) return;
         var p = pedido; pedido = null;
         p.prompt();
-        if (p.userChoice) p.userChoice.then(function (r) { if (r && r.outcome === 'accepted') lembrar(true); });
+        if (p.userChoice) p.userChoice.then(function (r) { if (r && r.outcome === 'accepted') lembrar(true); else recusou = true; });
     };
     document.addEventListener('DOMContentLoaded', function () { if (emApp()) lembrar(true); });
 })();
