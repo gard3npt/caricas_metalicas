@@ -7,6 +7,13 @@
 <title>@caricas_metalicas</title>
 <meta name="description" content="Coleção de caricas metálicas catalogada por número. Pesquisa e vê cada carica em @caricas_metalicas.">
 <meta name="theme-color" content="#121212">
+
+<!-- App instalável (PWA) -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Caricas">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta property="og:type" content="website">
 <meta property="og:title" content="@caricas_metalicas">
 <meta property="og:description" content="Coleção de caricas metálicas catalogada por número.">
@@ -20,8 +27,7 @@
 
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="shortcut icon" href="favicon.png">
-<link rel="apple-touch-icon" href="favicon.png">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cpath%20d%3D%22M61.0%2032.0%20L56.1%2038.5%20L57.1%2046.5%20L49.7%2049.7%20L46.5%2057.1%20L38.5%2056.1%20L32.0%2061.0%20L25.5%2056.1%20L17.5%2057.1%20L14.3%2049.7%20L6.9%2046.5%20L7.9%2038.5%20L3.0%2032.0%20L7.9%2025.5%20L6.9%2017.5%20L14.3%2014.3%20L17.5%206.9%20L25.5%207.9%20L32.0%203.0%20L38.5%207.9%20L46.5%206.9%20L49.7%2014.3%20L57.1%2017.5%20L56.1%2025.5%20Z%22%20fill%3D%22%23FCAF45%22%20stroke%3D%22%23b9770e%22%20stroke-width%3D%222%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2217%22%20fill%3D%22%23ffd27a%22%20stroke%3D%22%23b9770e%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <style>
 * {
@@ -536,7 +542,7 @@ footer {
         <p class="tagline" data-i18n="colecao">Coleção catalogada e numerada.</p>
         <div class="stats">
             <div class="stat"><strong id="totalModal">0</strong><span data-i18n="cariPal">caricas</span></div>
-            <div class="stat"><strong id="sobreBandeira"></strong><span> Portugal</span></div>
+            <div class="stat"><strong id="sobreBandeira"></strong><span>Portugal</span></div>
         </div>
         <a class="btn-insta" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg>
@@ -636,7 +642,7 @@ const TAMANHO_PASTA = 50;
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-const ULTIMA_ATUALIZACAO = "2026-10-16";
+const ULTIMA_ATUALIZACAO = "2026-10-24";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -1081,6 +1087,15 @@ document.getElementById("abrirCookies").addEventListener("click", e => {
 document.getElementById("cookieSim").addEventListener("click", () => guardarConsentimento("sim"));
 document.getElementById("cookieNao").addEventListener("click", () => guardarConsentimento("nao"));
 if (!lerConsentimento()) bannerCookies(true);
+</script>
+
+<script>
+// App instalável: regista o service worker (só em http/https)
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+}
 </script>
 
 </body>
