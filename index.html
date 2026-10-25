@@ -29,6 +29,7 @@
 <link rel="shortcut icon" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
+
 <!-- Instalar app: usa o pedido do browser quando existe; senão mostra instruções -->
 <script>
 (function () {
@@ -82,13 +83,6 @@
         el.classList.add('show');
         clearTimeout(window._toastTimer);
         window._toastTimer = setTimeout(function () { el.classList.remove('show'); }, est.tempo);
-    };
-    /* Botão «Instalar app» da janela Sobre: o botão fica sempre visível e a resposta aparece dentro da janela */
-    window.estadoAppDoSobre = function () {
-        var h = document.getElementById('ajudaInstalar');
-        if (!h || typeof t !== 'function') return;
-        desenhar(h, estado(), function () { h.hidden = true; window.instalarApp(); });
-        h.hidden = false;
     };
     window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedido = e; lembrar(false); });
     window.addEventListener('appinstalled', function () { pedido = null; lembrar(true); });
@@ -335,7 +329,7 @@ main {
     align-items: center;
     z-index: 9999;
     cursor: pointer;
-    touch-action: pan-y;
+    touch-action: none;
 }
 
 .lb-fig {
@@ -350,7 +344,9 @@ main {
 
 #lightbox img {
     max-width: 100%;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 175px);
+    max-height: calc(100dvh - 175px);
+    transition: transform 0.15s ease;
     border-radius: 15px;
 }
 
@@ -376,6 +372,10 @@ main {
 .lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
 .lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
 .lb-close { top: 12px; right: 12px; }
+.lb-up { top: 12px; left: 50%; transform: translateX(-50%); font-size: 18px; }
+.lb-down { bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 18px; }
+button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: pointer; }
+.faltam { margin: 10px 0 0; font-size: 12px; opacity: 0.75; line-height: 1.5; word-break: break-word; }
 .lb-btn[hidden] { display: none; }
 
 .carica img:focus-visible { outline: 3px solid #FCAF45; outline-offset: 3px; }
@@ -539,35 +539,6 @@ footer {
 }
 .modal-content a.btn-insta:hover { transform: scale(1.04); text-decoration: none; }
 .btn-insta svg { width: 18px; height: 18px; }
-.btn-instalar {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 9px 20px;
-    border-radius: 999px;
-    border: 1px solid #FCAF45;
-    background: transparent;
-    color: #FCAF45;
-    font: inherit;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-.btn-instalar:hover { background: #FCAF45; color: #121212; }
-.ajuda-instalar {
-    margin: 12px 0 0;
-    padding: 10px 14px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    font-size: 13px;
-    line-height: 1.5;
-    text-align: left;
-}
-.ajuda-instalar[hidden] { display: none; }
-.ajuda-instalar button { display: block; margin-top: 8px; background: none; border: 0; color: #93c5fd; font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; padding: 4px 0; }
 .oferta { margin: 16px 0 0; font-size: 13px; opacity: 0.7; }
 
 .modal-content h2 {
@@ -649,14 +620,11 @@ footer {
             <div class="stat"><strong id="totalModal">0</strong><span data-i18n="cariPal">caricas</span></div>
             <div class="stat"><strong id="sobreBandeira"></strong><span>Portugal</span></div>
         </div>
+        <p class="faltam" id="faltam" hidden></p>
         <a class="btn-insta" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg>
             @caricas_metalicas
         </a>
-        <div>
-            <button type="button" class="btn-instalar" id="btnInstalar" onclick="estadoAppDoSobre()"><span aria-hidden="true">📲</span><span data-i18n="instalar">Instalar app</span></button>
-        </div>
-        <p class="ajuda-instalar" id="ajudaInstalar" role="status" hidden></p>
         <p class="oferta" data-i18n="oferta">🫶 Aceito ofertas.</p>
     </div>
 </div>
@@ -681,6 +649,10 @@ footer {
                 <button type="button" data-lang="en">English</button>
                 <button type="button" data-lang="es">Español</button>
                 <button type="button" data-lang="fr">Français</button>
+                <button type="button" data-lang="de">Deutsch</button>
+                <button type="button" data-lang="it">Italiano</button>
+                <button type="button" data-lang="nl">Nederlands</button>
+                <button type="button" data-lang="pl">Polski</button>
             </div>
         </div>
     </div>
@@ -695,6 +667,9 @@ footer {
 
     <div class="pilulas">
         <span class="pilula" id="contador" aria-live="polite">0 caricas</span>
+        <button type="button" class="pilula" id="btnOrdem" aria-label="Inverter a ordem" data-i18n-attr="aria-label:ordAria">1→9</button>
+        <button type="button" class="pilula" id="btnAleat" aria-label="Carica aleatória" data-i18n-attr="aria-label:aleatAria">🎲</button>
+        <button type="button" class="pilula" id="btnFim" aria-label="Ir para o fim" data-i18n-attr="aria-label:fimAria">⤓</button>
     </div>
 </header>
 
@@ -717,6 +692,8 @@ footer {
 <div id="lightbox" role="dialog" aria-modal="true">
     <button type="button" class="lb-btn lb-close" id="lbClose" aria-label="Fechar" data-i18n-attr="aria-label:fechar">&times;</button>
     <button type="button" class="lb-btn lb-prev" id="lbPrev" aria-label="Anterior" data-i18n-attr="aria-label:anterior">&#8249;</button>
+    <button type="button" class="lb-btn lb-up" id="lbUp" aria-label="Anterior" data-i18n-attr="aria-label:anterior">&#9650;</button>
+    <button type="button" class="lb-btn lb-down" id="lbDown" aria-label="Seguinte" data-i18n-attr="aria-label:seguinte">&#9660;</button>
     <figure class="lb-fig">
         <img id="lightbox-img" alt="Carica Grande">
         <figcaption id="lbNum"></figcaption>
@@ -746,12 +723,13 @@ const contador = document.getElementById("contador");
 const fmt = n => n.toLocaleString("pt-PT");
 const caricas = [];
 const TAMANHO_PASTA = 50;
+let ordemDesc = false;
 
 // ANÚNCIO: preencher o ID do bloco criado no AdSense (ex.: "1234567890")
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-const ULTIMA_ATUALIZACAO = "2026-10-24";
+const ULTIMA_ATUALIZACAO = "2026-10-25";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -840,7 +818,7 @@ function inserirAnuncios() {
 }
 
 function atualizarGaleria() {
-    caricas.sort((a, b) => Number(a) - Number(b));
+    caricas.sort((a, b) => ordemDesc ? Number(b) - Number(a) : Number(a) - Number(b));
     galeria.innerHTML = "";
 
     const mostrarAnuncio = ADSENSE_SLOT && lerConsentimento() === "sim";
@@ -889,6 +867,7 @@ function atualizarGaleria() {
 const lightbox = document.getElementById("lightbox");
 let lbLista = [];
 let lbIndice = -1;
+let lbHist = false;
 
 function lbAberto() { return lightbox.style.display === "flex"; }
 
@@ -907,6 +886,9 @@ function mostrarLb() {
     const varias = lbLista.length > 1;
     document.getElementById("lbPrev").hidden = !varias;
     document.getElementById("lbNext").hidden = !varias;
+    document.getElementById("lbUp").hidden = !varias;
+    document.getElementById("lbDown").hidden = !varias;
+    resetZoom();
     try { history.replaceState(null, "", "#" + n); } catch (e) {}
 }
 
@@ -915,6 +897,7 @@ function abrirLightbox(numero) {
     lbIndice = lbLista.indexOf(String(numero));
     if (lbIndice < 0) { lbLista = [String(numero)]; lbIndice = 0; }
     mostrarLb();
+    if (!lbAberto()) { try { history.pushState({ lb: 1 }, "", "#" + String(numero)); lbHist = true; } catch (e) {} }
     lightbox.style.display = "flex";
     document.body.style.overflow = "hidden";
 }
@@ -931,12 +914,16 @@ function abrirPorHash() {
 }
 
 function fecharTudo() {
+    const voltar = lbHist && lbAberto();
+    lbHist = false;
     document.getElementById("langMenu").hidden = true;
     if (location.hash) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
     document.getElementById("lightbox").style.display = "none";
     document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
     document.body.style.overflow = "";
+    if (voltar) { try { history.back(); } catch (e) {} }
 }
+window.addEventListener("popstate", () => { if (lbAberto()) { lbHist = false; fecharTudo(); } });
 
 // Espaço para o cabeçalho fixo (varia no mobile)
 function ajustarPadding() {
@@ -954,23 +941,63 @@ window.addEventListener("load", ajustarPadding);
 
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") fecharTudo();
-    else if (lbAberto() && e.key === "ArrowLeft") navegarLb(-1);
-    else if (lbAberto() && e.key === "ArrowRight") navegarLb(1);
+    else if (lbAberto() && (e.key === "ArrowLeft" || e.key === "ArrowUp")) { e.preventDefault(); navegarLb(-1); }
+    else if (lbAberto() && (e.key === "ArrowRight" || e.key === "ArrowDown")) { e.preventDefault(); navegarLb(1); }
 });
 
 lightbox.addEventListener("click", e => { if (e.target === lightbox) fecharTudo(); });
 document.getElementById("lbClose").addEventListener("click", fecharTudo);
 document.getElementById("lbPrev").addEventListener("click", () => navegarLb(-1));
 document.getElementById("lbNext").addEventListener("click", () => navegarLb(1));
+document.getElementById("lbUp").addEventListener("click", () => navegarLb(-1));
+document.getElementById("lbDown").addEventListener("click", () => navegarLb(1));
 
-let toqueX = null;
-lightbox.addEventListener("touchstart", e => { toqueX = e.touches[0].clientX; }, { passive: true });
-lightbox.addEventListener("touchend", e => {
-    if (toqueX === null) return;
-    const dx = e.changedTouches[0].clientX - toqueX;
-    toqueX = null;
-    if (Math.abs(dx) > 50) navegarLb(dx < 0 ? 1 : -1);
+// Gestos: deslizar (←→ ou ↑↓) muda de carica; pinça faz zoom e arrastar move a imagem com zoom
+const lbImg = document.getElementById("lightbox-img");
+let zoom = 1, zx = 0, zy = 0, d0 = 0, z0 = 1, toque = null;
+function aplicarZoom() { lbImg.style.transform = zoom > 1 ? `translate(${zx}px, ${zy}px) scale(${zoom})` : ""; }
+function resetZoom() { zoom = 1; zx = zy = 0; d0 = 0; toque = null; aplicarZoom(); }
+const dist = t2 => Math.hypot(t2[0].clientX - t2[1].clientX, t2[0].clientY - t2[1].clientY);
+lightbox.addEventListener("touchstart", e => {
+    if (e.touches.length === 2) { d0 = dist(e.touches); z0 = zoom; toque = null; }
+    else if (e.touches.length === 1) toque = { x: e.touches[0].clientX, y: e.touches[0].clientY, zx, zy };
 }, { passive: true });
+lightbox.addEventListener("touchmove", e => {
+    if (e.touches.length === 2 && d0) {
+        zoom = Math.min(5, Math.max(1, z0 * dist(e.touches) / d0));
+        if (zoom === 1) { zx = zy = 0; }
+        aplicarZoom();
+    } else if (e.touches.length === 1 && toque && zoom > 1) {
+        zx = toque.zx + e.touches[0].clientX - toque.x;
+        zy = toque.zy + e.touches[0].clientY - toque.y;
+        aplicarZoom();
+    }
+}, { passive: true });
+lightbox.addEventListener("touchend", e => {
+    if (d0) { if (e.touches.length === 0) { d0 = 0; if (zoom < 1.05) resetZoom(); } toque = null; return; }
+    if (!toque || zoom > 1 || e.touches.length) { toque = null; return; }
+    const dx = e.changedTouches[0].clientX - toque.x, dy = e.changedTouches[0].clientY - toque.y;
+    toque = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) navegarLb(dx < 0 ? 1 : -1);
+    else if (Math.abs(dy) > 50) navegarLb(dy < 0 ? 1 : -1);
+}, { passive: true });
+
+// Barra: inverter ordem, carica aleatória, ir ao fim
+const btnOrdem = document.getElementById("btnOrdem");
+btnOrdem.addEventListener("click", () => { ordemDesc = !ordemDesc; btnOrdem.textContent = ordemDesc ? "9→1" : "1→9"; atualizarGaleria(); });
+document.getElementById("btnAleat").addEventListener("click", () => {
+    const l = listaVisivel(); if (l.length) abrirLightbox(l[Math.floor(Math.random() * l.length)]);
+});
+document.getElementById("btnFim").addEventListener("click", () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" }));
+
+// Números em falta na sequência (janela Sobre)
+function mostrarFaltas() {
+    const el = document.getElementById("faltam");
+    const set = new Set(caricas.map(Number)), max = Math.max(0, ...set), falt = [];
+    for (let i = 1; i <= max; i++) if (!set.has(i)) falt.push(i);
+    el.hidden = !falt.length;
+    if (falt.length) el.textContent = t("faltam") + " " + falt.slice(0, 40).join(", ") + (falt.length > 40 ? " … (+" + (falt.length - 40) + ")" : "");
+}
 
 window.addEventListener("hashchange", () => { if (!lbAberto()) abrirPorHash(); });
 
@@ -1021,13 +1048,14 @@ document.querySelector(".marca").addEventListener("click", e => {
 });
 
 // ===== Idiomas =====
-const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr" };
+const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr", de: "de", it: "it", nl: "nl", pl: "pl" };
 const PT = {
     cariPal: "caricas", res1: "resultado", resN: "resultados", pub: "Publicidade",
     altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
     erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde.",
     semRes: "Nenhuma carica encontrada.", anterior: "Anterior", seguinte: "Seguinte",
-    instOk: "✅ App já instalada. Procure o ícone no ecrã ou na lista de aplicações.", instPed: "📲 Instale a app no ecrã principal.", instAcao: "Instalar",
+    ordAria: "Inverter a ordem", aleatAria: "Carica aleatória", fimAria: "Ir para o fim", faltam: "Números em falta:",
+    instOk: "✅ App já instalada.", instPed: "📲 Instale a app no ecrã principal.", instAcao: "Instalar",
     ajApp: "Esta página está aberta dentro de outra aplicação, que não permite instalar. Abra o endereço diretamente no Chrome (ou no Safari, no iPhone).",
     ajIos: "No iPhone/iPad: toque em Partilhar (o quadrado com a seta) na barra do Safari e escolha «Adicionar ao ecrã principal».",
     ajOutro: "Abra o menu do browser (⋮) e escolha «Instalar aplicação» ou «Adicionar ao ecrã principal». No computador, use o ícone de instalar na barra de endereço. Se aparecer «Abrir» com o nome da app, já está instalada: procure o ícone no ecrã ou na lista de aplicações."
@@ -1046,12 +1074,152 @@ const T = {
         p2h: "Advertising (Google AdSense)", p2: "The site may show Google AdSense ads. The ad code is only loaded after you accept, and Google may then use cookies and identifiers to show and measure ads. If you decline, that code is not loaded. You can change your mind at any time via “Cookies” in the footer. More information at <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
         p3h: "Storage in your browser", p3: "We only store your cookie choice and language in the browser's local storage. This data never leaves your device.",
         p4h: "Contact and rights", p4: "For any question, contact us via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Under the GDPR you have the right of access, rectification, erasure and objection, as well as the right to lodge a complaint with the Portuguese data protection authority (cnpd.pt).",
-        cookiesTxt: "This site uses advertising cookies (Google AdSense). Do you accept?<br>", aceitar: "Accept", recusar: "Decline",
-        instalar: "Install app",
-        instOk: "✅ App already installed. Look for the icon on your screen or in your app list.", instPed: "📲 Install the app on your home screen.", instAcao: "Install",
+        cookiesTxt: "This site uses advertising cookies (Google AdSense). Do you accept?<br>", aceitar: "Accept", recusar: "Decline", 
+        instalar: "Install app", ordAria: "Reverse order", aleatAria: "Random bottle cap", fimAria: "Go to the end", faltam: "Missing numbers:",
+        instOk: "✅ App already installed.", instPed: "📲 Install the app on your home screen.", instAcao: "Install",
         ajApp: "This page is open inside another app, which does not allow installing. Open the address directly in Chrome (or Safari on iPhone).",
         ajIos: "On iPhone/iPad: tap Share (the square with an arrow) in Safari and choose “Add to Home Screen”.",
         ajOutro: "Open the browser menu (⋮) and choose “Install app” or “Add to Home screen”. On a computer, use the install icon in the address bar. If you see “Open” with the app name, it is already installed: look for its icon on your home screen or in your app list."
+    },
+    de: {
+        cariPal: "Kronkorken",
+        res1: "Ergebnis",
+        resN: "Ergebnisse",
+        pub: "Werbung",
+        altImg: "Kronkorken Nr.",
+        falta: "Bild fehlt",
+        upd: "Letzte Aktualisierung: ",
+        erro: "Die Sammlung konnte nicht geladen werden. Bitte später erneut versuchen.",
+        semRes: "Kein Kronkorken gefunden.",
+        anterior: "Zurück",
+        seguinte: "Weiter",
+        colecao: "Nach Nummern katalogisierte Sammlung.",
+        total: "Gesamt:",
+        oferta: "🫶 Spenden willkommen.",
+        sobre: "Über",
+        inicio: "Start",
+        ph: "Nr. suchen…",
+        pesqAria: "Nummer des Kronkorkens suchen",
+        limpar: "Suche löschen",
+        fechar: "Schließen",
+        idioma: "Sprache",
+        privTitulo: "🔒 Datenschutz und Cookies",
+        priv: "Datenschutz",
+        cook: "Cookies",
+        ultAtual: "Letzte Aktualisierung ansehen",
+        ultAtualAria: "Datum der letzten Aktualisierung ansehen",
+        cookiesTxt: "Diese Website verwendet Werbe-Cookies (Google AdSense). Akzeptierst du?<br>",
+        aceitar: "Akzeptieren",
+        recusar: "Ablehnen",
+        instalar: "App installieren", ordAria: "Reihenfolge umkehren",
+        aleatAria: "Zufälliger Kronkorken",
+        fimAria: "Zum Ende springen",
+        faltam: "Fehlende Nummern:"
+    },
+    it: {
+        cariPal: "tappi",
+        res1: "risultato",
+        resN: "risultati",
+        pub: "Pubblicità",
+        altImg: "Tappo n.",
+        falta: "immagine mancante",
+        upd: "Ultimo aggiornamento: ",
+        erro: "Impossibile caricare la collezione. Riprova più tardi.",
+        semRes: "Nessun tappo trovato.",
+        anterior: "Precedente",
+        seguinte: "Successivo",
+        colecao: "Collezione catalogata per numero.",
+        total: "Totale:",
+        oferta: "🫶 Accetto donazioni.",
+        sobre: "Info",
+        inicio: "Home",
+        ph: "Cerca n.…",
+        pesqAria: "Cerca il numero del tappo",
+        limpar: "Cancella ricerca",
+        fechar: "Chiudi",
+        idioma: "Lingua",
+        privTitulo: "🔒 Privacy e Cookie",
+        priv: "Privacy",
+        cook: "Cookie",
+        ultAtual: "Vedi ultimo aggiornamento",
+        ultAtualAria: "Vedi la data dell’ultimo aggiornamento",
+        cookiesTxt: "Questo sito usa cookie pubblicitari (Google AdSense). Accetti?<br>",
+        aceitar: "Accetta",
+        recusar: "Rifiuta",
+        instalar: "Installa app", ordAria: "Inverti l’ordine",
+        aleatAria: "Tappo casuale",
+        fimAria: "Vai alla fine",
+        faltam: "Numeri mancanti:"
+    },
+    nl: {
+        cariPal: "kroonkurken",
+        res1: "resultaat",
+        resN: "resultaten",
+        pub: "Advertentie",
+        altImg: "Kroonkurk nr.",
+        falta: "afbeelding ontbreekt",
+        upd: "Laatste update: ",
+        erro: "De collectie kon niet worden geladen. Probeer het later opnieuw.",
+        semRes: "Geen kroonkurk gevonden.",
+        anterior: "Vorige",
+        seguinte: "Volgende",
+        colecao: "Collectie gecatalogiseerd op nummer.",
+        total: "Totaal:",
+        oferta: "🫶 Giften welkom.",
+        sobre: "Over",
+        inicio: "Start",
+        ph: "Zoek nr.…",
+        pesqAria: "Zoek het nummer van de kroonkurk",
+        limpar: "Zoekopdracht wissen",
+        fechar: "Sluiten",
+        idioma: "Taal",
+        privTitulo: "🔒 Privacy en cookies",
+        priv: "Privacy",
+        cook: "Cookies",
+        ultAtual: "Laatste update bekijken",
+        ultAtualAria: "De datum van de laatste update bekijken",
+        cookiesTxt: "Deze site gebruikt advertentiecookies (Google AdSense). Accepteer je?<br>",
+        aceitar: "Accepteren",
+        recusar: "Weigeren",
+        instalar: "App installeren", ordAria: "Volgorde omkeren",
+        aleatAria: "Willekeurige kroonkurk",
+        fimAria: "Naar het einde",
+        faltam: "Ontbrekende nummers:"
+    },
+    pl: {
+        cariPal: "kapsli",
+        res1: "wynik",
+        resN: "wyniki",
+        pub: "Reklama",
+        altImg: "Kapsel nr",
+        falta: "brak obrazu",
+        upd: "Ostatnia aktualizacja: ",
+        erro: "Nie udało się wczytać kolekcji. Spróbuj ponownie później.",
+        semRes: "Nie znaleziono kapsla.",
+        anterior: "Poprzedni",
+        seguinte: "Następny",
+        colecao: "Kolekcja skatalogowana według numerów.",
+        total: "Razem:",
+        oferta: "🫶 Przyjmuję datki.",
+        sobre: "O stronie",
+        inicio: "Start",
+        ph: "Szukaj nr…",
+        pesqAria: "Szukaj numeru kapsla",
+        limpar: "Wyczyść wyszukiwanie",
+        fechar: "Zamknij",
+        idioma: "Język",
+        privTitulo: "🔒 Prywatność i pliki cookie",
+        priv: "Prywatność",
+        cook: "Cookies",
+        ultAtual: "Zobacz ostatnią aktualizację",
+        ultAtualAria: "Zobacz datę ostatniej aktualizacji",
+        cookiesTxt: "Ta strona używa reklamowych plików cookie (Google AdSense). Akceptujesz?<br>",
+        aceitar: "Akceptuj",
+        recusar: "Odrzuć",
+        instalar: "Zainstaluj aplikację", ordAria: "Odwróć kolejność",
+        aleatAria: "Losowy kapsel",
+        fimAria: "Przejdź na koniec",
+        faltam: "Brakujące numery:"
     },
     es: {
         cariPal: "chapas", res1: "resultado", resN: "resultados", pub: "Publicidad",
@@ -1066,9 +1234,9 @@ const T = {
         p2h: "Publicidad (Google AdSense)", p2: "El sitio puede mostrar anuncios de Google AdSense. El código de anuncios solo se carga después de aceptar, y Google puede entonces usar cookies e identificadores para mostrar y medir anuncios. Si rechazas, ese código no se carga. Puedes cambiar de opinión en cualquier momento en “Cookies”, en el pie de página. Más información en <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
         p3h: "Almacenamiento en tu navegador", p3: "Solo guardamos en el almacenamiento local del navegador tu elección sobre cookies y el idioma. Estos datos no salen de tu dispositivo.",
         p4h: "Contacto y derechos", p4: "Para cualquier cuestión, contacta por <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Según el RGPD tienes derecho de acceso, rectificación, supresión y oposición, así como a presentar una reclamación ante la autoridad portuguesa de protección de datos (cnpd.pt).",
-        cookiesTxt: "Este sitio usa cookies de publicidad (Google AdSense). ¿Aceptas?<br>", aceitar: "Aceptar", recusar: "Rechazar",
-        instalar: "Instalar app",
-        instOk: "✅ App ya instalada. Busca el icono en la pantalla o en la lista de aplicaciones.", instPed: "📲 Instala la app en la pantalla de inicio.", instAcao: "Instalar",
+        cookiesTxt: "Este sitio usa cookies de publicidad (Google AdSense). ¿Aceptas?<br>", aceitar: "Aceptar", recusar: "Rechazar", 
+        instalar: "Instalar app", ordAria: "Invertir el orden", aleatAria: "Chapa aleatoria", fimAria: "Ir al final", faltam: "Números que faltan:",
+        instOk: "✅ App ya instalada.", instPed: "📲 Instala la app en la pantalla de inicio.", instAcao: "Instalar",
         ajApp: "Esta página está abierta dentro de otra aplicación, que no permite instalar. Abre la dirección directamente en Chrome (o en Safari, en iPhone).",
         ajIos: "En iPhone/iPad: toca Compartir (el cuadrado con la flecha) en Safari y elige «Añadir a pantalla de inicio».",
         ajOutro: "Abre el menú del navegador (⋮) y elige «Instalar aplicación» o «Añadir a la pantalla de inicio». En el ordenador, usa el icono de instalación de la barra de direcciones. Si aparece «Abrir» con el nombre de la app, ya está instalada: busca su icono en la pantalla de inicio o en la lista de aplicaciones."
@@ -1086,9 +1254,9 @@ const T = {
         p2h: "Publicité (Google AdSense)", p2: "Le site peut afficher des annonces Google AdSense. Le code publicitaire n'est chargé qu'après votre acceptation, et Google peut alors utiliser des cookies et des identifiants pour afficher et mesurer les annonces. Si vous refusez, ce code n'est pas chargé. Vous pouvez changer d'avis à tout moment via « Cookies », en bas de page. Plus d'informations sur <a href=\"https://policies.google.com/technologies/ads\" target=\"_blank\" rel=\"noopener\">policies.google.com/technologies/ads</a>.",
         p3h: "Stockage dans votre navigateur", p3: "Nous conservons uniquement, dans le stockage local du navigateur, votre choix sur les cookies et la langue. Ces données ne quittent pas votre appareil.",
         p4h: "Contact et droits", p4: "Pour toute question, contactez-nous via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. En vertu du RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition, ainsi que du droit d'introduire une réclamation auprès de l'autorité portugaise de protection des données (cnpd.pt).",
-        cookiesTxt: "Ce site utilise des cookies publicitaires (Google AdSense). Acceptez-vous ?<br>", aceitar: "Accepter", recusar: "Refuser",
-        instalar: "Installer l’app",
-        instOk: "✅ App déjà installée. Cherchez l’icône sur l’écran ou dans la liste des applications.", instPed: "📲 Installez l’app sur l’écran d’accueil.", instAcao: "Installer",
+        cookiesTxt: "Ce site utilise des cookies publicitaires (Google AdSense). Acceptez-vous ?<br>", aceitar: "Accepter", recusar: "Refuser", 
+        instalar: "Installer l’app", ordAria: "Inverser l’ordre", aleatAria: "Capsule aléatoire", fimAria: "Aller à la fin", faltam: "Numéros manquants :",
+        instOk: "✅ App déjà installée.", instPed: "📲 Installez l’app sur l’écran d’accueil.", instAcao: "Installer",
         ajApp: "Cette page est ouverte dans une autre application, qui ne permet pas l’installation. Ouvrez l’adresse directement dans Chrome (ou Safari sur iPhone).",
         ajIos: "Sur iPhone/iPad : touchez Partager (le carré avec la flèche) dans Safari et choisissez « Sur l’écran d’accueil ».",
         ajOutro: "Ouvrez le menu du navigateur (⋮) et choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ». Sur ordinateur, utilisez l’icône d’installation dans la barre d’adresse. Si vous voyez « Ouvrir » avec le nom de l’app, elle est déjà installée : cherchez son icône sur l’écran d’accueil ou dans la liste des applications."
@@ -1100,7 +1268,7 @@ try { lang = localStorage.getItem("lang"); } catch (e) {}
 if (!lang) lang = (navigator.language || "pt").slice(0, 2).toLowerCase();
 if (!LANGS[lang]) lang = "pt";
 
-function t(k) { return (T[lang] && T[lang][k]) || PT[k] || ""; }
+function t(k) { return (T[lang] && T[lang][k]) || (lang !== "pt" && T.en[k]) || PT[k] || ""; }
 
 document.querySelectorAll("[data-i18n]").forEach(el => { el._pt = el.innerHTML; });
 document.querySelectorAll("[data-i18n-attr]").forEach(el => {
@@ -1115,23 +1283,27 @@ const SVG = {
     pt: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="12" height="20" fill="#060"/><rect x="12" width="18" height="20" fill="#f00"/><circle cx="12" cy="10" r="4.5" fill="#ff0"/><circle cx="12" cy="10" r="2.6" fill="#fff" stroke="#f00" stroke-width="1"/></svg>',
     en: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="c"><path d="M30 15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0 0l60 30m0-30l-60 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30l-60 30" clip-path="url(#c)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30m-30-15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30m-30-15h60" stroke="#C8102E" stroke-width="6"/></svg>',
     es: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg>',
-    fr: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/></svg>'
+    fr: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/></svg>',
+    de: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="7" fill="#000"/><rect y="7" width="30" height="6.7" fill="#d00"/><rect y="13.3" width="30" height="6.7" fill="#fc0"/></svg>',
+    it: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>',
+    nl: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="7" fill="#ae1c28"/><rect y="7" width="30" height="6.7" fill="#fff"/><rect y="13.3" width="30" height="6.7" fill="#21468b"/></svg>',
+    pl: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#dc143c"/></svg>',
 };
 function bandeira(l) {
     return '<img class="flag" alt="" src="data:image/svg+xml,' + encodeURIComponent(SVG[l]) + '">';
 }
-const NOMES = { pt: "Português", en: "English", es: "Español", fr: "Français" };
+const NOMES = { pt: "Português", en: "English", es: "Español", fr: "Français", de: "Deutsch", it: "Italiano", nl: "Nederlands", pl: "Polski" };
 document.querySelectorAll("#langMenu button").forEach(b => { b.innerHTML = bandeira(b.dataset.lang) + "<span>" + NOMES[b.dataset.lang] + "</span>"; });
 
 function aplicarIdioma() {
     document.documentElement.lang = LANGS[lang];
     document.querySelectorAll("[data-i18n]").forEach(el => {
-        el.innerHTML = lang === "pt" ? el._pt : (T[lang][el.dataset.i18n] || el._pt);
+        el.innerHTML = lang === "pt" ? el._pt : (T[lang][el.dataset.i18n] || T.en[el.dataset.i18n] || el._pt);
     });
     document.querySelectorAll("[data-i18n-attr]").forEach(el => {
         el.dataset.i18nAttr.split(";").forEach(par => {
             const [a, k] = par.split(":");
-            el.setAttribute(a, lang === "pt" ? el._ptAttr[a] : (T[lang][k] || el._ptAttr[a]));
+            el.setAttribute(a, lang === "pt" ? el._ptAttr[a] : (T[lang][k] || T.en[k] || el._ptAttr[a]));
         });
     });
     document.getElementById("langBtn").innerHTML = bandeira(lang);
@@ -1178,6 +1350,7 @@ const abrirSobre = document.getElementById("abrirSobre");
 abrirSobre.addEventListener("click", (e) => {
     e.preventDefault();
     document.getElementById("totalModal").textContent = fmt(caricas.length);
+    mostrarFaltas();
     modalSobre.style.display = "flex";
     document.body.style.overflow = "hidden";
 });
