@@ -339,7 +339,7 @@ main {
     align-items: center;
     gap: 10px;
     max-width: 92%;
-    cursor: default;
+    cursor: pointer;
 }
 
 #lightbox img {
@@ -369,14 +369,71 @@ main {
     padding: 0;
 }
 .lb-btn:hover { background: rgba(252,175,69,0.2); }
-.lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
-.lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
-.lb-close { top: 12px; right: 12px; }
-.lb-up { top: 12px; left: 50%; transform: translateX(-50%); font-size: 18px; }
-.lb-down { bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 18px; }
+.lb-close { top: 12px; right: 12px; width: 48px; height: 48px; font-size: 32px; background: rgba(252,175,69,0.95); color: #121212; border-color: transparent; z-index: 2; }
+.lb-close:hover { background: #FCAF45; }
+body.lb-on #cookies { visibility: hidden; }
 button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: pointer; }
 .faltam { margin: 10px 0 0; font-size: 12px; opacity: 0.75; line-height: 1.5; word-break: break-word; }
-.lb-btn[hidden] { display: none; }
+.lb-btn[hidden], .lb-nav-btn[hidden] { display: none; }
+.lb-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(92vw, 420px);
+    cursor: default;
+}
+.lb-nav-btn {
+    height: 44px;
+    min-width: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(252,175,69,0.4);
+    background: rgba(30,30,30,0.85);
+    color: #FCAF45;
+    font: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.lb-nav-btn:hover { background: rgba(252,175,69,0.2); }
+.lb-arr { font-size: 28px; line-height: 1; }
+@media (max-width: 768px) {
+    .lb-txt { display: none; }
+    .lb-nav-btn { width: 52px; padding: 0; }
+}
+
+/* Botão flutuante: ir para o fim / voltar ao início */
+.fab {
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 54px;
+    height: 54px;
+    border: 0;
+    border-radius: 50%;
+    background: #FCAF45;
+    color: #121212;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 0 3px rgba(18,18,18,0.6);
+    z-index: 900;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+.fab[hidden] { display: none; }
+.fab:hover { transform: scale(1.08); background: #ffc069; }
+.fab svg { width: 26px; height: 26px; transition: transform 0.3s ease; }
+.fab.topo svg { transform: rotate(180deg); }
+@media (max-width: 768px) {
+    body.com-cookies .fab { bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
+}
 
 .carica img:focus-visible { outline: 3px solid #FCAF45; outline-offset: 3px; }
 
@@ -667,9 +724,8 @@ footer {
 
     <div class="pilulas">
         <span class="pilula" id="contador" aria-live="polite">0 caricas</span>
-        <button type="button" class="pilula" id="btnOrdem" aria-label="Inverter a ordem" data-i18n-attr="aria-label:ordAria">1→9</button>
+        <button type="button" class="pilula" id="btnOrdem" aria-label="Inverter a ordem" data-i18n-attr="aria-label:ordAria">A→Z</button>
         <button type="button" class="pilula" id="btnAleat" aria-label="Carica aleatória" data-i18n-attr="aria-label:aleatAria">🎲</button>
-        <button type="button" class="pilula" id="btnFim" aria-label="Ir para o fim" data-i18n-attr="aria-label:fimAria">⤓</button>
     </div>
 </header>
 
@@ -691,14 +747,14 @@ footer {
 
 <div id="lightbox" role="dialog" aria-modal="true">
     <button type="button" class="lb-btn lb-close" id="lbClose" aria-label="Fechar" data-i18n-attr="aria-label:fechar">&times;</button>
-    <button type="button" class="lb-btn lb-prev" id="lbPrev" aria-label="Anterior" data-i18n-attr="aria-label:anterior">&#8249;</button>
-    <button type="button" class="lb-btn lb-up" id="lbUp" aria-label="Anterior" data-i18n-attr="aria-label:anterior">&#9650;</button>
-    <button type="button" class="lb-btn lb-down" id="lbDown" aria-label="Seguinte" data-i18n-attr="aria-label:seguinte">&#9660;</button>
     <figure class="lb-fig">
         <img id="lightbox-img" alt="Carica Grande">
-        <figcaption id="lbNum"></figcaption>
+        <figcaption class="lb-nav">
+            <button type="button" class="lb-nav-btn" id="lbPrev" aria-label="Anterior" data-i18n-attr="aria-label:anterior"><span class="lb-arr">&#8249;</span><span class="lb-txt" data-i18n="anterior">Anterior</span></button>
+            <span id="lbNum"></span>
+            <button type="button" class="lb-nav-btn" id="lbNext" aria-label="Seguinte" data-i18n-attr="aria-label:seguinte"><span class="lb-txt" data-i18n="seguinte">Seguinte</span><span class="lb-arr">&#8250;</span></button>
+        </figcaption>
     </figure>
-    <button type="button" class="lb-btn lb-next" id="lbNext" aria-label="Seguinte" data-i18n-attr="aria-label:seguinte">&#8250;</button>
 </div>
 
 <div id="cookies" role="dialog" aria-label="Cookies">
@@ -712,6 +768,10 @@ footer {
     <button type="button" class="footer-link" id="abrirPrivacidade" data-i18n="priv">Privacidade</button>
     <button type="button" class="footer-link" id="abrirCookies" data-i18n="cook">Cookies</button>
 </footer>
+
+<button type="button" class="fab" id="btnFab" hidden aria-label="Ir para o fim" title="Ir para o fim">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M6.5 10.5 12 16l5.5-5.5"/><path d="M5 20h14"/></svg>
+</button>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -886,19 +946,18 @@ function mostrarLb() {
     const varias = lbLista.length > 1;
     document.getElementById("lbPrev").hidden = !varias;
     document.getElementById("lbNext").hidden = !varias;
-    document.getElementById("lbUp").hidden = !varias;
-    document.getElementById("lbDown").hidden = !varias;
     resetZoom();
     try { history.replaceState(null, "", "#" + n); } catch (e) {}
 }
 
-function abrirLightbox(numero) {
+function abrirLightbox(numero, semHist) {
     lbLista = listaVisivel();
     lbIndice = lbLista.indexOf(String(numero));
     if (lbIndice < 0) { lbLista = [String(numero)]; lbIndice = 0; }
     mostrarLb();
-    if (!lbAberto()) { try { history.pushState({ lb: 1 }, "", "#" + String(numero)); lbHist = true; } catch (e) {} }
+    if (!lbAberto() && !semHist) { try { history.pushState({ lb: 1 }, "", "#" + String(numero)); lbHist = true; } catch (e) {} }
     lightbox.style.display = "flex";
+    document.body.classList.add("lb-on");
     document.body.style.overflow = "hidden";
 }
 
@@ -910,9 +969,10 @@ function navegarLb(d) {
 
 function abrirPorHash() {
     const h = decodeURIComponent(location.hash.slice(1));
-    if (/^\d+$/.test(h) && caricas.some(c => String(c) === h)) abrirLightbox(h);
+    if (/^\d+$/.test(h) && caricas.some(c => String(c) === h)) abrirLightbox(h, true);
 }
 
+let ignoraHash = false;
 function fecharTudo() {
     const voltar = lbHist && lbAberto();
     lbHist = false;
@@ -921,7 +981,8 @@ function fecharTudo() {
     document.getElementById("lightbox").style.display = "none";
     document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
     document.body.style.overflow = "";
-    if (voltar) { try { history.back(); } catch (e) {} }
+    document.body.classList.remove("lb-on");
+    if (voltar) { ignoraHash = true; setTimeout(() => { ignoraHash = false; }, 600); try { history.back(); } catch (e) {} }
 }
 window.addEventListener("popstate", () => { if (lbAberto()) { lbHist = false; fecharTudo(); } });
 
@@ -945,12 +1006,13 @@ document.addEventListener("keydown", e => {
     else if (lbAberto() && (e.key === "ArrowRight" || e.key === "ArrowDown")) { e.preventDefault(); navegarLb(1); }
 });
 
-lightbox.addEventListener("click", e => { if (e.target === lightbox) fecharTudo(); });
+// Tocar/clicar no fundo ou na própria imagem fecha (a não ser que haja zoom)
+lightbox.addEventListener("click", e => {
+    if ((e.target === lightbox || e.target.closest(".lb-fig")) && !e.target.closest(".lb-nav") && zoom <= 1) fecharTudo();
+});
 document.getElementById("lbClose").addEventListener("click", fecharTudo);
 document.getElementById("lbPrev").addEventListener("click", () => navegarLb(-1));
 document.getElementById("lbNext").addEventListener("click", () => navegarLb(1));
-document.getElementById("lbUp").addEventListener("click", () => navegarLb(-1));
-document.getElementById("lbDown").addEventListener("click", () => navegarLb(1));
 
 // Gestos: deslizar (←→ ou ↑↓) muda de carica; pinça faz zoom e arrastar move a imagem com zoom
 const lbImg = document.getElementById("lightbox-img");
@@ -984,11 +1046,25 @@ lightbox.addEventListener("touchend", e => {
 
 // Barra: inverter ordem, carica aleatória, ir ao fim
 const btnOrdem = document.getElementById("btnOrdem");
-btnOrdem.addEventListener("click", () => { ordemDesc = !ordemDesc; btnOrdem.textContent = ordemDesc ? "9→1" : "1→9"; atualizarGaleria(); });
+btnOrdem.addEventListener("click", () => { ordemDesc = !ordemDesc; btnOrdem.textContent = ordemDesc ? "Z→A" : "A→Z"; atualizarGaleria(); });
 document.getElementById("btnAleat").addEventListener("click", () => {
     const l = listaVisivel(); if (l.length) abrirLightbox(l[Math.floor(Math.random() * l.length)]);
 });
-document.getElementById("btnFim").addEventListener("click", () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" }));
+
+// Botão flutuante: «ir para o fim» e, quando já se está no fim, «voltar ao início»
+const fab = document.getElementById("btnFab");
+function noFim() { return window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80; }
+function atualizarFab() {
+    fab.hidden = document.documentElement.scrollHeight <= window.innerHeight + 200;
+    const fim = noFim();
+    fab.classList.toggle("topo", fim);
+    const k = t(fim ? "topoAria" : "fimAria");
+    fab.setAttribute("aria-label", k);
+    fab.title = k;
+}
+fab.addEventListener("click", () => window.scrollTo({ top: noFim() ? 0 : document.documentElement.scrollHeight, behavior: "smooth" }));
+window.addEventListener("scroll", atualizarFab, { passive: true });
+window.addEventListener("resize", atualizarFab);
 
 // Números em falta na sequência (janela Sobre)
 function mostrarFaltas() {
@@ -999,7 +1075,7 @@ function mostrarFaltas() {
     if (falt.length) el.textContent = t("faltam") + " " + falt.slice(0, 40).join(", ") + (falt.length > 40 ? " … (+" + (falt.length - 40) + ")" : "");
 }
 
-window.addEventListener("hashchange", () => { if (!lbAberto()) abrirPorHash(); });
+window.addEventListener("hashchange", () => { if (!lbAberto() && !ignoraHash) abrirPorHash(); });
 
 // Pesquisa (esconde o anúncio enquanto há pesquisa ativa)
 const campo = document.getElementById("pesquisa");
@@ -1023,6 +1099,7 @@ function filtrar() {
     });
 
     semRes.hidden = !(ativo && visiveis === 0);
+    atualizarFab();
 
     contador.textContent = ativo
         ? `${fmt(visiveis)} ${visiveis === 1 ? t("res1") : t("resN")}`
@@ -1054,7 +1131,7 @@ const PT = {
     altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
     erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde.",
     semRes: "Nenhuma carica encontrada.", anterior: "Anterior", seguinte: "Seguinte",
-    ordAria: "Inverter a ordem", aleatAria: "Carica aleatória", fimAria: "Ir para o fim", faltam: "Números em falta:",
+    ordAria: "Inverter a ordem", aleatAria: "Carica aleatória", fimAria: "Ir para o fim", topoAria: "Voltar ao início", faltam: "Números em falta:",
     instOk: "✅ App já instalada.", instPed: "📲 Instale a app no ecrã principal.", instAcao: "Instalar",
     ajApp: "Esta página está aberta dentro de outra aplicação, que não permite instalar. Abra o endereço diretamente no Chrome (ou no Safari, no iPhone).",
     ajIos: "No iPhone/iPad: toque em Partilhar (o quadrado com a seta) na barra do Safari e escolha «Adicionar ao ecrã principal».",
@@ -1075,7 +1152,7 @@ const T = {
         p3h: "Storage in your browser", p3: "We only store your cookie choice and language in the browser's local storage. This data never leaves your device.",
         p4h: "Contact and rights", p4: "For any question, contact us via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Under the GDPR you have the right of access, rectification, erasure and objection, as well as the right to lodge a complaint with the Portuguese data protection authority (cnpd.pt).",
         cookiesTxt: "This site uses advertising cookies (Google AdSense). Do you accept?<br>", aceitar: "Accept", recusar: "Decline", 
-        instalar: "Install app", ordAria: "Reverse order", aleatAria: "Random bottle cap", fimAria: "Go to the end", faltam: "Missing numbers:",
+        instalar: "Install app", ordAria: "Reverse order", aleatAria: "Random bottle cap", fimAria: "Go to the end", topoAria: "Back to top", faltam: "Missing numbers:",
         instOk: "✅ App already installed.", instPed: "📲 Install the app on your home screen.", instAcao: "Install",
         ajApp: "This page is open inside another app, which does not allow installing. Open the address directly in Chrome (or Safari on iPhone).",
         ajIos: "On iPhone/iPad: tap Share (the square with an arrow) in Safari and choose “Add to Home Screen”.",
@@ -1113,7 +1190,7 @@ const T = {
         recusar: "Ablehnen",
         instalar: "App installieren", ordAria: "Reihenfolge umkehren",
         aleatAria: "Zufälliger Kronkorken",
-        fimAria: "Zum Ende springen",
+        fimAria: "Zum Ende springen", topoAria: "Nach oben",
         faltam: "Fehlende Nummern:"
     },
     it: {
@@ -1148,7 +1225,7 @@ const T = {
         recusar: "Rifiuta",
         instalar: "Installa app", ordAria: "Inverti l’ordine",
         aleatAria: "Tappo casuale",
-        fimAria: "Vai alla fine",
+        fimAria: "Vai alla fine", topoAria: "Torna su",
         faltam: "Numeri mancanti:"
     },
     nl: {
@@ -1183,7 +1260,7 @@ const T = {
         recusar: "Weigeren",
         instalar: "App installeren", ordAria: "Volgorde omkeren",
         aleatAria: "Willekeurige kroonkurk",
-        fimAria: "Naar het einde",
+        fimAria: "Naar het einde", topoAria: "Naar boven",
         faltam: "Ontbrekende nummers:"
     },
     pl: {
@@ -1218,7 +1295,7 @@ const T = {
         recusar: "Odrzuć",
         instalar: "Zainstaluj aplikację", ordAria: "Odwróć kolejność",
         aleatAria: "Losowy kapsel",
-        fimAria: "Przejdź na koniec",
+        fimAria: "Przejdź na koniec", topoAria: "Wróć na górę",
         faltam: "Brakujące numery:"
     },
     es: {
@@ -1235,7 +1312,7 @@ const T = {
         p3h: "Almacenamiento en tu navegador", p3: "Solo guardamos en el almacenamiento local del navegador tu elección sobre cookies y el idioma. Estos datos no salen de tu dispositivo.",
         p4h: "Contacto y derechos", p4: "Para cualquier cuestión, contacta por <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. Según el RGPD tienes derecho de acceso, rectificación, supresión y oposición, así como a presentar una reclamación ante la autoridad portuguesa de protección de datos (cnpd.pt).",
         cookiesTxt: "Este sitio usa cookies de publicidad (Google AdSense). ¿Aceptas?<br>", aceitar: "Aceptar", recusar: "Rechazar", 
-        instalar: "Instalar app", ordAria: "Invertir el orden", aleatAria: "Chapa aleatoria", fimAria: "Ir al final", faltam: "Números que faltan:",
+        instalar: "Instalar app", ordAria: "Invertir el orden", aleatAria: "Chapa aleatoria", fimAria: "Ir al final", topoAria: "Volver al inicio", faltam: "Números que faltan:",
         instOk: "✅ App ya instalada.", instPed: "📲 Instala la app en la pantalla de inicio.", instAcao: "Instalar",
         ajApp: "Esta página está abierta dentro de otra aplicación, que no permite instalar. Abre la dirección directamente en Chrome (o en Safari, en iPhone).",
         ajIos: "En iPhone/iPad: toca Compartir (el cuadrado con la flecha) en Safari y elige «Añadir a pantalla de inicio».",
@@ -1255,7 +1332,7 @@ const T = {
         p3h: "Stockage dans votre navigateur", p3: "Nous conservons uniquement, dans le stockage local du navigateur, votre choix sur les cookies et la langue. Ces données ne quittent pas votre appareil.",
         p4h: "Contact et droits", p4: "Pour toute question, contactez-nous via <a href=\"https://www.instagram.com/caricas_metalicas/\" target=\"_blank\" rel=\"noopener\">Instagram</a>. En vertu du RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition, ainsi que du droit d'introduire une réclamation auprès de l'autorité portugaise de protection des données (cnpd.pt).",
         cookiesTxt: "Ce site utilise des cookies publicitaires (Google AdSense). Acceptez-vous ?<br>", aceitar: "Accepter", recusar: "Refuser", 
-        instalar: "Installer l’app", ordAria: "Inverser l’ordre", aleatAria: "Capsule aléatoire", fimAria: "Aller à la fin", faltam: "Numéros manquants :",
+        instalar: "Installer l’app", ordAria: "Inverser l’ordre", aleatAria: "Capsule aléatoire", fimAria: "Aller à la fin", topoAria: "Retour en haut", faltam: "Numéros manquants :",
         instOk: "✅ App déjà installée.", instPed: "📲 Installez l’app sur l’écran d’accueil.", instAcao: "Installer",
         ajApp: "Cette page est ouverte dans une autre application, qui ne permet pas l’installation. Ouvrez l’adresse directement dans Chrome (ou Safari sur iPhone).",
         ajIos: "Sur iPhone/iPad : touchez Partager (le carré avec la flèche) dans Safari et choisissez « Sur l’écran d’accueil ».",
@@ -1307,6 +1384,7 @@ function aplicarIdioma() {
         });
     });
     document.getElementById("langBtn").innerHTML = bandeira(lang);
+    atualizarFab();
     document.querySelectorAll("#langMenu button").forEach(b => b.classList.toggle("sel", b.dataset.lang === lang));
     if (caricas.length) atualizarGaleria();
     else filtrar();
