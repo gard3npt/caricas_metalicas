@@ -344,8 +344,8 @@ main {
 
 #lightbox img {
     max-width: 100%;
-    max-height: calc(100vh - 175px);
-    max-height: calc(100dvh - 175px);
+    max-height: calc(100vh - 200px);
+    max-height: calc(100dvh - 200px);
     transition: transform 0.15s ease;
     border-radius: 15px;
 }
@@ -431,8 +431,20 @@ button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: point
 .fab:hover { transform: scale(1.08); background: #ffc069; }
 .fab svg { width: 26px; height: 26px; transition: transform 0.3s ease; }
 .fab.topo svg { transform: rotate(180deg); }
+/* Dado: sempre visível, também por cima da imagem aberta */
+.fab-dado {
+    left: 16px;
+    right: auto;
+    z-index: 10000;
+    background: #2a2a2a;
+    border: 2px solid #FCAF45;
+    font-size: 26px;
+    line-height: 1;
+}
+.fab-dado:hover { background: #3a3a3a; }
 @media (max-width: 768px) {
     body.com-cookies .fab { bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
+    body.com-cookies.lb-on .fab-dado { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
 }
 
 .carica img:focus-visible { outline: 3px solid #FCAF45; outline-offset: 3px; }
@@ -725,7 +737,6 @@ footer {
     <div class="pilulas">
         <span class="pilula" id="contador" aria-live="polite">0 caricas</span>
         <button type="button" class="pilula" id="btnOrdem" aria-label="Inverter a ordem" data-i18n-attr="aria-label:ordAria">A→Z</button>
-        <button type="button" class="pilula" id="btnAleat" aria-label="Carica aleatória" data-i18n-attr="aria-label:aleatAria">🎲</button>
     </div>
 </header>
 
@@ -772,6 +783,8 @@ footer {
 <button type="button" class="fab" id="btnFab" hidden aria-label="Ir para o fim" title="Ir para o fim">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M6.5 10.5 12 16l5.5-5.5"/><path d="M5 20h14"/></svg>
 </button>
+
+<button type="button" class="fab fab-dado" id="btnAleat" aria-label="Carica aleatória" title="Carica aleatória" data-i18n-attr="aria-label:aleatAria;title:aleatAria">🎲</button>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
