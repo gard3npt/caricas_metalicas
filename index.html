@@ -328,7 +328,7 @@ main {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    cursor: pointer;
+    cursor: default;
     touch-action: none;
 }
 
@@ -339,7 +339,7 @@ main {
     align-items: center;
     gap: 10px;
     max-width: 92%;
-    cursor: pointer;
+    cursor: default;
 }
 
 #lightbox img {
@@ -955,7 +955,7 @@ function abrirLightbox(numero, semHist) {
     lbIndice = lbLista.indexOf(String(numero));
     if (lbIndice < 0) { lbLista = [String(numero)]; lbIndice = 0; }
     mostrarLb();
-    if (!lbAberto() && !semHist) { try { history.pushState({ lb: 1 }, "", "#" + String(numero)); lbHist = true; } catch (e) {} }
+    if (!lbAberto()) { try { history.pushState({ lb: 1 }, "", "#" + String(numero)); lbHist = true; } catch (e) {} }
     lightbox.style.display = "flex";
     document.body.classList.add("lb-on");
     document.body.style.overflow = "hidden";
@@ -969,7 +969,10 @@ function navegarLb(d) {
 
 function abrirPorHash() {
     const h = decodeURIComponent(location.hash.slice(1));
-    if (/^\d+$/.test(h) && caricas.some(c => String(c) === h)) abrirLightbox(h, true);
+    if (/^\d+$/.test(h) && caricas.some(c => String(c) === h)) {
+        try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+        abrirLightbox(h);
+    }
 }
 
 let ignoraHash = false;
@@ -1006,10 +1009,6 @@ document.addEventListener("keydown", e => {
     else if (lbAberto() && (e.key === "ArrowRight" || e.key === "ArrowDown")) { e.preventDefault(); navegarLb(1); }
 });
 
-// Tocar/clicar no fundo ou na própria imagem fecha (a não ser que haja zoom)
-lightbox.addEventListener("click", e => {
-    if ((e.target === lightbox || e.target.closest(".lb-fig")) && !e.target.closest(".lb-nav") && zoom <= 1) fecharTudo();
-});
 document.getElementById("lbClose").addEventListener("click", fecharTudo);
 document.getElementById("lbPrev").addEventListener("click", () => navegarLb(-1));
 document.getElementById("lbNext").addEventListener("click", () => navegarLb(1));
