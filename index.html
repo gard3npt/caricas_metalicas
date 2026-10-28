@@ -78,6 +78,7 @@
     window.mostrarEstadoApp = function () {
         var el = document.getElementById('toast');
         if (!el || typeof t !== 'function') return;
+        var ft = document.getElementById('footer-toast'); if (ft) ft.classList.remove('show');
         var est = estado();
         desenhar(el, est, function () { el.classList.remove('show'); window.instalarApp(); });
         el.classList.add('show');
@@ -450,7 +451,8 @@ button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: point
 .carica img:focus-visible { outline: 3px solid #FCAF45; outline-offset: 3px; }
 
 footer {
-    position: static;
+    position: relative;
+    z-index: 10;
     width: 100%;
     min-height: 60px;
     margin-top: 32px;
@@ -481,6 +483,29 @@ footer {
 .footer-copy:hover { text-decoration: underline; text-underline-offset: 2px; }
 .footer-brand { font-size: inherit; text-decoration: none; font-weight: 700; letter-spacing: .04em; }
 .footer-brand:hover { text-decoration: underline; text-underline-offset: 2px; }
+/* «© ano» e «AGAJOTA» no rodapé: botões ocultos (parecem texto; só reagem a 3 cliques seguidos) */
+.footer-oculto, .footer-oculto:hover { cursor: default; text-decoration: none; color: #94a3b8; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.footer-oculto:focus-visible { outline: none; }
+#footer-toast {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translate(-50%, 8px);
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    text-align: center;
+    background: rgba(15, 23, 42, 0.97);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 100;
+}
+#footer-toast.show { opacity: 1; transform: translate(-50%, 0); }
 .toast {
     position: fixed;
     left: 50%;
@@ -775,9 +800,10 @@ footer {
 </div>
 
 <footer>
-    <span><button type="button" class="footer-link footer-copy" id="copiaRodape" onclick="mostrarEstadoApp()" title="Instalar app" aria-label="Instalar app" data-i18n-attr="title:instalar;aria-label:instalar">© <span id="ano">2026</span></button> <button type="button" class="footer-link footer-brand" id="nomeRodape" title="Ver última atualização" aria-label="Ver data da última atualização" data-i18n-attr="title:ultAtual;aria-label:ultAtualAria">AGAJOTA</button></span>
+    <span><button type="button" class="footer-link footer-copy footer-oculto" id="copiaRodape" tabindex="-1" onclick="triploClique(this, mostrarEstadoApp, event)">© <span id="ano">2026</span></button> <button type="button" class="footer-link footer-brand footer-oculto" id="nomeRodape" tabindex="-1" onclick="triploClique(this, mostrarUltimaAtualizacao, event)">AGAJOTA</button></span>
     <button type="button" class="footer-link" id="abrirPrivacidade" data-i18n="priv">Privacidade</button>
     <button type="button" class="footer-link" id="abrirCookies" data-i18n="cook">Cookies</button>
+    <div id="footer-toast" role="status" aria-live="polite"></div>
 </footer>
 
 <button type="button" class="fab" id="btnFab" hidden aria-label="Ir para o fim" title="Ir para o fim">
@@ -802,7 +828,7 @@ let ordemDesc = false;
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-const ULTIMA_ATUALIZACAO = "2026-10-25";
+const ULTIMA_ATUALIZACAO = "2026-10-28";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -1454,13 +1480,24 @@ modalSobre.addEventListener("click", (e) => {
 const dataAtual = new Date(ULTIMA_ATUALIZACAO + "T12:00:00");
 document.getElementById("ano").textContent = new Date().getFullYear();
 
-document.getElementById("nomeRodape").addEventListener("click", () => {
-    const toast = document.getElementById("toast");
-    toast.textContent = t("upd") + dataAtual.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
-    toast.classList.add("show");
-    clearTimeout(window._toastTimer);
-    window._toastTimer = setTimeout(() => toast.classList.remove("show"), 4000);
-});
+/* 3 cliques seguidos (em 1,5 s) para ativar a ação dos botões ocultos do rodapé */
+function triploClique(el, fn, ev) {
+    el._n = (el._n || 0) + 1;
+    clearTimeout(el._t);
+    if (el._n >= 3) { el._n = 0; fn(ev); return; }
+    el._t = setTimeout(function () { el._n = 0; }, 1500);
+}
+
+let footerToastTimer = null;
+function mostrarUltimaAtualizacao() {
+    const el = document.getElementById("footer-toast");
+    if (!el) return;
+    const tt = document.getElementById("toast"); if (tt) tt.classList.remove("show");
+    el.textContent = t("upd") + dataAtual.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
+    el.classList.add("show");
+    clearTimeout(footerToastTimer);
+    footerToastTimer = setTimeout(() => el.classList.remove("show"), 2500);
+}
 
 const modalPrivacidade = document.getElementById("modalPrivacidade");
 modalPrivacidade.addEventListener("click", e => { if (e.target === modalPrivacidade) fecharTudo(); });
