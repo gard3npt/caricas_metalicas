@@ -211,6 +211,28 @@ h1 {
 
 .marca { order: 1; }
 .pesq { order: 2; }
+/* Sair do modo repetidas: canto superior direito, logo abaixo do cabeçalho (sobe quando o cabeçalho se esconde) */
+#btnSairRep {
+    position: fixed;
+    right: 16px;
+    top: calc(var(--cab-h, 60px) + 8px);
+    z-index: 950;
+    padding: 8px 14px;
+    border: 2px solid #FCAF45;
+    border-radius: 999px;
+    background: rgba(18,18,18,0.3);
+    color: #FCAF45;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    cursor: pointer;
+    transition: top 0.3s ease, background 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+#btnSairRep[hidden] { display: none; }
+#btnSairRep:hover { background: rgba(252,175,69,0.28); }
+header.oculto ~ #btnSairRep { top: calc(8px + env(safe-area-inset-top, 0px)); }
 .pilulas { order: 3; }
 .acoes { display: flex; gap: 8px; order: 4; }
 
@@ -433,22 +455,18 @@ button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: point
 .fab:hover { transform: scale(1.08); background: rgba(252,175,69,0.28); }
 .fab svg { width: 26px; height: 26px; transition: transform 0.3s ease; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9)); }
 .fab.topo svg { transform: rotate(180deg); }
-/* Dado e troca: sempre visíveis, também por cima da imagem aberta */
+/* Dado e troca: sempre visíveis, também por cima da imagem aberta (todos os botões ficam à direita, empilhados;
+   a posição vertical é calculada em posicionarFabs() para nunca ficarem em cima do rodapé nem do aviso de cookies) */
 .fab-dado, .fab-troca {
-    left: 16px;
-    right: auto;
     z-index: 10000;
     font-size: 26px;
     line-height: 1;
     text-shadow: 0 1px 4px rgba(0,0,0,0.9);
 }
-.fab-troca { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
-@media (max-width: 768px) {
-    body.com-cookies .fab { bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
-    body.com-cookies .fab-troca { bottom: calc(216px + env(safe-area-inset-bottom, 0px)); }
-    body.com-cookies.lb-on .fab-dado { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
-    body.com-cookies.lb-on .fab-troca { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
-}
+.fab-troca.on { background: rgba(252,175,69,0.35); box-shadow: 0 0 0 3px rgba(252,175,69,0.25); }
+/* Modo «repetidas»: número da carica à esquerda e, a amarelo, a quantidade para troca à direita (ex.: X20) */
+.carica.rep .numero { display: flex; justify-content: space-between; align-items: baseline; width: 100%; max-width: 180px; }
+.rep-q { color: #FCAF45; font-weight: 800; }
 
 .carica img:focus-visible { outline: 3px solid #FCAF45; outline-offset: 3px; }
 
@@ -572,29 +590,6 @@ footer {
 .modal-content.texto { text-align: left; font-size: 14px; max-height: 85vh; overflow-y: auto; }
 .modal-content.texto h2 { text-align: center; }
 
-/* Modal: repetidas para troca */
-.troca-info { margin: 4px 0 10px; opacity: .8; font-size: 13px; text-align: center; }
-.troca-resumo { text-align: center; color: #FCAF45; font-weight: 700; margin-bottom: 10px; min-height: 1em; }
-.troca-lista { display: grid; gap: 8px; }
-.troca-item { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px; }
-.troca-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; cursor: pointer; background: #111; flex-shrink: 0; }
-.troca-n { flex: 1; font-weight: 700; color: #fff; }
-.troca-q { color: #FCAF45; font-weight: 800; font-size: 1.15rem; min-width: 2.4em; text-align: center; }
-.troca-vazio { text-align: center; opacity: .7; padding: 18px 0; }
-.troca-contacto { text-align: center; margin: 14px 0 0; font-size: 13px; }
-.troca-contacto a { color: #FCAF45; }
-#modalTroca h2 { user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-.troca-edicao { background: rgba(252,175,69,0.08); border: 1px dashed rgba(252,175,69,0.5); border-radius: 12px; padding: 10px; margin-bottom: 12px; font-size: 12px; }
-.troca-edicao[hidden], .troca-ferr[hidden] { display: none; }
-.troca-form { display: flex; gap: 6px; margin-top: 8px; }
-.troca-form input { flex: 1; min-width: 0; padding: 8px; border-radius: 10px; border: 1px solid #444; background: #121212; color: #fff; font-size: 14px; }
-.troca-btn { border: 1px solid rgba(252,175,69,0.6); background: rgba(252,175,69,0.12); color: #FCAF45; border-radius: 10px; padding: 6px 10px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
-.troca-btn:hover { background: rgba(252,175,69,0.28); }
-.troca-btn.perigo { border-color: rgba(255,138,128,0.6); color: #ff8a80; background: rgba(255,138,128,0.1); }
-.troca-ferr { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
-.troca-ctrl { display: flex; gap: 4px; }
-#trocaMsg { min-height: 1.2em; margin-top: 6px; color: #ff8a80; }
-
 /* Modal Sobre */
 .modal {
     display: none;
@@ -641,6 +636,8 @@ footer {
     font-size: 12px;
     opacity: 0.95;
 }
+.stat-col { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.stat[hidden] { display: none; }
 .stat strong { font-size: 1.6rem; color: #FCAF45; line-height: 1.1; display: flex; align-items: center; min-height: 28px; }
 .stat .flag { width: 34px; height: 23px; }
 .modal-content a.btn-insta {
@@ -658,6 +655,7 @@ footer {
 }
 .modal-content a.btn-insta:hover { transform: scale(1.04); text-decoration: none; }
 .btn-insta svg { width: 18px; height: 18px; }
+.contacto { margin: 4px 0 8px; font-size: 13px; opacity: 0.75; }
 .oferta { margin: 16px 0 0; font-size: 13px; opacity: 0.7; }
 
 .modal-content h2 {
@@ -736,10 +734,14 @@ footer {
         <h2>Caricas_Metalicas</h2>
         <p class="tagline" data-i18n="colecao">Coleção catalogada e numerada.</p>
         <div class="stats">
-            <div class="stat"><strong id="totalModal">0</strong><span data-i18n="cariPal">caricas</span></div>
-            <div class="stat"><strong id="sobreBandeira"></strong><span>Portugal</span></div>
+            <div class="stat-col">
+                <div class="stat"><strong id="totalModal">0</strong><span data-i18n="cariPal">caricas</span></div>
+                <div class="stat stat-rep" id="statRep" hidden><strong id="trocaModal">0</strong><span data-i18n="trocaSobre">para troca</span></div>
+            </div>
+            <div class="stat"><strong id="sobreBandeira"></strong><span data-i18n="sobreDe">De: Ansião, Portugal</span></div>
         </div>
         <p class="faltam" id="faltam" hidden></p>
+        <p class="contacto" data-i18n="sobreContacto">Contacto:</p>
         <a class="btn-insta" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg>
             @caricas_metalicas
@@ -790,6 +792,8 @@ footer {
     </div>
 </header>
 
+<button type="button" id="btnSairRep" hidden data-i18n="trocaSair">✕ Sair das repetidas</button>
+
 <main>
     <div class="galeria" id="galeria"></div>
     <div class="erro" id="semRes" hidden data-i18n="semRes">Nenhuma carica encontrada.</div>
@@ -803,30 +807,6 @@ footer {
         <div class="priv-card"><h4 data-i18n="p2h">Publicidade (Google AdSense)</h4><p data-i18n="p2">O site pode mostrar anúncios do Google AdSense. Só depois de aceitar é que o código de anúncios é carregado, e o Google pode então usar cookies e identificadores para mostrar e medir anúncios. Se recusar, esse código não é carregado. Pode mudar de ideias a qualquer momento em “Cookies”, no rodapé. Mais informação em <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">policies.google.com/technologies/ads</a>.</p></div>
         <div class="priv-card"><h4 data-i18n="p3h">Armazenamento no seu navegador</h4><p data-i18n="p3">Guardamos apenas, no armazenamento local do navegador, a sua escolha sobre cookies. Estes dados não saem do seu dispositivo.</p></div>
         <div class="priv-card"><h4 data-i18n="p4h">Contacto e direitos</h4><p data-i18n="p4">Para qualquer questão, contacte via <a href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener">Instagram</a>. Ao abrigo do RGPD, tem direito de acesso, retificação, apagamento e oposição, bem como o direito de reclamação à CNPD (cnpd.pt).</p></div>
-    </div>
-</div>
-
-<div id="modalTroca" class="modal">
-    <div class="modal-content texto">
-        <span class="fechar-modal" role="button" aria-label="Fechar" data-i18n-attr="aria-label:fechar">&times;</span>
-        <h2 id="trocaTitulo" data-i18n="trocaTitulo">🔁 Repetidas para troca</h2>
-        <p class="troca-info" data-i18n="trocaInfo">Caricas que tenho repetidas e estão disponíveis para troca, com a quantidade de cada uma. Toca numa imagem para a ver maior.</p>
-        <div id="trocaResumo" class="troca-resumo"></div>
-        <div id="trocaEdicao" class="troca-edicao" hidden>
-            ✏️ Modo de edição: as alterações ficam só neste dispositivo. Quando terminares, usa «Copiar JSON» e cola o conteúdo no ficheiro <b>repetidas.json</b> do site para todos verem.
-            <div class="troca-form">
-                <input type="number" id="trocaNum" min="1" inputmode="numeric" placeholder="Nº da carica" aria-label="Número da carica">
-                <input type="number" id="trocaQtd" min="1" inputmode="numeric" placeholder="Qtd." aria-label="Quantidade">
-                <button type="button" class="troca-btn" id="trocaAdd">Adicionar</button>
-            </div>
-            <div id="trocaMsg" role="status"></div>
-        </div>
-        <div id="trocaLista" class="troca-lista"></div>
-        <div id="trocaFerr" class="troca-ferr" hidden>
-            <button type="button" class="troca-btn" id="trocaCopiar">Copiar JSON</button>
-            <button type="button" class="troca-btn perigo" id="trocaRepor">Repor lista publicada</button>
-        </div>
-        <p class="troca-contacto"><a href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener" data-i18n="trocaContacto">Queres trocar? Fala comigo no Instagram.</a></p>
     </div>
 </div>
 
@@ -859,7 +839,7 @@ footer {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M6.5 10.5 12 16l5.5-5.5"/><path d="M5 20h14"/></svg>
 </button>
 
-<button type="button" class="fab fab-troca" id="btnTroca" aria-label="Repetidas para troca" title="Repetidas para troca" data-i18n-attr="aria-label:trocaAria;title:trocaAria">🔁</button>
+<button type="button" class="fab fab-troca" id="btnTroca" aria-pressed="false" aria-label="Mostrar só as repetidas para troca" title="Mostrar só as repetidas para troca" data-i18n-attr="aria-label:trocaAria;title:trocaAria">🔁</button>
 
 <button type="button" class="fab fab-dado" id="btnAleat" aria-label="Carica aleatória" title="Carica aleatória" data-i18n-attr="aria-label:aleatAria;title:aleatAria">🎲</button>
 
@@ -875,11 +855,45 @@ const caricas = [];
 const TAMANHO_PASTA = 50;
 let ordemDesc = false;
 
+// ===== Repetidas para troca (botão 🔁 liga/desliga) =====
+// Lista pública: ficheiro repetidas.json, ex.: {"12": 3, "45": 1} (número da carica → quantidade).
+let repPublicadas = {};
+let modoRep = false;
+function repQtd(n) { const q = parseInt(repPublicadas[String(parseInt(n, 10))], 10); return q > 0 ? q : 0; }
+function escreverNumero(card) {
+    const n = card.dataset.numero, q = modoRep ? repQtd(n) : 0;
+    const el = card.querySelector(".numero");
+    card.classList.toggle("rep", q > 0);
+    el.textContent = "";
+    if (q > 0) {
+        const a = document.createElement("span"); a.textContent = `Nº ${n}`;
+        const b = document.createElement("span"); b.className = "rep-q"; b.textContent = "X" + q;
+        el.append(a, b);
+    } else {
+        el.textContent = `Nº ${n}`;
+    }
+}
+fetch("repetidas.json", { cache: "no-cache" })
+    .then(r => r.ok ? r.json() : {})
+    .then(o => { if (o && typeof o === "object") { repPublicadas = o; if (modoRep) filtrar(); } })
+    .catch(() => {});
+function definirModoRep(on) {
+    modoRep = on;
+    const b = document.getElementById("btnTroca");
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-pressed", String(on));
+    document.getElementById("btnSairRep").hidden = !on;
+    filtrar();
+    if (!lbAberto()) window.scrollTo({ top: 0 });
+}
+document.getElementById("btnTroca").addEventListener("click", () => definirModoRep(!modoRep));
+document.getElementById("btnSairRep").addEventListener("click", () => definirModoRep(false));
+
 // ANÚNCIO: preencher o ID do bloco criado no AdSense (ex.: "1234567890")
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-const ULTIMA_ATUALIZACAO = "2026-10-28";
+const ULTIMA_ATUALIZACAO = "2026-11-01";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -1081,7 +1095,9 @@ window.addEventListener("popstate", () => { if (lbAberto()) { lbHist = false; fe
 
 // Espaço para o cabeçalho fixo (varia no mobile)
 function ajustarPadding() {
-    document.body.style.paddingTop = (document.querySelector("header").offsetHeight + 12) + "px";
+    const h = document.querySelector("header").offsetHeight;
+    document.body.style.paddingTop = (h + 12) + "px";
+    document.documentElement.style.setProperty("--cab-h", h + "px");
 }
 window.addEventListener("resize", ajustarPadding);
 let _rt;
@@ -1094,7 +1110,11 @@ window.addEventListener("resize", () => {
 window.addEventListener("load", ajustarPadding);
 
 document.addEventListener("keydown", e => {
-    if (e.key === "Escape") fecharTudo();
+    if (e.key === "Escape") {
+        const aberto = lbAberto() || [...document.querySelectorAll(".modal")].some(m => m.style.display === "flex");
+        fecharTudo();
+        if (!aberto && modoRep) definirModoRep(false);
+    }
     else if (lbAberto() && (e.key === "ArrowLeft" || e.key === "ArrowUp")) { e.preventDefault(); navegarLb(-1); }
     else if (lbAberto() && (e.key === "ArrowRight" || e.key === "ArrowDown")) { e.preventDefault(); navegarLb(1); }
 });
@@ -1143,8 +1163,38 @@ document.getElementById("btnAleat").addEventListener("click", () => {
 // Botão flutuante: «ir para o fim» e, quando já se está no fim, «voltar ao início»
 const fab = document.getElementById("btnFab");
 function noFim() { return window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80; }
+/* Empilha os botões flutuantes no canto inferior direito, acima do rodapé e do aviso de cookies quando estes aparecem no ecrã */
+let fabsAgendado = false;
+function posicionarFabs() {
+    if (fabsAgendado) return;
+    fabsAgendado = true;
+    requestAnimationFrame(() => {
+        fabsAgendado = false;
+        let base = 16;
+        if (!document.body.classList.contains("lb-on")) {
+            ["footer", "#cookies"].forEach(sel => {
+                const el = document.querySelector(sel);
+                if (!el || getComputedStyle(el).display === "none") return;
+                const r = el.getBoundingClientRect();
+                if (r.bottom > 0 && r.top < window.innerHeight) base = Math.max(base, window.innerHeight - r.top + 12);
+            });
+        }
+        let y = base;
+        ["btnFab", "btnAleat", "btnTroca"].forEach(id => {
+            const b = document.getElementById(id);
+            if (b.hidden) return;
+            b.style.bottom = `calc(${Math.round(y)}px + env(safe-area-inset-bottom, 0px))`;
+            y += 66;
+        });
+    });
+}
+window.addEventListener("scroll", posicionarFabs, { passive: true });
+window.addEventListener("resize", posicionarFabs);
+if (window.ResizeObserver) new ResizeObserver(posicionarFabs).observe(document.body);
+new MutationObserver(posicionarFabs).observe(document.body, { attributes: true, attributeFilter: ["class"] });
 function atualizarFab() {
     fab.hidden = document.documentElement.scrollHeight <= window.innerHeight + 200;
+    posicionarFabs();
     const fim = noFim();
     fab.classList.toggle("topo", fim);
     const k = t(fim ? "topoAria" : "fimAria");
@@ -1177,22 +1227,27 @@ function filtrar() {
     limpar.style.display = ativo ? "block" : "none";
 
     document.querySelectorAll(".anuncio-card").forEach(ad => {
-        ad.style.display = ativo ? "none" : "";
+        ad.style.display = (ativo || modoRep) ? "none" : "";
     });
 
     let visiveis = 0;
     document.querySelectorAll(".carica").forEach(card => {
-        const ok = !ativo || (texto !== "" && String(parseInt(card.dataset.numero, 10)).startsWith(texto));
+        const ok = (!ativo || (texto !== "" && String(parseInt(card.dataset.numero, 10)).startsWith(texto)))
+            && (!modoRep || repQtd(card.dataset.numero) > 0);
         card.style.display = ok ? "" : "none";
         if (ok) visiveis++;
+        escreverNumero(card);
     });
 
-    semRes.hidden = !(ativo && visiveis === 0);
+    semRes.hidden = !((ativo || modoRep) && visiveis === 0);
+    semRes.textContent = (modoRep && !ativo) ? t("trocaVazio") : t("semRes");
     atualizarFab();
 
     contador.textContent = ativo
         ? `${fmt(visiveis)} ${visiveis === 1 ? t("res1") : t("resN")}`
-        : `${fmt(caricas.length)} ${t("cariPal")}`;
+        : modoRep
+            ? `${fmt(visiveis)} ${visiveis === 1 ? t("trocaRep1") : t("trocaRepN")} ${fmt(caricas.length)}`
+            : `${fmt(caricas.length)} ${t("cariPal")}`;
 }
 
 campo.addEventListener("input", filtrar);
@@ -1216,7 +1271,7 @@ document.querySelector(".marca").addEventListener("click", e => {
 // ===== Idiomas =====
 const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr", de: "de", it: "it", nl: "nl", pl: "pl" };
 const PT = {
-    trocaAria: "Repetidas para troca", trocaTitulo: "🔁 Repetidas para troca", trocaInfo: "Caricas que tenho repetidas e estão disponíveis para troca, com a quantidade de cada uma. Toca numa imagem para a ver maior.", trocaVazio: "Neste momento não há caricas repetidas para troca.", trocaDif: "caricas diferentes", trocaEx: "exemplares", trocaContacto: "Queres trocar? Fala comigo no Instagram.",
+    trocaAria: "Mostrar só as repetidas para troca", trocaVazio: "Neste momento não há caricas repetidas para troca.", trocaSair: "✕ Sair das repetidas", trocaSobre: "para troca", sobreDe: "De: Ansião, Portugal", sobreContacto: "Contacto:", trocaRep1: "carica repetida de", trocaRepN: "caricas repetidas de",
     cariPal: "caricas", res1: "resultado", resN: "resultados", pub: "Publicidade",
     altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
     erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde.",
@@ -1229,7 +1284,7 @@ const PT = {
 };
 const T = {
     en: {
-        trocaAria: "Duplicates for trading", trocaTitulo: "🔁 Duplicates for trading", trocaInfo: "Bottle caps I have more than one of and can trade, with the quantity of each. Tap a picture to see it bigger.", trocaVazio: "There are no duplicates for trading right now.", trocaDif: "different caps", trocaEx: "copies", trocaContacto: "Want to trade? Message me on Instagram.",
+        trocaAria: "Show only duplicates for trading", trocaVazio: "There are no duplicates for trading right now.", trocaSair: "✕ Exit duplicates", trocaSobre: "for trading", sobreDe: "From: Ansião, Portugal", sobreContacto: "Contact:", trocaRep1: "duplicate bottle cap out of", trocaRepN: "duplicate bottle caps out of",
         cariPal: "bottle caps", res1: "result", resN: "results", pub: "Advertisement",
         altImg: "Bottle cap no.", falta: "image missing", upd: "Last updated: ",
         erro: "The collection could not be loaded. Please try again later.",
@@ -1390,7 +1445,7 @@ const T = {
         faltam: "Brakujące numery:"
     },
     es: {
-        trocaAria: "Repetidas para intercambio", trocaTitulo: "🔁 Repetidas para intercambio", trocaInfo: "Chapas que tengo repetidas y puedo intercambiar, con la cantidad de cada una. Toca una imagen para verla más grande.", trocaVazio: "Ahora mismo no hay chapas repetidas para intercambio.", trocaDif: "chapas distintas", trocaEx: "ejemplares", trocaContacto: "¿Quieres intercambiar? Escríbeme en Instagram.",
+        trocaAria: "Mostrar solo las repetidas para intercambio", trocaVazio: "Ahora mismo no hay chapas repetidas para intercambio.", trocaSair: "✕ Salir de repetidas", trocaSobre: "para intercambio", sobreDe: "De: Ansião, Portugal", sobreContacto: "Contacto:", trocaRep1: "chapa repetida de", trocaRepN: "chapas repetidas de",
         cariPal: "chapas", res1: "resultado", resN: "resultados", pub: "Publicidad",
         altImg: "Chapa nº", falta: "imagen no disponible", upd: "Última actualización: ",
         erro: "No se pudo cargar la colección. Inténtalo de nuevo más tarde.",
@@ -1411,7 +1466,7 @@ const T = {
         ajOutro: "Abre el menú del navegador (⋮) y elige «Instalar aplicación» o «Añadir a la pantalla de inicio». En el ordenador, usa el icono de instalación de la barra de direcciones. Si aparece «Abrir» con el nombre de la app, ya está instalada: busca su icono en la pantalla de inicio o en la lista de aplicaciones."
     },
     fr: {
-        trocaAria: "Doubles à échanger", trocaTitulo: "🔁 Doubles à échanger", trocaInfo: "Capsules que j’ai en double et que je peux échanger, avec la quantité de chacune. Touchez une image pour l’agrandir.", trocaVazio: "Aucun double à échanger pour le moment.", trocaDif: "capsules différentes", trocaEx: "exemplaires", trocaContacto: "Envie d’échanger ? Écrivez-moi sur Instagram.",
+        trocaAria: "Afficher seulement les doubles à échanger", trocaVazio: "Aucun double à échanger pour le moment.", trocaSair: "✕ Quitter les doubles", trocaSobre: "à échanger", sobreDe: "De : Ansião, Portugal", sobreContacto: "Contact :", trocaRep1: "capsule en double sur", trocaRepN: "capsules en double sur",
         cariPal: "capsules", res1: "résultat", resN: "résultats", pub: "Publicité",
         altImg: "Capsule n°", falta: "image manquante", upd: "Dernière mise à jour : ",
         erro: "Impossible de charger la collection. Réessayez plus tard.",
@@ -1521,6 +1576,9 @@ const abrirSobre = document.getElementById("abrirSobre");
 abrirSobre.addEventListener("click", (e) => {
     e.preventDefault();
     document.getElementById("totalModal").textContent = fmt(caricas.length);
+    const repNums = caricas.filter(n => repQtd(n) > 0);
+    document.getElementById("statRep").hidden = repNums.length === 0;
+    document.getElementById("trocaModal").textContent = fmt(repNums.length);
     mostrarFaltas();
     modalSobre.style.display = "flex";
     document.body.style.overflow = "hidden";
@@ -1553,111 +1611,6 @@ function mostrarUltimaAtualizacao() {
     clearTimeout(footerToastTimer);
     footerToastTimer = setTimeout(() => el.classList.remove("show"), 2500);
 }
-
-// ===== Repetidas para troca =====
-// Lista pública: ficheiro repetidas.json, ex.: {"12": 3, "45": 1} (número da carica → quantidade).
-// Modo de edição (3 cliques no título): as alterações ficam só neste dispositivo; «Copiar JSON» gera o conteúdo para o ficheiro.
-const REP_CHAVE = "repetidasLocal";
-let repPublicadas = {};
-let repEdicao = false;
-const modalTroca = document.getElementById("modalTroca");
-const trocaLista = document.getElementById("trocaLista");
-
-function repLerLocal() {
-    try { const v = localStorage.getItem(REP_CHAVE); const o = v ? JSON.parse(v) : null; return o && typeof o === "object" ? o : null; }
-    catch (e) { return null; }
-}
-function repAtuais() { return repLerLocal() || repPublicadas; }
-function repLimpar(o) {
-    const r = {};
-    Object.keys(o || {}).filter(n => /^\d+$/.test(n)).sort((a, b) => a - b).forEach(n => {
-        const q = parseInt(o[n], 10);
-        if (q > 0) r[n] = q;
-    });
-    return r;
-}
-function repAlterar(fn) {
-    const o = repLimpar(repAtuais());
-    fn(o);
-    try { localStorage.setItem(REP_CHAVE, JSON.stringify(repLimpar(o))); } catch (e) {}
-    repRender();
-}
-function repMsg(s) { document.getElementById("trocaMsg").textContent = s || ""; }
-
-function repRender() {
-    const dados = repLimpar(repAtuais());
-    const nums = Object.keys(dados);
-    const ex = nums.reduce((s, n) => s + dados[n], 0);
-    document.getElementById("trocaResumo").textContent = nums.length ? nums.length + " " + t("trocaDif") + " · " + ex + " " + t("trocaEx") : "";
-    document.getElementById("trocaEdicao").hidden = !repEdicao;
-    document.getElementById("trocaFerr").hidden = !repEdicao;
-    trocaLista.innerHTML = "";
-    if (!nums.length) {
-        const v = document.createElement("div"); v.className = "troca-vazio"; v.textContent = t("trocaVazio");
-        trocaLista.appendChild(v);
-        return;
-    }
-    nums.forEach(n => {
-        const linha = document.createElement("div"); linha.className = "troca-item";
-        const img = document.createElement("img");
-        img.src = caminhoMini(n); img.alt = t("altImg") + " " + n; img.loading = "lazy";
-        img.addEventListener("click", () => { modalTroca.style.display = "none"; abrirLightbox(n); });
-        const num = document.createElement("span"); num.className = "troca-n"; num.textContent = "Nº " + n;
-        const q = document.createElement("span"); q.className = "troca-q"; q.textContent = "×" + dados[n];
-        linha.append(img, num);
-        if (repEdicao) {
-            const ctrl = document.createElement("span"); ctrl.className = "troca-ctrl";
-            const mk = (txt, aria, fn, cls) => { const b = document.createElement("button"); b.type = "button"; b.className = "troca-btn" + (cls ? " " + cls : ""); b.textContent = txt; b.setAttribute("aria-label", aria); b.addEventListener("click", fn); return b; };
-            ctrl.append(
-                mk("−", "Menos um", () => repAlterar(o => { o[n] = (o[n] || 0) - 1; })),
-                q,
-                mk("+", "Mais um", () => repAlterar(o => { o[n] = (o[n] || 0) + 1; })),
-                mk("✕", "Remover", () => repAlterar(o => { delete o[n]; }), "perigo")
-            );
-            linha.appendChild(ctrl);
-        } else {
-            linha.appendChild(q);
-        }
-        trocaLista.appendChild(linha);
-    });
-}
-
-fetch("repetidas.json", { cache: "no-cache" })
-    .then(r => r.ok ? r.json() : {})
-    .then(o => { if (o && typeof o === "object") { repPublicadas = o; if (modalTroca.style.display === "flex") repRender(); } })
-    .catch(() => {});
-
-document.getElementById("btnTroca").addEventListener("click", () => {
-    repEdicao = false; repMsg("");
-    repRender();
-    modalTroca.style.display = "flex";
-    document.body.style.overflow = "hidden";
-});
-modalTroca.addEventListener("click", e => { if (e.target === modalTroca) fecharTudo(); });
-document.getElementById("trocaTitulo").addEventListener("click", function () {
-    triploClique(this, () => { repEdicao = !repEdicao; repMsg(""); repRender(); });
-});
-document.getElementById("trocaAdd").addEventListener("click", () => {
-    const n = String(parseInt(document.getElementById("trocaNum").value, 10));
-    const q = parseInt(document.getElementById("trocaQtd").value, 10);
-    if (!caricas.some(c => String(c) === n)) { repMsg("Esse número não existe na coleção."); return; }
-    if (!(q > 0)) { repMsg("Indica uma quantidade de 1 ou mais."); return; }
-    repMsg("");
-    repAlterar(o => { o[n] = q; });
-    document.getElementById("trocaNum").value = "";
-    document.getElementById("trocaQtd").value = "";
-});
-document.getElementById("trocaCopiar").addEventListener("click", () => {
-    const json = JSON.stringify(repLimpar(repAtuais()), null, 2);
-    const ok = () => repMsg("");
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(json).then(() => { repMsg("✅ JSON copiado."); document.getElementById("trocaMsg").style.color = "#34d399"; setTimeout(() => { document.getElementById("trocaMsg").style.color = ""; ok(); }, 2500); }, () => window.prompt("Copia este JSON:", json));
-    else window.prompt("Copia este JSON:", json);
-});
-document.getElementById("trocaRepor").addEventListener("click", () => {
-    if (!confirm("Voltar à lista publicada em repetidas.json? As alterações feitas neste dispositivo perdem-se.")) return;
-    try { localStorage.removeItem(REP_CHAVE); } catch (e) {}
-    repRender();
-});
 
 const modalPrivacidade = document.getElementById("modalPrivacidade");
 modalPrivacidade.addEventListener("click", e => { if (e.target === modalPrivacidade) fecharTudo(); });
