@@ -167,7 +167,7 @@ h1 {
     white-space: nowrap;
 }
 
-.pesq { position: relative; width: 220px; }
+.pesq { position: relative; width: 120px; }
 
 .pesq .lupa {
     position: absolute;
@@ -255,6 +255,30 @@ header.oculto ~ #btnSairRep { top: calc(8px + env(safe-area-inset-top, 0px)); }
 .icone-btn.insta { background: linear-gradient(45deg, #833AB4, #C13584, #E1306C, #FD1D1D, #FCAF45); border: 0; }
 .icone-btn svg { width: 18px; height: 18px; }
 .quebra { display: none; }
+#btnPino.on { color: #FCAF45; border-color: rgba(252,175,69,0.6); background: rgba(252,175,69,0.18); }
+#btnPino svg { transition: transform 0.2s ease; transform: rotate(45deg); }
+#btnPino.on svg { transform: none; }
+/* Menu (três traços): lista de ações, ao estilo de uma lista de pastas */
+.menu-wrap { position: relative; order: 0; flex-shrink: 0; }
+#menuBtn { padding: 0; cursor: pointer; }
+.menu-lista {
+    position: absolute; top: 44px; left: 0; z-index: 1100;
+    width: 270px; max-width: calc(100vw - 20px); padding: 6px;
+    background: #1e1e1e; border: 1px solid rgba(252,175,69,0.4); border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+}
+.menu-lista[hidden] { display: none; }
+.menu-lista > button, .menu-lista > a {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 8px 10px; border: 0; border-radius: 10px; background: none;
+    color: #fff; font: inherit; font-size: 14px; text-align: left; text-decoration: none; cursor: pointer;
+}
+.menu-lista > button:hover, .menu-lista > a:hover, .menu-lista > button:focus-visible, .menu-lista > a:focus-visible { background: rgba(252,175,69,0.18); color: #FCAF45; outline: none; }
+.menu-lista .mi { width: 30px; height: 30px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: rgba(255,255,255,0.07); font-size: 16px; }
+.menu-lista .mi-estado { margin-left: auto; color: #FCAF45; font-weight: 800; visibility: hidden; }
+.menu-lista > button.on { color: #FCAF45; }
+.menu-lista > button.on .mi-estado { visibility: visible; }
+.menu-sep { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 4px; }
 .lang { position: relative; }
 #langBtn { padding: 0; cursor: pointer; }
 .flag { width: 22px; height: 15px; border-radius: 3px; display: block; box-shadow: 0 0 0 1px rgba(255,255,255,0.25); }
@@ -454,7 +478,7 @@ button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: point
 .fab[hidden] { display: none; }
 .fab:hover { transform: scale(1.08); background: rgba(252,175,69,0.28); }
 .fab svg { width: 26px; height: 26px; transition: transform 0.3s ease; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9)); }
-.fab.topo svg { transform: rotate(180deg); }
+#btnFabTopo svg { transform: rotate(180deg); }
 /* Dado e troca: sempre visíveis, também por cima da imagem aberta (todos os botões ficam à direita, empilhados;
    a posição vertical é calculada em posicionarFabs() para nunca ficarem em cima do rodapé nem do aviso de cookies) */
 .fab-dado, .fab-troca {
@@ -464,6 +488,20 @@ button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: point
     text-shadow: 0 1px 4px rgba(0,0,0,0.9);
 }
 .fab-troca.on { background: rgba(252,175,69,0.35); box-shadow: 0 0 0 3px rgba(252,175,69,0.25); }
+.fab:active { transform: scale(0.94); }
+/* Telemóvel: botões mais pequenos e mais encostados ao canto, para tapar menos a galeria */
+@media (max-width: 600px) {
+    .fab { width: 42px; height: 42px; right: 10px; border-width: 1.5px; }
+    .fab svg { width: 20px; height: 20px; }
+    .fab-dado, .fab-troca { font-size: 20px; }
+    #btnSairRep { right: 10px; padding: 6px 12px; font-size: 12px; }
+}
+/* Ecrãs tácteis: sem efeito «hover» preso depois de tocar */
+@media (hover: none) {
+    .fab:hover { transform: none; background: rgba(18,18,18,0.22); }
+    .fab-troca.on:hover { background: rgba(252,175,69,0.35); }
+    #btnSairRep:hover { background: rgba(18,18,18,0.3); }
+}
 /* Modo «repetidas»: número da carica à esquerda e, a amarelo, a quantidade para troca à direita (ex.: X20) */
 .carica.rep .numero { display: flex; justify-content: space-between; align-items: baseline; width: 100%; max-width: 180px; }
 .rep-q { color: #FCAF45; font-weight: 800; }
@@ -693,11 +731,12 @@ footer {
         padding: 100px 5px 20px 5px;
     }
 
+    .menu-wrap { order: 0; }
     .marca { order: 1; flex: 1; }
     .acoes { order: 2; }
     .quebra { display: block; order: 3; flex-basis: 100%; height: 0; }
-    .pesq { order: 4; flex: 1; width: auto; }
-    .pilulas { order: 5; }
+    .pesq { order: 4; flex: 0 1 120px; width: auto; }
+    .pilulas { order: 5; margin-left: auto; }
     h1 { font-size: 0.95rem; }
     .marca { gap: 8px; }
     .marca img { width: 34px; height: 34px; }
@@ -705,7 +744,7 @@ footer {
     .icone-btn { width: 34px; height: 34px; }
 
     .galeria {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 6px;
     }
 
@@ -722,6 +761,28 @@ footer {
     .numero {
         font-size: 14px;
     }
+}
+
+/* Telemóvel: 3 caricas lado a lado */
+@media (max-width: 600px) {
+    .galeria {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+    }
+    .carica {
+        padding: 4px;
+        min-height: 120px;
+        border-radius: 12px;
+    }
+    .carica img {
+        border-width: 2px;
+        box-shadow: 0 0 8px rgba(255,255,255,0.12);
+    }
+    .numero {
+        margin-top: 6px;
+        font-size: 11px;
+    }
+    .carica.rep .numero { gap: 3px; }
 }
 </style>
 </head>
@@ -741,28 +802,33 @@ footer {
             <div class="stat"><strong id="sobreBandeira"></strong><span data-i18n="sobreDe">De: Ansião, Portugal</span></div>
         </div>
         <p class="faltam" id="faltam" hidden></p>
-        <p class="contacto" data-i18n="sobreContacto">Contacto:</p>
-        <a class="btn-insta" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg>
-            @caricas_metalicas
-        </a>
         <p class="oferta" data-i18n="oferta">🫶 Aceito ofertas.</p>
     </div>
 </div>
 
 <header id="topo">
+    <div class="menu-wrap">
+        <button type="button" id="menuBtn" class="icone-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="menuLista" aria-label="Menu" title="Menu" data-i18n-attr="aria-label:menuAria;title:menuAria">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="menu-lista" id="menuLista" role="menu" hidden>
+            <button type="button" role="menuitem" data-acao="troca" id="menuTroca"><span class="mi" aria-hidden="true">🔁</span><span data-i18n="menuTroca">Caricas repetidas para troca</span><span class="mi-estado" aria-hidden="true">✓</span></button>
+            <button type="button" role="menuitem" data-acao="aleat"><span class="mi" aria-hidden="true">🎲</span><span data-i18n="aleatAria">Carica aleatória</span></button>
+            <button type="button" role="menuitem" data-acao="ordem"><span class="mi" aria-hidden="true">⇅</span><span data-i18n="ordAria">Inverter a ordem</span></button>
+            <hr class="menu-sep">
+            <button type="button" role="menuitem" data-acao="sobre"><span class="mi" aria-hidden="true">ℹ️</span><span data-i18n="sobre">Sobre</span></button>
+            <a role="menuitem" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg></span><span>Instagram</span></a>
+        </div>
+    </div>
+
     <a href="#" class="marca" aria-label="Início" data-i18n-attr="aria-label:inicio">
         <img src="favicon.png" alt="">
         <h1>Caricas_Metalicas</h1>
     </a>
 
     <div class="acoes">
-        <a href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener" class="icone-btn insta" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5Zm8.88 1.13a1.12 1.12 0 1 1 0 2.24 1.12 1.12 0 0 1 0-2.24ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/>
-            </svg>
-        </a>
-        <a href="#" id="abrirSobre" role="button" class="icone-btn" aria-label="Sobre" title="Sobre" data-i18n-attr="aria-label:sobre;title:sobre">ℹ️</a>
+        <button type="button" class="icone-btn" id="btnAleat" aria-label="Carica aleatória" title="Carica aleatória" data-i18n-attr="aria-label:aleatAria;title:aleatAria" style="cursor:pointer">🎲</button>
+        <a href="#" id="abrirSobre" role="button" class="icone-btn" hidden style="display:none" aria-label="Sobre" title="Sobre" data-i18n-attr="aria-label:sobre;title:sobre">ℹ️</a>
         <div class="lang">
             <button type="button" id="langBtn" class="icone-btn" aria-label="Idioma" title="Idioma" data-i18n-attr="aria-label:idioma;title:idioma"></button>
             <div class="lang-menu" id="langMenu" hidden>
@@ -776,6 +842,9 @@ footer {
                 <button type="button" data-lang="pl">Polski</button>
             </div>
         </div>
+        <button type="button" class="icone-btn" id="btnPino" aria-pressed="true" style="cursor:pointer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6l-1 6 3 3v2H7v-2l3-3-1-6Z"/><path d="M12 15v6"/></svg>
+        </button>
     </div>
 
     <div class="quebra"></div>
@@ -835,13 +904,14 @@ footer {
     <div id="footer-toast" role="status" aria-live="polite"></div>
 </footer>
 
+<button type="button" class="fab" id="btnFabTopo" hidden aria-label="Voltar ao início" title="Voltar ao início" style="--r:180deg">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6.5 13.5 12 19l5.5-5.5"/></svg>
+</button>
 <button type="button" class="fab" id="btnFab" hidden aria-label="Ir para o fim" title="Ir para o fim">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M6.5 10.5 12 16l5.5-5.5"/><path d="M5 20h14"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6.5 13.5 12 19l5.5-5.5"/></svg>
 </button>
 
-<button type="button" class="fab fab-troca" id="btnTroca" aria-pressed="false" aria-label="Mostrar só as repetidas para troca" title="Mostrar só as repetidas para troca" data-i18n-attr="aria-label:trocaAria;title:trocaAria">🔁</button>
-
-<button type="button" class="fab fab-dado" id="btnAleat" aria-label="Carica aleatória" title="Carica aleatória" data-i18n-attr="aria-label:aleatAria;title:aleatAria">🎲</button>
+<button type="button" class="fab fab-troca" id="btnTroca" hidden aria-pressed="false" aria-label="Mostrar só as repetidas para troca" title="Mostrar só as repetidas para troca" data-i18n-attr="aria-label:trocaAria;title:trocaAria">🔁</button>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -883,6 +953,7 @@ function definirModoRep(on) {
     b.classList.toggle("on", on);
     b.setAttribute("aria-pressed", String(on));
     document.getElementById("btnSairRep").hidden = !on;
+    document.getElementById("menuTroca").classList.toggle("on", on);
     filtrar();
     if (!lbAberto()) window.scrollTo({ top: 0 });
 }
@@ -893,7 +964,7 @@ document.getElementById("btnSairRep").addEventListener("click", () => definirMod
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-const ULTIMA_ATUALIZACAO = "2026-11-01";
+const ULTIMA_ATUALIZACAO = "2026-11-02";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -1111,7 +1182,9 @@ window.addEventListener("load", ajustarPadding);
 
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
-        const aberto = lbAberto() || [...document.querySelectorAll(".modal")].some(m => m.style.display === "flex");
+        const menuAberto = !menuLista.hidden;
+        fecharMenu();
+        const aberto = menuAberto || lbAberto() || [...document.querySelectorAll(".modal")].some(m => m.style.display === "flex");
         fecharTudo();
         if (!aberto && modoRep) definirModoRep(false);
     }
@@ -1170,7 +1243,8 @@ function posicionarFabs() {
     fabsAgendado = true;
     requestAnimationFrame(() => {
         fabsAgendado = false;
-        let base = 16;
+        const pequeno = window.innerWidth <= 600;
+        let base = pequeno ? 12 : 16;
         if (!document.body.classList.contains("lb-on")) {
             ["footer", "#cookies"].forEach(sel => {
                 const el = document.querySelector(sel);
@@ -1180,11 +1254,11 @@ function posicionarFabs() {
             });
         }
         let y = base;
-        ["btnFab", "btnAleat", "btnTroca"].forEach(id => {
+        ["btnFab", "btnFabTopo"].forEach(id => {
             const b = document.getElementById(id);
             if (b.hidden) return;
             b.style.bottom = `calc(${Math.round(y)}px + env(safe-area-inset-bottom, 0px))`;
-            y += 66;
+            y += b.offsetHeight + (pequeno ? 10 : 12);
         });
     });
 }
@@ -1192,16 +1266,19 @@ window.addEventListener("scroll", posicionarFabs, { passive: true });
 window.addEventListener("resize", posicionarFabs);
 if (window.ResizeObserver) new ResizeObserver(posicionarFabs).observe(document.body);
 new MutationObserver(posicionarFabs).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+const fabTopo = document.getElementById("btnFabTopo");
+function noTopo() { return window.scrollY <= 80; }
 function atualizarFab() {
-    fab.hidden = document.documentElement.scrollHeight <= window.innerHeight + 200;
+    const rola = document.documentElement.scrollHeight > window.innerHeight + 200;
+    // topo: só descer; fundo: só subir; a meio: as duas
+    fab.hidden = !rola || noFim();
+    fabTopo.hidden = !rola || noTopo();
     posicionarFabs();
-    const fim = noFim();
-    fab.classList.toggle("topo", fim);
-    const k = t(fim ? "topoAria" : "fimAria");
-    fab.setAttribute("aria-label", k);
-    fab.title = k;
+    fab.setAttribute("aria-label", t("fimAria")); fab.title = t("fimAria");
+    fabTopo.setAttribute("aria-label", t("topoAria")); fabTopo.title = t("topoAria");
 }
-fab.addEventListener("click", () => window.scrollTo({ top: noFim() ? 0 : document.documentElement.scrollHeight, behavior: "smooth" }));
+fab.addEventListener("click", () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" }));
+fabTopo.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 window.addEventListener("scroll", atualizarFab, { passive: true });
 window.addEventListener("resize", atualizarFab);
 
@@ -1256,9 +1333,39 @@ limpar.addEventListener("click", () => { campo.value = ""; filtrar(); campo.focu
 // Cabeçalho: esconde ao descer, mostra ao subir
 const cabecalho = document.getElementById("topo");
 let ultimoY = 0;
+// Pino: cabeçalho fixo (ligado) ou que esconde ao descer (desligado); a escolha fica guardada
+let cabPinado = true;
+try { cabPinado = localStorage.getItem("cabPino") !== "0"; } catch (e) {}
+const btnPino = document.getElementById("btnPino");
+const PINO_TXT = {
+    pt: ["Cabeçalho fixo (clicar para desbloquear)", "Cabeçalho livre (clicar para fixar)"],
+    en: ["Header pinned (click to unpin)", "Header unpinned (click to pin)"],
+    es: ["Cabecera fija (clic para desbloquear)", "Cabecera libre (clic para fijar)"],
+    fr: ["En-tête épinglé (cliquer pour libérer)", "En-tête libre (cliquer pour épingler)"],
+    de: ["Kopfzeile fixiert (zum Lösen klicken)", "Kopfzeile frei (zum Fixieren klicken)"],
+    it: ["Intestazione fissa (clic per sbloccare)", "Intestazione libera (clic per fissare)"],
+    nl: ["Kop vastgezet (klik om los te maken)", "Kop los (klik om vast te zetten)"],
+    pl: ["Nagłówek przypięty (kliknij, by odpiąć)", "Nagłówek odpięty (kliknij, by przypiąć)"]
+};
+function atualizarPino() {
+    let l = "pt"; try { l = lang; } catch (e) {}
+    const t = (PINO_TXT[l] || PINO_TXT.pt)[cabPinado ? 0 : 1];
+    btnPino.classList.toggle("on", cabPinado);
+    btnPino.setAttribute("aria-pressed", String(cabPinado));
+    btnPino.title = t; btnPino.setAttribute("aria-label", t);
+}
+btnPino.addEventListener("click", () => {
+    cabPinado = !cabPinado;
+    try { localStorage.setItem("cabPino", cabPinado ? "1" : "0"); } catch (e) {}
+    if (cabPinado) cabecalho.classList.remove("oculto");
+    atualizarPino();
+});
+window.addEventListener("load", atualizarPino);
+document.querySelectorAll("#langMenu button").forEach(b => b.addEventListener("click", () => setTimeout(atualizarPino, 0)));
 window.addEventListener("scroll", () => {
     const y = window.scrollY;
-    if (y > ultimoY && y > 80 && document.activeElement !== campo) cabecalho.classList.add("oculto");
+    if (cabPinado) cabecalho.classList.remove("oculto");
+    else if (y > ultimoY && y > 80 && document.activeElement !== campo) cabecalho.classList.add("oculto");
     else if (y < ultimoY) cabecalho.classList.remove("oculto");
     ultimoY = y;
 }, { passive: true });
@@ -1271,7 +1378,7 @@ document.querySelector(".marca").addEventListener("click", e => {
 // ===== Idiomas =====
 const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr", de: "de", it: "it", nl: "nl", pl: "pl" };
 const PT = {
-    trocaAria: "Mostrar só as repetidas para troca", trocaVazio: "Neste momento não há caricas repetidas para troca.", trocaSair: "✕ Sair das repetidas", trocaSobre: "para troca", sobreDe: "De: Ansião, Portugal", sobreContacto: "Contacto:", trocaRep1: "carica repetida de", trocaRepN: "caricas repetidas de",
+    trocaAria: "Mostrar só as repetidas para troca", trocaVazio: "Neste momento não há caricas repetidas para troca.", trocaSair: "✕ Sair das repetidas", trocaSobre: "para troca", menuAria: "Menu", menuTroca: "Caricas repetidas para troca", menuContacto: "Contacto (Instagram)", sobreDe: "De: Ansião, Portugal", sobreContacto: "Contacto:", trocaRep1: "carica repetida de", trocaRepN: "caricas repetidas de",
     cariPal: "caricas", res1: "resultado", resN: "resultados", pub: "Publicidade",
     altImg: "Carica nº", falta: "imagem em falta", upd: "Última atualização: ",
     erro: "Não foi possível carregar a coleção. Tenta novamente mais tarde.",
@@ -1284,7 +1391,7 @@ const PT = {
 };
 const T = {
     en: {
-        trocaAria: "Show only duplicates for trading", trocaVazio: "There are no duplicates for trading right now.", trocaSair: "✕ Exit duplicates", trocaSobre: "for trading", sobreDe: "From: Ansião, Portugal", sobreContacto: "Contact:", trocaRep1: "duplicate bottle cap out of", trocaRepN: "duplicate bottle caps out of",
+        trocaAria: "Show only duplicates for trading", trocaVazio: "There are no duplicates for trading right now.", trocaSair: "✕ Exit duplicates", trocaSobre: "for trading", menuAria: "Menu", menuTroca: "Duplicates for trading", menuContacto: "Contact (Instagram)", sobreDe: "From: Ansião, Portugal", sobreContacto: "Contact:", trocaRep1: "duplicate bottle cap out of", trocaRepN: "duplicate bottle caps out of",
         cariPal: "bottle caps", res1: "result", resN: "results", pub: "Advertisement",
         altImg: "Bottle cap no.", falta: "image missing", upd: "Last updated: ",
         erro: "The collection could not be loaded. Please try again later.",
@@ -1445,7 +1552,7 @@ const T = {
         faltam: "Brakujące numery:"
     },
     es: {
-        trocaAria: "Mostrar solo las repetidas para intercambio", trocaVazio: "Ahora mismo no hay chapas repetidas para intercambio.", trocaSair: "✕ Salir de repetidas", trocaSobre: "para intercambio", sobreDe: "De: Ansião, Portugal", sobreContacto: "Contacto:", trocaRep1: "chapa repetida de", trocaRepN: "chapas repetidas de",
+        trocaAria: "Mostrar solo las repetidas para intercambio", trocaVazio: "Ahora mismo no hay chapas repetidas para intercambio.", trocaSair: "✕ Salir de repetidas", trocaSobre: "para intercambio", menuAria: "Menú", menuTroca: "Repetidas para intercambio", menuContacto: "Contacto (Instagram)", sobreDe: "De: Ansião, Portugal", sobreContacto: "Contacto:", trocaRep1: "chapa repetida de", trocaRepN: "chapas repetidas de",
         cariPal: "chapas", res1: "resultado", resN: "resultados", pub: "Publicidad",
         altImg: "Chapa nº", falta: "imagen no disponible", upd: "Última actualización: ",
         erro: "No se pudo cargar la colección. Inténtalo de nuevo más tarde.",
@@ -1466,7 +1573,7 @@ const T = {
         ajOutro: "Abre el menú del navegador (⋮) y elige «Instalar aplicación» o «Añadir a la pantalla de inicio». En el ordenador, usa el icono de instalación de la barra de direcciones. Si aparece «Abrir» con el nombre de la app, ya está instalada: busca su icono en la pantalla de inicio o en la lista de aplicaciones."
     },
     fr: {
-        trocaAria: "Afficher seulement les doubles à échanger", trocaVazio: "Aucun double à échanger pour le moment.", trocaSair: "✕ Quitter les doubles", trocaSobre: "à échanger", sobreDe: "De : Ansião, Portugal", sobreContacto: "Contact :", trocaRep1: "capsule en double sur", trocaRepN: "capsules en double sur",
+        trocaAria: "Afficher seulement les doubles à échanger", trocaVazio: "Aucun double à échanger pour le moment.", trocaSair: "✕ Quitter les doubles", trocaSobre: "à échanger", menuAria: "Menu", menuTroca: "Doubles à échanger", menuContacto: "Contact (Instagram)", sobreDe: "De : Ansião, Portugal", sobreContacto: "Contact :", trocaRep1: "capsule en double sur", trocaRepN: "capsules en double sur",
         cariPal: "capsules", res1: "résultat", resN: "résultats", pub: "Publicité",
         altImg: "Capsule n°", falta: "image manquante", upd: "Dernière mise à jour : ",
         erro: "Impossible de charger la collection. Réessayez plus tard.",
@@ -1550,6 +1657,33 @@ langMenu.querySelectorAll("button").forEach(b => b.addEventListener("click", () 
     aplicarIdioma();
 }));
 document.addEventListener("click", () => { langMenu.hidden = true; });
+
+// Menu (três traços)
+const menuBtn = document.getElementById("menuBtn");
+const menuLista = document.getElementById("menuLista");
+function fecharMenu() { menuLista.hidden = true; menuBtn.setAttribute("aria-expanded", "false"); }
+menuBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    langMenu.hidden = true;
+    const abre = menuLista.hidden;
+    menuLista.hidden = !abre;
+    menuBtn.setAttribute("aria-expanded", String(abre));
+});
+document.getElementById("langBtn").addEventListener("click", fecharMenu);
+document.addEventListener("click", fecharMenu);
+menuLista.addEventListener("click", e => {
+    const item = e.target.closest("[data-acao], a");
+    if (!item) return;
+    e.stopPropagation();
+    fecharMenu();
+    const acao = item.dataset.acao;
+    if (acao === "troca") definirModoRep(!modoRep);
+    else if (acao === "aleat") document.getElementById("btnAleat").click();
+    else if (acao === "ordem") document.getElementById("btnOrdem").click();
+    else if (acao === "sobre") document.getElementById("abrirSobre").click();
+    else if (acao === "priv") document.getElementById("abrirPrivacidade").click();
+    else if (acao === "cook") document.getElementById("abrirCookies").click();
+});
 
 document.getElementById("sobreBandeira").innerHTML = bandeira("pt");
 document.getElementById("langBtn").innerHTML = bandeira(lang);
