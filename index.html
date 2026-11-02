@@ -171,7 +171,7 @@ h1 {
 
 .pesq .lupa {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     opacity: 0.6;
@@ -181,7 +181,8 @@ h1 {
 
 #pesquisa {
     width: 100%;
-    padding: 8px 30px 8px 34px;
+    padding: 8px 8px 8px 30px;
+    text-overflow: ellipsis;
     border: 1px solid rgba(255,255,255,0.2);
     border-radius: 999px;
     font-size: 14px;
@@ -190,6 +191,8 @@ h1 {
 }
 
 #pesquisa:focus { outline: none; border-color: #FCAF45; }
+#pesquisa::placeholder { font-size: 11px; }
+#pesquisa:not(:placeholder-shown) { padding-right: 30px; }
 
 #limpar {
     display: none;
@@ -211,28 +214,9 @@ h1 {
 
 .marca { order: 1; }
 .pesq { order: 2; }
-/* Sair do modo repetidas: canto superior direito, logo abaixo do cabeçalho (sobe quando o cabeçalho se esconde) */
-#btnSairRep {
-    position: fixed;
-    right: 16px;
-    top: calc(var(--cab-h, 60px) + 8px);
-    z-index: 950;
-    padding: 8px 14px;
-    border: 2px solid #FCAF45;
-    border-radius: 999px;
-    background: rgba(18,18,18,0.3);
-    color: #FCAF45;
-    font: inherit;
-    font-size: 13px;
-    font-weight: 800;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.9);
-    cursor: pointer;
-    transition: top 0.3s ease, background 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-}
-#btnSairRep[hidden] { display: none; }
-#btnSairRep:hover { background: rgba(252,175,69,0.28); }
-header.oculto ~ #btnSairRep { top: calc(8px + env(safe-area-inset-top, 0px)); }
+/* Sair do modo repetidas: tocar no contador do cabeçalho (mostra um ✕) */
+#contador.sair { cursor: pointer; border-color: #FCAF45; color: #FCAF45; }
+#contador.sair::before { content: "✕ "; font-weight: 800; }
 .pilulas { order: 3; }
 .acoes { display: flex; gap: 8px; order: 4; }
 
@@ -275,9 +259,19 @@ header.oculto ~ #btnSairRep { top: calc(8px + env(safe-area-inset-top, 0px)); }
 }
 .menu-lista > button:hover, .menu-lista > a:hover, .menu-lista > button:focus-visible, .menu-lista > a:focus-visible { background: rgba(252,175,69,0.18); color: #FCAF45; outline: none; }
 .menu-lista .mi { width: 30px; height: 30px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: rgba(255,255,255,0.07); font-size: 16px; }
+.menu-lista .mi-ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); color: #fff; }
 .menu-lista .mi-estado { margin-left: auto; color: #FCAF45; font-weight: 800; visibility: hidden; }
 .menu-lista > button.on { color: #FCAF45; }
 .menu-lista > button.on .mi-estado { visibility: visible; }
+.menu-lista > button.menu-upd { justify-content: center; padding: 6px 10px; font-size: 12px; font-weight: 400; color: #9a9a9a; text-align: center; }
+.menu-lista > button.menu-upd:hover { background: none; color: #bdbdbd; }
+#menuTroca .mi-estado { margin-left: 8px; }
+.menu-lista .mi-ord { margin-left: auto; color: #FCAF45; font-weight: 800; font-size: 13px; }
+.menu-langs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px 4px 4px 42px; }
+.menu-langs[hidden] { display: none; }
+.menu-langs button { padding: 6px 8px; border: 0; border-radius: 8px; background: none; color: #ddd; font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+.menu-langs button:hover, .menu-langs button:focus-visible { background: rgba(252,175,69,0.18); color: #FCAF45; outline: none; }
+.menu-langs button.sel { color: #FCAF45; font-weight: 800; }
 .menu-sep { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 4px; }
 .lang { position: relative; }
 #langBtn { padding: 0; cursor: pointer; }
@@ -370,7 +364,7 @@ main {
 #lightbox {
     display: none;
     position: fixed;
-    inset: 0;
+    inset: var(--cab-h, 60px) 0 0 0; /* deixa o cabeçalho visível */
     background: rgba(0,0,0,0.95);
     justify-content: center;
     align-items: center;
@@ -391,8 +385,8 @@ main {
 
 #lightbox img {
     max-width: 100%;
-    max-height: calc(100vh - 200px);
-    max-height: calc(100dvh - 200px);
+    max-height: calc(100vh - 200px - var(--cab-h, 60px));
+    max-height: calc(100dvh - 200px - var(--cab-h, 60px));
     transition: transform 0.15s ease;
     border-radius: 15px;
 }
@@ -419,6 +413,7 @@ main {
 .lb-close { top: 12px; right: 12px; width: 48px; height: 48px; font-size: 32px; background: rgba(252,175,69,0.95); color: #121212; border-color: transparent; z-index: 2; }
 .lb-close:hover { background: #FCAF45; }
 body.lb-on #cookies { visibility: hidden; }
+body.lb-on header { z-index: 10001; transform: none; }
 button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: pointer; }
 .faltam { margin: 10px 0 0; font-size: 12px; opacity: 0.75; line-height: 1.5; word-break: break-word; }
 .lb-btn[hidden], .lb-nav-btn[hidden] { display: none; }
@@ -494,16 +489,15 @@ button.pilula { font: inherit; font-size: 12px; font-weight: bold; cursor: point
     .fab { width: 42px; height: 42px; right: 10px; border-width: 1.5px; }
     .fab svg { width: 20px; height: 20px; }
     .fab-dado, .fab-troca { font-size: 20px; }
-    #btnSairRep { right: 10px; padding: 6px 12px; font-size: 12px; }
 }
 /* Ecrãs tácteis: sem efeito «hover» preso depois de tocar */
 @media (hover: none) {
     .fab:hover { transform: none; background: rgba(18,18,18,0.22); }
     .fab-troca.on:hover { background: rgba(252,175,69,0.35); }
-    #btnSairRep:hover { background: rgba(18,18,18,0.3); }
 }
 /* Modo «repetidas»: número da carica à esquerda e, a amarelo, a quantidade para troca à direita (ex.: X20) */
-.carica.rep .numero { display: flex; justify-content: space-between; align-items: baseline; width: 100%; max-width: 180px; }
+.carica.rep .numero { display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline; width: 100%; max-width: 180px; }
+.carica.rep .numero > :nth-child(3) { text-align: right; }
 .rep-q { color: #FCAF45; font-weight: 800; }
 
 .carica img:focus-visible { outline: 3px solid #FCAF45; outline-offset: 3px; }
@@ -628,6 +622,28 @@ footer {
 .modal-content.texto { text-align: left; font-size: 14px; max-height: 85vh; overflow-y: auto; }
 .modal-content.texto h2 { text-align: center; }
 
+
+/* Painel de administração (oculto): editar quantidades das repetidas */
+#modalAdmin .modal-content { max-width: 480px; text-align: left; max-height: 88vh; overflow-y: auto; padding: 24px 22px; }
+#modalAdmin h2 { text-align: center; margin: 0 0 4px; }
+#modalAdmin .adm-nota { font-size: 12px; line-height: 1.5; opacity: .75; margin: 0 0 14px; text-align: center; }
+.adm-form { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 14px; }
+.adm-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; opacity: .85; flex: 1; min-width: 0; }
+.adm-form input, .adm-qtd input { width: 100%; box-sizing: border-box; padding: 9px 10px; border-radius: 10px; border: 1px solid rgba(252,175,69,.45); background: #121212; color: #fff; font: inherit; font-size: 15px; }
+.adm-btn { padding: 9px 14px; border: 0; border-radius: 10px; background: #FCAF45; color: #121212; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.adm-btn.sec { background: rgba(255,255,255,.1); color: #fff; font-weight: 600; }
+.adm-erro { color: #ff8a80; font-size: 12px; min-height: 16px; margin: -6px 0 8px; }
+.adm-lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.adm-vazio { text-align: center; opacity: .6; font-size: 13px; padding: 10px 0; }
+.adm-linha { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.05); border-radius: 10px; padding: 6px 8px 6px 12px; }
+.adm-linha strong { flex: 1; font-size: 15px; }
+.adm-qtd { display: flex; align-items: center; gap: 4px; }
+.adm-qtd input { width: 54px; text-align: center; padding: 6px 4px; }
+.adm-mini { width: 32px; height: 32px; border: 0; border-radius: 8px; background: rgba(252,175,69,.2); color: #FCAF45; font-size: 18px; font-weight: 800; cursor: pointer; line-height: 1; }
+.adm-mini.del { background: rgba(255,90,90,.18); color: #ff8a80; }
+#modalAdmin .adm-sair { position: static; display: block; margin: 0 0 8px auto; font-size: 14px; color: #121212; }
+.adm-rodape { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
 /* Modal Sobre */
 .modal {
     display: none;
@@ -674,6 +690,8 @@ footer {
     font-size: 12px;
     opacity: 0.95;
 }
+.stat-total { flex-direction: row; justify-content: center; gap: 8px; }
+.stat-total span { font-size: 1.05rem; font-weight: 700; }
 .stat-col { flex: 1; display: flex; flex-direction: column; gap: 10px; }
 .stat[hidden] { display: none; }
 .stat strong { font-size: 1.6rem; color: #FCAF45; line-height: 1.1; display: flex; align-items: center; min-height: 28px; }
@@ -782,7 +800,7 @@ footer {
         margin-top: 6px;
         font-size: 11px;
     }
-    .carica.rep .numero { gap: 3px; }
+    .carica.rep .numero { gap: 2px; }
 }
 </style>
 </head>
@@ -796,13 +814,46 @@ footer {
         <p class="tagline" data-i18n="colecao">Coleção catalogada e numerada.</p>
         <div class="stats">
             <div class="stat-col">
-                <div class="stat"><strong id="totalModal">0</strong><span data-i18n="cariPal">caricas</span></div>
-                <div class="stat stat-rep" id="statRep" hidden><strong id="trocaModal">0</strong><span data-i18n="trocaSobre">para troca</span></div>
+                <div class="stat stat-total"><span data-i18n="total">Total:</span><strong id="totalModal">0</strong></div>
+                <div class="stat stat-rep stat-total" id="statRep" hidden><span data-i18n="trocaLbl">Para troca:</span><strong id="trocaModal">0</strong></div>
+                <div class="stat stat-total"><span data-i18n="sobreDe">De: Ansião, Portugal</span></div>
             </div>
-            <div class="stat"><strong id="sobreBandeira"></strong><span data-i18n="sobreDe">De: Ansião, Portugal</span></div>
         </div>
         <p class="faltam" id="faltam" hidden></p>
         <p class="oferta" data-i18n="oferta">🫶 Aceito ofertas.</p>
+    </div>
+</div>
+
+<div id="modalAdminPass" class="modal">
+    <div class="modal-content" style="max-width:340px">
+        <span class="fechar-modal" role="button" aria-label="Fechar">&times;</span>
+        <h2>🔒 Administração</h2>
+        <div class="adm-form" style="margin-top:14px">
+            <label>Palavra-passe<input type="password" id="admPass" autocomplete="off" inputmode="numeric"></label>
+            <button type="button" class="adm-btn" id="admEntrar">Entrar</button>
+        </div>
+        <div class="adm-erro" id="admPassErro" aria-live="polite"></div>
+    </div>
+</div>
+
+<div id="modalAdmin" class="modal">
+    <div class="modal-content">
+        <button type="button" class="adm-btn fechar-modal adm-sair">Guardar e sair</button>
+        <h2>⚙️ Administração</h2>
+        <p class="adm-nota">Indica quantas caricas tens para troca. Com 1 ou mais, aparece nas repetidas com essa quantidade; com 0, sai.</p>
+        <div class="adm-form">
+            <label>Nº da carica<input type="number" id="admNum" min="1" inputmode="numeric"></label>
+            <label>Para troca<input type="number" id="admQtd" min="0" value="1" inputmode="numeric"></label>
+            <button type="button" class="adm-btn" id="admSet">Adicionar</button>
+        </div>
+        <div class="adm-erro" id="admErro" aria-live="polite"></div>
+        <div class="adm-lista" id="admLista"></div>
+        <div class="adm-rodape">
+            <button type="button" class="adm-btn" id="admVer">Ver repetidas</button>
+            <button type="button" class="adm-btn sec" id="admCopiar">Descarregar repetidas.json</button>
+            <button type="button" class="adm-btn sec" id="admRepor">Descartar alterações</button>
+        </div>
+        <p class="adm-nota" style="margin-top:14px">As alterações ficam guardadas neste dispositivo. Para todos os visitantes as verem, descarrega o <b>repetidas.json</b> e substitui o ficheiro no site.</p>
     </div>
 </div>
 
@@ -812,12 +863,29 @@ footer {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
         <div class="menu-lista" id="menuLista" role="menu" hidden>
-            <button type="button" role="menuitem" data-acao="troca" id="menuTroca"><span class="mi" aria-hidden="true">🔁</span><span data-i18n="menuTroca">Caricas repetidas para troca</span><span class="mi-estado" aria-hidden="true">✓</span></button>
+            <button type="button" role="menuitem" data-acao="troca" id="menuTroca"><span class="mi" aria-hidden="true">🔁</span><span data-i18n="menuTroca">Repetidas</span><span class="mi-ord" id="menuTrocaN"></span><span class="mi-estado" aria-hidden="true">✓</span></button>
             <button type="button" role="menuitem" data-acao="aleat"><span class="mi" aria-hidden="true">🎲</span><span data-i18n="aleatAria">Carica aleatória</span></button>
-            <button type="button" role="menuitem" data-acao="ordem"><span class="mi" aria-hidden="true">⇅</span><span data-i18n="ordAria">Inverter a ordem</span></button>
+            <button type="button" role="menuitem" data-acao="ordem"><span class="mi" aria-hidden="true">⇅</span><span data-i18n="ordAria">Inverter a ordem</span><span class="mi-ord" id="menuOrdEstado">Z→A</span></button>
+            <button type="button" role="menuitem" data-acao="idioma" id="menuIdioma" aria-expanded="false"><span class="mi" id="menuLangFlag" aria-hidden="true"></span><span data-i18n="idioma">Idioma</span><span class="mi-ord" id="menuLangNome"></span></button>
+            <div class="menu-langs" id="menuLangs" hidden>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="pt">Português</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="en">English</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="es">Español</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="fr">Français</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="de">Deutsch</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="it">Italiano</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="nl">Nederlands</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="pl">Polski</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="sv">Svenska</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="tr">Türkçe</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="ru">Русский</button>
+                <button type="button" role="menuitem" data-acao="lang" data-lang="ja">日本語</button>
+            </div>
             <hr class="menu-sep">
             <button type="button" role="menuitem" data-acao="sobre"><span class="mi" aria-hidden="true">ℹ️</span><span data-i18n="sobre">Sobre</span></button>
-            <a role="menuitem" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg></span><span>Instagram</span></a>
+            <a role="menuitem" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener"><span class="mi mi-ig" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg></span><span>Instagram</span></a>
+            <hr class="menu-sep">
+            <button type="button" role="menuitem" data-acao="upd" id="menuUpd" class="menu-upd"></button>
         </div>
     </div>
 
@@ -840,6 +908,10 @@ footer {
                 <button type="button" data-lang="it">Italiano</button>
                 <button type="button" data-lang="nl">Nederlands</button>
                 <button type="button" data-lang="pl">Polski</button>
+                <button type="button" data-lang="sv">Svenska</button>
+                <button type="button" data-lang="tr">Türkçe</button>
+                <button type="button" data-lang="ru">Русский</button>
+                <button type="button" data-lang="ja">日本語</button>
             </div>
         </div>
         <button type="button" class="icone-btn" id="btnPino" aria-pressed="true" style="cursor:pointer">
@@ -857,11 +929,10 @@ footer {
 
     <div class="pilulas">
         <span class="pilula" id="contador" aria-live="polite">0 caricas</span>
-        <button type="button" class="pilula" id="btnOrdem" aria-label="Inverter a ordem" data-i18n-attr="aria-label:ordAria">A→Z</button>
+        <button type="button" class="pilula" id="btnOrdem" aria-label="Inverter a ordem" data-i18n-attr="aria-label:ordAria">Z→A</button>
     </div>
 </header>
 
-<button type="button" id="btnSairRep" hidden data-i18n="trocaSair">✕ Sair das repetidas</button>
 
 <main>
     <div class="galeria" id="galeria"></div>
@@ -929,36 +1000,55 @@ let ordemDesc = false;
 // Lista pública: ficheiro repetidas.json, ex.: {"12": 3, "45": 1} (número da carica → quantidade).
 let repPublicadas = {};
 let modoRep = false;
-function repQtd(n) { const q = parseInt(repPublicadas[String(parseInt(n, 10))], 10); return q > 0 ? q : 0; }
+let repLocal = {};
+try { repLocal = JSON.parse(localStorage.getItem("repAdmin") || "{}") || {}; } catch (e) { repLocal = {}; }
+function repQtd(n) {
+    const k = String(parseInt(n, 10));
+    // alterações do administrador têm prioridade; a quantidade é o número de caricas para troca (0 = não está nas repetidas)
+    if (k in repLocal) { const q = parseInt(repLocal[k], 10); return q > 0 ? q : 0; }
+    const q = parseInt(repPublicadas[k], 10);
+    return q > 0 ? q : 0;
+}
 function escreverNumero(card) {
     const n = card.dataset.numero, q = modoRep ? repQtd(n) : 0;
     const el = card.querySelector(".numero");
     card.classList.toggle("rep", q > 0);
     el.textContent = "";
     if (q > 0) {
+        // número centrado como no modo normal; quantidade (ex.: 2x) à direita, a amarelo
+        const e = document.createElement("span");
         const a = document.createElement("span"); a.textContent = `Nº ${n}`;
-        const b = document.createElement("span"); b.className = "rep-q"; b.textContent = "X" + q;
-        el.append(a, b);
+        const b = document.createElement("span"); b.className = "rep-q"; b.textContent = q + "x";
+        el.append(e, a, b);
     } else {
         el.textContent = `Nº ${n}`;
     }
 }
 fetch("repetidas.json", { cache: "no-cache" })
     .then(r => r.ok ? r.json() : {})
-    .then(o => { if (o && typeof o === "object") { repPublicadas = o; if (modoRep) filtrar(); } })
+    .then(o => { if (o && typeof o === "object") { repPublicadas = o; atualizarContaRep(); if (modoRep) filtrar(); } })
     .catch(() => {});
+// Número de caricas que constam para troca (junto a «Repetidas» no menu)
+function atualizarContaRep() {
+    const el = document.getElementById("menuTrocaN");
+    if (el) el.textContent = caricas.filter(c => repQtd(c) > 0).length || "";
+}
 function definirModoRep(on) {
     modoRep = on;
     const b = document.getElementById("btnTroca");
     b.classList.toggle("on", on);
     b.setAttribute("aria-pressed", String(on));
-    document.getElementById("btnSairRep").hidden = !on;
+    const ct = document.getElementById("contador");
+    ct.classList.toggle("sair", on);
+    if (on) { ct.setAttribute("role", "button"); ct.tabIndex = 0; ct.title = t("trocaSair").replace("✕ ", ""); }
+    else { ct.removeAttribute("role"); ct.removeAttribute("tabindex"); ct.removeAttribute("title"); }
     document.getElementById("menuTroca").classList.toggle("on", on);
     filtrar();
     if (!lbAberto()) window.scrollTo({ top: 0 });
 }
 document.getElementById("btnTroca").addEventListener("click", () => definirModoRep(!modoRep));
-document.getElementById("btnSairRep").addEventListener("click", () => definirModoRep(false));
+document.getElementById("contador").addEventListener("click", () => { if (modoRep) definirModoRep(false); });
+document.getElementById("contador").addEventListener("keydown", e => { if (modoRep && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); definirModoRep(false); } });
 
 // ANÚNCIO: preencher o ID do bloco criado no AdSense (ex.: "1234567890")
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
@@ -1228,7 +1318,14 @@ lightbox.addEventListener("touchend", e => {
 
 // Barra: inverter ordem, carica aleatória, ir ao fim
 const btnOrdem = document.getElementById("btnOrdem");
-btnOrdem.addEventListener("click", () => { ordemDesc = !ordemDesc; btnOrdem.textContent = ordemDesc ? "Z→A" : "A→Z"; atualizarGaleria(); });
+// O botão mostra a ordem para a qual vai mudar ao carregar
+function rotuloOrdem() {
+    const alvo = ordemDesc ? "A→Z" : "Z→A";
+    btnOrdem.textContent = alvo;
+    document.getElementById("menuOrdEstado").textContent = alvo;
+}
+rotuloOrdem();
+btnOrdem.addEventListener("click", () => { ordemDesc = !ordemDesc; rotuloOrdem(); atualizarGaleria(); });
 document.getElementById("btnAleat").addEventListener("click", () => {
     const l = listaVisivel(); if (l.length) abrirLightbox(l[Math.floor(Math.random() * l.length)]);
 });
@@ -1319,6 +1416,7 @@ function filtrar() {
     semRes.hidden = !((ativo || modoRep) && visiveis === 0);
     semRes.textContent = (modoRep && !ativo) ? t("trocaVazio") : t("semRes");
     atualizarFab();
+    atualizarContaRep();
 
     contador.textContent = ativo
         ? `${fmt(visiveis)} ${visiveis === 1 ? t("res1") : t("resN")}`
@@ -1345,7 +1443,11 @@ const PINO_TXT = {
     de: ["Kopfzeile fixiert (zum Lösen klicken)", "Kopfzeile frei (zum Fixieren klicken)"],
     it: ["Intestazione fissa (clic per sbloccare)", "Intestazione libera (clic per fissare)"],
     nl: ["Kop vastgezet (klik om los te maken)", "Kop los (klik om vast te zetten)"],
-    pl: ["Nagłówek przypięty (kliknij, by odpiąć)", "Nagłówek odpięty (kliknij, by przypiąć)"]
+    pl: ["Nagłówek przypięty (kliknij, by odpiąć)", "Nagłówek odpięty (kliknij, by przypiąć)"],
+    sv: ["Rubriken är fastlåst (klicka för att låsa upp)", "Rubriken är fri (klicka för att låsa fast)"],
+    tr: ["Üst bilgi sabit (çözmek için tıklayın)", "Üst bilgi serbest (sabitlemek için tıklayın)"],
+    ru: ["Шапка закреплена (нажмите, чтобы открепить)", "Шапка откреплена (нажмите, чтобы закрепить)"],
+    ja: ["ヘッダー固定中(クリックで解除)", "ヘッダー固定なし(クリックで固定)"]
 };
 function atualizarPino() {
     let l = "pt"; try { l = lang; } catch (e) {}
@@ -1376,7 +1478,7 @@ document.querySelector(".marca").addEventListener("click", e => {
 });
 
 // ===== Idiomas =====
-const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr", de: "de", it: "it", nl: "nl", pl: "pl" };
+const LANGS = { pt: "pt-PT", en: "en", es: "es", fr: "fr", de: "de", it: "it", nl: "nl", pl: "pl", sv: "sv", tr: "tr", ru: "ru", ja: "ja" };
 const PT = {
     trocaAria: "Mostrar só as repetidas para troca", trocaVazio: "Neste momento não há caricas repetidas para troca.", trocaSair: "✕ Sair das repetidas", trocaSobre: "para troca", menuAria: "Menu", menuTroca: "Caricas repetidas para troca", menuContacto: "Contacto (Instagram)", sobreDe: "De: Ansião, Portugal", sobreContacto: "Contacto:", trocaRep1: "carica repetida de", trocaRepN: "caricas repetidas de",
     cariPal: "caricas", res1: "resultado", resN: "resultados", pub: "Publicidade",
@@ -1595,6 +1697,194 @@ const T = {
     }
 };
 
+/* Idiomas extra: o que não estiver traduzido (ex.: textos longos de privacidade) cai para inglês */
+Object.assign(T, {
+    "sv": {
+        "trocaAria": "Visa bara dubbletter för byte",
+        "trocaVazio": "Just nu finns inga dubbletter för byte.",
+        "trocaSair": "✕ Lämna dubbletter",
+        "trocaSobre": "för byte",
+        "menuAria": "Meny",
+        "menuTroca": "Dubbletter för byte",
+        "trocaRep1": "dubblett av",
+        "trocaRepN": "dubbletter av",
+        "cariPal": "kapsyler",
+        "res1": "resultat",
+        "resN": "resultat",
+        "pub": "Annons",
+        "altImg": "Kapsyl nr",
+        "falta": "bild saknas",
+        "upd": "Senast uppdaterad: ",
+        "erro": "Samlingen kunde inte laddas. Försök igen senare.",
+        "semRes": "Ingen kapsyl hittades.",
+        "anterior": "Föregående",
+        "seguinte": "Nästa",
+        "colecao": "Samling katalogiserad efter nummer.",
+        "total": "Totalt:",
+        "oferta": "🫶 Tar gärna emot gåvor.",
+        "sobre": "Om",
+        "inicio": "Hem",
+        "ph": "Sök nr…",
+        "pesqAria": "Sök kapsylnummer",
+        "limpar": "Rensa sökning",
+        "fechar": "Stäng",
+        "idioma": "Språk",
+        "privTitulo": "🔒 Integritet och cookies",
+        "priv": "Integritet",
+        "cook": "Cookies",
+        "ordAria": "Vänd ordningen",
+        "aleatAria": "Slumpmässig kapsyl",
+        "fimAria": "Gå till slutet",
+        "topoAria": "Tillbaka till toppen",
+        "faltam": "Saknade nummer:",
+        "cookiesTxt": "Den här webbplatsen använder reklamcookies (Google AdSense). Godkänner du?<br>",
+        "aceitar": "Godkänn",
+        "recusar": "Avböj",
+        "instalar": "Installera appen"
+    },
+    "tr": {
+        "trocaAria": "Yalnızca takaslık mükerrerleri göster",
+        "trocaVazio": "Şu anda takaslık mükerrer kapak yok.",
+        "trocaSair": "✕ Mükerrerlerden çık",
+        "trocaSobre": "takas için",
+        "menuAria": "Menü",
+        "menuTroca": "Takaslık mükerrerler",
+        "trocaRep1": "mükerrer kapak /",
+        "trocaRepN": "mükerrer kapak /",
+        "cariPal": "kapak",
+        "res1": "sonuç",
+        "resN": "sonuç",
+        "pub": "Reklam",
+        "altImg": "Kapak no.",
+        "falta": "görsel eksik",
+        "upd": "Son güncelleme: ",
+        "erro": "Koleksiyon yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+        "semRes": "Kapak bulunamadı.",
+        "anterior": "Önceki",
+        "seguinte": "Sonraki",
+        "colecao": "Numaraya göre kataloglanmış koleksiyon.",
+        "total": "Toplam:",
+        "oferta": "🫶 Hediyeler kabul edilir.",
+        "sobre": "Hakkında",
+        "inicio": "Ana sayfa",
+        "ph": "No ara…",
+        "pesqAria": "Kapak numarası ara",
+        "limpar": "Aramayı temizle",
+        "fechar": "Kapat",
+        "idioma": "Dil",
+        "privTitulo": "🔒 Gizlilik ve Çerezler",
+        "priv": "Gizlilik",
+        "cook": "Çerezler",
+        "ordAria": "Sırayı tersine çevir",
+        "aleatAria": "Rastgele kapak",
+        "fimAria": "Sona git",
+        "topoAria": "Başa dön",
+        "faltam": "Eksik numaralar:",
+        "cookiesTxt": "Bu site reklam çerezleri (Google AdSense) kullanır. Kabul ediyor musunuz?<br>",
+        "aceitar": "Kabul et",
+        "recusar": "Reddet",
+        "instalar": "Uygulamayı yükle"
+    },
+    "ru": {
+        "trocaAria": "Показать только дубликаты для обмена",
+        "trocaVazio": "Сейчас нет дубликатов для обмена.",
+        "trocaSair": "✕ Выйти из дубликатов",
+        "trocaSobre": "для обмена",
+        "menuAria": "Меню",
+        "menuTroca": "Дубликаты для обмена",
+        "trocaRep1": "дубликат из",
+        "trocaRepN": "дубликатов из",
+        "cariPal": "крышек",
+        "res1": "результат",
+        "resN": "результатов",
+        "pub": "Реклама",
+        "altImg": "Крышка №",
+        "falta": "изображение отсутствует",
+        "upd": "Последнее обновление: ",
+        "erro": "Не удалось загрузить коллекцию. Попробуйте позже.",
+        "semRes": "Крышка не найдена.",
+        "anterior": "Назад",
+        "seguinte": "Вперёд",
+        "colecao": "Коллекция, каталогизированная по номерам.",
+        "total": "Всего:",
+        "oferta": "🫶 Принимаю подарки.",
+        "sobre": "О коллекции",
+        "inicio": "Главная",
+        "ph": "Поиск №…",
+        "pesqAria": "Поиск по номеру крышки",
+        "limpar": "Очистить поиск",
+        "fechar": "Закрыть",
+        "idioma": "Язык",
+        "privTitulo": "🔒 Конфиденциальность и cookie",
+        "priv": "Конфиденциальность",
+        "cook": "Cookie",
+        "ordAria": "Изменить порядок",
+        "aleatAria": "Случайная крышка",
+        "fimAria": "В конец",
+        "topoAria": "Наверх",
+        "faltam": "Недостающие номера:",
+        "cookiesTxt": "Этот сайт использует рекламные cookie (Google AdSense). Вы согласны?<br>",
+        "aceitar": "Принять",
+        "recusar": "Отклонить",
+        "instalar": "Установить приложение"
+    },
+    "ja": {
+        "trocaAria": "交換用の重複のみ表示",
+        "trocaVazio": "現在、交換用の重複はありません。",
+        "trocaSair": "✕ 重複表示を終了",
+        "trocaSobre": "交換用",
+        "menuAria": "メニュー",
+        "menuTroca": "交換用の重複",
+        "trocaRep1": "件の重複 / 全",
+        "trocaRepN": "件の重複 / 全",
+        "cariPal": "王冠",
+        "res1": "件",
+        "resN": "件",
+        "pub": "広告",
+        "altImg": "王冠 No.",
+        "falta": "画像なし",
+        "upd": "最終更新: ",
+        "erro": "コレクションを読み込めませんでした。後でもう一度お試しください。",
+        "semRes": "王冠が見つかりません。",
+        "anterior": "前へ",
+        "seguinte": "次へ",
+        "colecao": "番号で整理されたコレクション。",
+        "total": "合計:",
+        "oferta": "🫶 プレゼント歓迎です。",
+        "sobre": "このサイトについて",
+        "inicio": "ホーム",
+        "ph": "番号を検索…",
+        "pesqAria": "王冠の番号を検索",
+        "limpar": "検索をクリア",
+        "fechar": "閉じる",
+        "idioma": "言語",
+        "privTitulo": "🔒 プライバシーとCookie",
+        "priv": "プライバシー",
+        "cook": "Cookie",
+        "ordAria": "順序を反転",
+        "aleatAria": "ランダムな王冠",
+        "fimAria": "最後へ",
+        "topoAria": "トップへ戻る",
+        "faltam": "欠番:",
+        "cookiesTxt": "このサイトは広告用Cookie(Google AdSense)を使用します。同意しますか?<br>",
+        "aceitar": "同意する",
+        "recusar": "拒否する",
+        "instalar": "アプリをインストール"
+    }
+});
+
+// Menu: nome curto para a lista de repetidas
+PT.menuTroca = "Repetidas";
+const MENU_TROCA = { en: "Duplicates", es: "Repetidas", fr: "Doubles", de: "Doppelte", it: "Doppie", nl: "Dubbele", pl: "Duplikaty", sv: "Dubbletter", tr: "Mükerrer", ru: "Дубликаты", ja: "重複" };
+Object.keys(MENU_TROCA).forEach(k => { if (T[k]) T[k].menuTroca = MENU_TROCA[k]; });
+// Janela Sobre: «De: Ansião, Portugal»
+const SOBRE_DE = { en: "From: Ansião, Portugal", es: "De: Ansião, Portugal", fr: "De : Ansião, Portugal", de: "Aus: Ansião, Portugal", it: "Da: Ansião, Portogallo", nl: "Uit: Ansião, Portugal", pl: "Z: Ansião, Portugalia", sv: "Från: Ansião, Portugal", tr: "Konum: Ansião, Portekiz", ru: "Откуда: Ansião, Португалия", ja: "出身: ポルトガル、アンシャン" };
+Object.keys(SOBRE_DE).forEach(k => { if (T[k]) T[k].sobreDe = SOBRE_DE[k]; });
+// Janela Sobre: «Para troca: N»
+PT.trocaLbl = "Para troca:";
+const TROCA_LBL = { en: "For trading:", es: "Para intercambio:", fr: "À échanger :", de: "Zum Tauschen:", it: "Da scambiare:", nl: "Te ruil:", pl: "Na wymianę:", sv: "För byte:", tr: "Takas için:", ru: "Для обмена:", ja: "交換用:" };
+Object.keys(TROCA_LBL).forEach(k => { if (T[k]) T[k].trocaLbl = TROCA_LBL[k]; });
+
 let lang = "pt";
 try { lang = localStorage.getItem("lang"); } catch (e) {}
 if (!lang) lang = (navigator.language || "pt").slice(0, 2).toLowerCase();
@@ -1620,13 +1910,23 @@ const SVG = {
     it: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>',
     nl: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="7" fill="#ae1c28"/><rect y="7" width="30" height="6.7" fill="#fff"/><rect y="13.3" width="30" height="6.7" fill="#21468b"/></svg>',
     pl: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#dc143c"/></svg>',
+    sv: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="20" fill="#006aa7"/><rect x="9" width="4" height="20" fill="#fecc00"/><rect y="8" width="30" height="4" fill="#fecc00"/></svg>',
+    tr: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="20" fill="#e30a17"/><circle cx="11" cy="10" r="5" fill="#fff"/><circle cx="12.4" cy="10" r="4" fill="#e30a17"/><polygon points="17.20,7.70 18.55,11.86 15.01,9.29 19.39,9.29 15.85,11.86" fill="#fff"/></svg>',
+    ru: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="7" fill="#fff"/><rect y="7" width="30" height="6.7" fill="#0039a6"/><rect y="13.3" width="30" height="6.7" fill="#d52b1e"/></svg>',
+    ja: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/></svg>',
 };
 function bandeira(l) {
     return '<img class="flag" alt="" src="data:image/svg+xml,' + encodeURIComponent(SVG[l]) + '">';
 }
-const NOMES = { pt: "Português", en: "English", es: "Español", fr: "Français", de: "Deutsch", it: "Italiano", nl: "Nederlands", pl: "Polski" };
+const NOMES = { pt: "Português", en: "English", es: "Español", fr: "Français", de: "Deutsch", it: "Italiano", nl: "Nederlands", pl: "Polski", sv: "Svenska", tr: "Türkçe", ru: "Русский", ja: "日本語" };
 document.querySelectorAll("#langMenu button").forEach(b => { b.innerHTML = bandeira(b.dataset.lang) + "<span>" + NOMES[b.dataset.lang] + "</span>"; });
 
+function atualizarDataMenu() {
+    const el = document.getElementById("menuUpd");
+    if (!el) return;
+    const d = new Date(ULTIMA_ATUALIZACAO + "T12:00:00");
+    el.textContent = t("upd") + d.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
+}
 function aplicarIdioma() {
     document.documentElement.lang = LANGS[lang];
     document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -1640,6 +1940,11 @@ function aplicarIdioma() {
     });
     document.getElementById("langBtn").innerHTML = bandeira(lang);
     atualizarFab();
+    atualizarDataMenu();
+    document.getElementById("menuLangFlag").innerHTML = bandeira(lang);
+    const lb = document.querySelector('#langMenu button[data-lang="' + lang + '"]');
+    document.getElementById("menuLangNome").textContent = lb ? lb.textContent : "";
+    document.querySelectorAll("#menuLangs button").forEach(b => b.classList.toggle("sel", b.dataset.lang === lang));
     document.querySelectorAll("#langMenu button").forEach(b => b.classList.toggle("sel", b.dataset.lang === lang));
     if (caricas.length) atualizarGaleria();
     else filtrar();
@@ -1661,7 +1966,7 @@ document.addEventListener("click", () => { langMenu.hidden = true; });
 // Menu (três traços)
 const menuBtn = document.getElementById("menuBtn");
 const menuLista = document.getElementById("menuLista");
-function fecharMenu() { menuLista.hidden = true; menuBtn.setAttribute("aria-expanded", "false"); }
+function fecharMenu() { const ml = document.getElementById("menuLangs"); if (ml) { ml.hidden = true; document.getElementById("menuIdioma").setAttribute("aria-expanded", "false"); } menuLista.hidden = true; menuBtn.setAttribute("aria-expanded", "false"); }
 menuBtn.addEventListener("click", e => {
     e.stopPropagation();
     langMenu.hidden = true;
@@ -1675,9 +1980,21 @@ menuLista.addEventListener("click", e => {
     const item = e.target.closest("[data-acao], a");
     if (!item) return;
     e.stopPropagation();
-    fecharMenu();
     const acao = item.dataset.acao;
-    if (acao === "troca") definirModoRep(!modoRep);
+    if (acao === "idioma") {
+        const l = document.getElementById("menuLangs");
+        l.hidden = !l.hidden;
+        item.setAttribute("aria-expanded", String(!l.hidden));
+        return;
+    }
+    if (acao === "upd") { triploClique(item, () => { fecharMenu(); abrirAdmin(); }, e); return; }
+    fecharMenu();
+    if (acao === "lang") {
+        lang = item.dataset.lang;
+        try { localStorage.setItem("lang", lang); } catch (e) {}
+        aplicarIdioma();
+    }
+    else if (acao === "troca") definirModoRep(!modoRep);
     else if (acao === "aleat") document.getElementById("btnAleat").click();
     else if (acao === "ordem") document.getElementById("btnOrdem").click();
     else if (acao === "sobre") document.getElementById("abrirSobre").click();
@@ -1685,7 +2002,6 @@ menuLista.addEventListener("click", e => {
     else if (acao === "cook") document.getElementById("abrirCookies").click();
 });
 
-document.getElementById("sobreBandeira").innerHTML = bandeira("pt");
 document.getElementById("langBtn").innerHTML = bandeira(lang);
 if (lang !== "pt") aplicarIdioma();
 
@@ -1734,6 +2050,108 @@ function triploClique(el, fn, ev) {
     if (el._n >= 3) { el._n = 0; fn(ev); return; }
     el._t = setTimeout(function () { el._n = 0; }, 1500);
 }
+
+
+/* ---- Administração oculta: 3 toques na data de atualização, no fim do menu (ou Ctrl+Shift+A) ---- */
+const modalAdmin = document.getElementById("modalAdmin");
+function guardarRepLocal() { try { localStorage.setItem("repAdmin", JSON.stringify(repLocal)); } catch (e) {} }
+function repAtuais() {
+    const res = {};
+    new Set([...Object.keys(repPublicadas), ...Object.keys(repLocal)]).forEach(k => { const q = repQtd(k); if (q > 0) res[k] = q; });
+    return res;
+}
+function admAplicar() { renderAdmin(); filtrar(); }
+function admDefinir(num, qtd) {
+    repLocal[String(parseInt(num, 10))] = Math.max(0, Math.min(999, qtd | 0));
+    guardarRepLocal(); admAplicar();
+}
+function renderAdmin() {
+    const cont = document.getElementById("admLista");
+    cont.textContent = "";
+    const at = repAtuais();
+    const ks = Object.keys(at).sort((a, b) => a - b);
+    if (!ks.length) { const v = document.createElement("div"); v.className = "adm-vazio"; v.textContent = "Sem caricas repetidas."; cont.append(v); return; }
+    ks.forEach(k => {
+        const l = document.createElement("div"); l.className = "adm-linha";
+        const n = document.createElement("strong"); n.textContent = "Nº " + k;
+        const q = document.createElement("div"); q.className = "adm-qtd";
+        const menos = document.createElement("button"); menos.type = "button"; menos.className = "adm-mini"; menos.textContent = "−"; menos.setAttribute("aria-label", "Diminuir");
+        const inp = document.createElement("input"); inp.type = "number"; inp.min = "0"; inp.value = at[k]; inp.inputMode = "numeric";
+        const mais = document.createElement("button"); mais.type = "button"; mais.className = "adm-mini"; mais.textContent = "+"; mais.setAttribute("aria-label", "Aumentar");
+        const del = document.createElement("button"); del.type = "button"; del.className = "adm-mini del"; del.textContent = "✕"; del.setAttribute("aria-label", "Remover das repetidas");
+        menos.onclick = () => admDefinir(k, at[k] - 1);
+        mais.onclick = () => admDefinir(k, at[k] + 1);
+        inp.onchange = () => admDefinir(k, parseInt(inp.value, 10) || 0);
+        del.onclick = () => admDefinir(k, 0);
+        q.append(menos, inp, mais);
+        l.append(n, q, del);
+        cont.append(l);
+    });
+}
+// Palavra-passe do painel de administração (para alterar, muda aqui o valor)
+const ADMIN_PASS = "112";
+const modalAdminPass = document.getElementById("modalAdminPass");
+function abrirAdmin() {
+    fecharTudo();
+    document.getElementById("admPass").value = "";
+    document.getElementById("admPassErro").textContent = "";
+    modalAdminPass.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    setTimeout(() => document.getElementById("admPass").focus(), 50);
+}
+function entrarAdmin() {
+    if (document.getElementById("admPass").value === ADMIN_PASS) abrirAdminPainel();
+    else { document.getElementById("admPassErro").textContent = "Palavra-passe errada."; document.getElementById("admPass").select(); }
+}
+document.getElementById("admEntrar").addEventListener("click", entrarAdmin);
+document.getElementById("admPass").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); entrarAdmin(); } });
+modalAdminPass.addEventListener("click", e => { if (e.target === modalAdminPass) fecharTudo(); });
+function abrirAdminPainel() {
+    fecharTudo();
+    document.getElementById("admErro").textContent = "";
+    renderAdmin();
+    modalAdmin.style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+document.getElementById("admNum").addEventListener("input", e => {
+    const q = repQtd(e.target.value);
+    if (q > 0) document.getElementById("admQtd").value = q;
+});
+document.getElementById("admSet").addEventListener("click", () => {
+    const num = parseInt(document.getElementById("admNum").value, 10);
+    const qtd = parseInt(document.getElementById("admQtd").value, 10);
+    const erro = document.getElementById("admErro");
+    if (!(num > 0) || !caricas.some(c => Number(c) === num)) { erro.textContent = "Essa carica não existe na coleção."; return; }
+    if (!(qtd >= 0)) { erro.textContent = "Quantidade inválida."; return; }
+    erro.textContent = qtd > 0 ? "" : "Com quantidade 0, a carica sai das repetidas.";
+    admDefinir(num, qtd);
+    document.getElementById("admNum").value = "";
+    document.getElementById("admQtd").value = 1;
+});
+document.getElementById("admVer").addEventListener("click", () => { fecharTudo(); definirModoRep(true); });
+document.getElementById("admRepor").addEventListener("click", () => {
+    if (!confirm("Descartar as alterações feitas neste dispositivo e voltar ao repetidas.json do site?")) return;
+    repLocal = {}; try { localStorage.removeItem("repAdmin"); } catch (e) {}
+    admAplicar();
+});
+document.getElementById("admCopiar").addEventListener("click", () => {
+    const erro = document.getElementById("admErro");
+    try {
+        const blob = new Blob([JSON.stringify(repAtuais(), null, 2) + "\n"], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "repetidas.json";
+        document.body.append(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        erro.textContent = "repetidas.json descarregado.";
+    } catch (e) { erro.textContent = "Não foi possível descarregar."; }
+});
+modalAdmin.addEventListener("click", e => { if (e.target === modalAdmin) fecharTudo(); });
+atualizarDataMenu();
+document.getElementById("menuLangFlag").innerHTML = bandeira(lang);
+{ const lb0 = document.querySelector('#langMenu button[data-lang="' + lang + '"]'); document.getElementById("menuLangNome").textContent = lb0 ? lb0.textContent : ""; }
+document.querySelectorAll("#menuLangs button").forEach(b => b.classList.toggle("sel", b.dataset.lang === lang));
+document.addEventListener("keydown", e => { if (e.ctrlKey && e.shiftKey && (e.key === "A" || e.key === "a")) { e.preventDefault(); abrirAdmin(); } });
 
 let footerToastTimer = null;
 function mostrarUltimaAtualizacao() {
