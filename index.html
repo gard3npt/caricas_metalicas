@@ -931,7 +931,7 @@ footer {
 
     <div class="pesq">
         <span class="lupa" aria-hidden="true">🔍</span>
-        <input type="text" id="pesquisa" inputmode="numeric" placeholder="Pesquisar nº…" aria-label="Pesquisar nº da carica" data-i18n-attr="placeholder:ph;aria-label:pesqAria" autocomplete="off">
+        <input type="text" id="pesquisa" inputmode="numeric" pattern="[0-9]*" placeholder="Pesquisar nº…" aria-label="Pesquisar nº da carica" data-i18n-attr="placeholder:ph;aria-label:pesqAria" autocomplete="off">
         <button type="button" id="limpar" aria-label="Limpar pesquisa" data-i18n-attr="aria-label:limpar">×</button>
     </div>
 
@@ -1438,6 +1438,8 @@ function filtrar() {
             : `${fmt(caricas.length)} ${t("cariPal")}`;
 }
 
+// A pesquisa só aceita números (também ao colar texto)
+campo.addEventListener("input", () => { const v = campo.value.replace(/\D+/g, ""); if (v !== campo.value) campo.value = v; });
 campo.addEventListener("input", filtrar);
 limpar.addEventListener("click", () => { campo.value = ""; filtrar(); campo.focus(); });
 
