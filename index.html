@@ -627,9 +627,12 @@ footer {
 #modalAdmin .modal-content { max-width: 480px; text-align: left; max-height: 88vh; overflow-y: auto; padding: 24px 22px; }
 #modalAdmin h2 { text-align: center; margin: 0 0 4px; }
 #modalAdmin .adm-nota { font-size: 12px; line-height: 1.5; opacity: .75; margin: 0 0 14px; text-align: center; }
+.adm-resumo { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 0 0 12px; }
+.adm-resumo span { background: rgba(255,255,255,.07); border-radius: 999px; padding: 6px 14px; font-size: 13px; }
+.adm-resumo strong { color: #FCAF45; margin-left: 4px; }
 .adm-form { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 14px; }
 .adm-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; opacity: .85; flex: 1; min-width: 0; }
-.adm-form input, .adm-qtd input { width: 100%; box-sizing: border-box; padding: 9px 10px; border-radius: 10px; border: 1px solid rgba(252,175,69,.45); background: #121212; color: #fff; font: inherit; font-size: 15px; }
+.adm-form input, .adm-qtd input { text-align: center; width: 100%; box-sizing: border-box; padding: 9px 10px; border-radius: 10px; border: 1px solid rgba(252,175,69,.45); background: #121212; color: #fff; font: inherit; font-size: 15px; }
 .adm-btn { padding: 9px 14px; border: 0; border-radius: 10px; background: #FCAF45; color: #121212; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; white-space: nowrap; }
 .adm-btn.sec { background: rgba(255,255,255,.1); color: #fff; font-weight: 600; }
 .adm-erro { color: #ff8a80; font-size: 12px; min-height: 16px; margin: -6px 0 8px; }
@@ -641,8 +644,10 @@ footer {
 .adm-qtd input { width: 54px; text-align: center; padding: 6px 4px; }
 .adm-mini { width: 32px; height: 32px; border: 0; border-radius: 8px; background: rgba(252,175,69,.2); color: #FCAF45; font-size: 18px; font-weight: 800; cursor: pointer; line-height: 1; }
 .adm-mini.del { background: rgba(255,90,90,.18); color: #ff8a80; }
-#modalAdmin .adm-sair { position: static; display: block; margin: 0 0 8px auto; font-size: 14px; color: #121212; }
-.adm-rodape { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+#modalAdmin .adm-sair { position: static; display: block; margin: 0; font-size: 14px; color: #121212; }
+.adm-aviso { text-align: center; font-size: 11px; line-height: 1.4; opacity: .7; margin: -2px 0 6px; }
+.adm-rodape { display: flex; flex-direction: column; gap: 8px; }
+.adm-rodape .adm-btn { width: 100%; padding: 11px 14px; }
 
 /* Modal Sobre */
 .modal {
@@ -815,7 +820,7 @@ footer {
         <div class="stats">
             <div class="stat-col">
                 <div class="stat stat-total"><span data-i18n="total">Total:</span><strong id="totalModal">0</strong></div>
-                <div class="stat stat-rep stat-total" id="statRep" hidden><span data-i18n="trocaLbl">Para troca:</span><strong id="trocaModal">0</strong></div>
+                <div class="stat stat-rep stat-total" id="statRep" hidden><span data-i18n="trocaLbl">Quantidade para troca:</span><strong id="trocaModal">0</strong></div>
                 <div class="stat stat-total"><span data-i18n="sobreDe">De: Ansião, Portugal</span></div>
             </div>
         </div>
@@ -827,7 +832,7 @@ footer {
 <div id="modalAdminPass" class="modal">
     <div class="modal-content" style="max-width:340px">
         <span class="fechar-modal" role="button" aria-label="Fechar">&times;</span>
-        <h2>🔒 Administração</h2>
+        <h2>🔒 Administrador</h2>
         <div class="adm-form" style="margin-top:14px">
             <label>Palavra-passe<input type="password" id="admPass" autocomplete="off" inputmode="numeric"></label>
             <button type="button" class="adm-btn" id="admEntrar">Entrar</button>
@@ -838,22 +843,22 @@ footer {
 
 <div id="modalAdmin" class="modal">
     <div class="modal-content">
-        <button type="button" class="adm-btn fechar-modal adm-sair">Guardar e sair</button>
-        <h2>⚙️ Administração</h2>
-        <p class="adm-nota">Indica quantas caricas tens para troca. Com 1 ou mais, aparece nas repetidas com essa quantidade; com 0, sai.</p>
+        <h2>⚙️ Administrador</h2>
+        <div class="adm-resumo"><span>Total de caricas: <strong id="admTotal">0</strong></span><span>Repetidas: <strong id="admRep">0</strong></span></div>
         <div class="adm-form">
-            <label>Nº da carica<input type="number" id="admNum" min="1" inputmode="numeric"></label>
-            <label>Para troca<input type="number" id="admQtd" min="0" value="1" inputmode="numeric"></label>
+            <label>Nº da carica<input type="text" id="admNum" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></label>
+            <label>Quantidade para troca<input type="text" id="admQtd" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off"></label>
             <button type="button" class="adm-btn" id="admSet">Adicionar</button>
         </div>
         <div class="adm-erro" id="admErro" aria-live="polite"></div>
         <div class="adm-lista" id="admLista"></div>
         <div class="adm-rodape">
-            <button type="button" class="adm-btn" id="admVer">Ver repetidas</button>
-            <button type="button" class="adm-btn sec" id="admCopiar">Descarregar repetidas.json</button>
-            <button type="button" class="adm-btn sec" id="admRepor">Descartar alterações</button>
+            <button type="button" class="adm-btn fechar-modal adm-sair">Guardar e sair</button>
+            <div class="adm-aviso">💾 As alterações ficam guardadas neste dispositivo.</div>
+            <button type="button" class="adm-btn" id="admCopiar">Descarregar ficheiro repetidas.json</button>
+            <div class="adm-aviso">Para todos os visitantes as verem, descarrega o ficheiro e substitui o <b>repetidas.json</b> no site.</div>
+            <button type="button" class="adm-btn" id="admRepor">Descartar e sair</button>
         </div>
-        <p class="adm-nota" style="margin-top:14px">As alterações ficam guardadas neste dispositivo. Para todos os visitantes as verem, descarrega o <b>repetidas.json</b> e substitui o ficheiro no site.</p>
     </div>
 </div>
 
@@ -882,8 +887,11 @@ footer {
                 <button type="button" role="menuitem" data-acao="lang" data-lang="ja">日本語</button>
             </div>
             <hr class="menu-sep">
-            <button type="button" role="menuitem" data-acao="sobre"><span class="mi" aria-hidden="true">ℹ️</span><span data-i18n="sobre">Sobre</span></button>
             <a role="menuitem" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener"><span class="mi mi-ig" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg></span><span>Instagram</span></a>
+            <button type="button" role="menuitem" data-acao="share"><span class="mi" aria-hidden="true">📤</span><span data-i18n="menuShare">Partilhar o site</span></button>
+            <button type="button" role="menuitem" data-acao="prop"><span class="mi" aria-hidden="true">✉️</span><span data-i18n="menuProp">Propor troca (E-mail)</span></button>
+            <hr class="menu-sep">
+            <button type="button" role="menuitem" data-acao="sobre"><span class="mi" aria-hidden="true">ℹ️</span><span data-i18n="sobre">Sobre</span></button>
             <hr class="menu-sep">
             <button type="button" role="menuitem" data-acao="upd" id="menuUpd" class="menu-upd"></button>
         </div>
@@ -1054,7 +1062,7 @@ document.getElementById("contador").addEventListener("keydown", e => { if (modoR
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-const ULTIMA_ATUALIZACAO = "2026-11-02";
+const ULTIMA_ATUALIZACAO = "2026-11-03";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -1219,8 +1227,10 @@ function abrirLightbox(numero, semHist) {
     lbLista = listaVisivel();
     lbIndice = lbLista.indexOf(String(numero));
     if (lbIndice < 0) { lbLista = [String(numero)]; lbIndice = 0; }
-    mostrarLb();
+    // Primeiro cria a entrada do histórico; só depois mostrarLb() atualiza o "#n" nessa entrada.
+    // (Antes, o "#n" era escrito na entrada anterior e ficava na barra de endereço depois de fechar.)
     if (!lbAberto()) { try { history.pushState({ lb: 1 }, "", "#" + String(numero)); lbHist = true; } catch (e) {} }
+    mostrarLb();
     lightbox.style.display = "flex";
     document.body.classList.add("lb-on");
     document.body.style.overflow = "hidden";
@@ -1251,6 +1261,8 @@ function fecharTudo() {
     document.body.style.overflow = "";
     document.body.classList.remove("lb-on");
     if (voltar) { ignoraHash = true; setTimeout(() => { ignoraHash = false; }, 600); try { history.back(); } catch (e) {} }
+    // Garantia: sem nenhuma carica aberta, o endereço fica sem "#"
+    setTimeout(() => { if (!lbAberto() && location.hash) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} } }, 150);
 }
 window.addEventListener("popstate", () => { if (lbAberto()) { lbHist = false; fecharTudo(); } });
 
@@ -1272,6 +1284,7 @@ window.addEventListener("load", ajustarPadding);
 
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
+        if (document.getElementById("modalAdmin").style.display === "flex") return;
         const menuAberto = !menuLista.hidden;
         fecharMenu();
         const aberto = menuAberto || lbAberto() || [...document.querySelectorAll(".modal")].some(m => m.style.display === "flex");
@@ -1881,9 +1894,19 @@ Object.keys(MENU_TROCA).forEach(k => { if (T[k]) T[k].menuTroca = MENU_TROCA[k];
 const SOBRE_DE = { en: "From: Ansião, Portugal", es: "De: Ansião, Portugal", fr: "De : Ansião, Portugal", de: "Aus: Ansião, Portugal", it: "Da: Ansião, Portogallo", nl: "Uit: Ansião, Portugal", pl: "Z: Ansião, Portugalia", sv: "Från: Ansião, Portugal", tr: "Konum: Ansião, Portekiz", ru: "Откуда: Ansião, Португалия", ja: "出身: ポルトガル、アンシャン" };
 Object.keys(SOBRE_DE).forEach(k => { if (T[k]) T[k].sobreDe = SOBRE_DE[k]; });
 // Janela Sobre: «Para troca: N»
-PT.trocaLbl = "Para troca:";
-const TROCA_LBL = { en: "For trading:", es: "Para intercambio:", fr: "À échanger :", de: "Zum Tauschen:", it: "Da scambiare:", nl: "Te ruil:", pl: "Na wymianę:", sv: "För byte:", tr: "Takas için:", ru: "Для обмена:", ja: "交換用:" };
+PT.trocaLbl = "Quantidade para troca:";
+const TROCA_LBL = {"en": "Quantity for trading:", "es": "Cantidad para intercambio:", "fr": "Quantité à échanger :", "de": "Menge zum Tauschen:", "it": "Quantità da scambiare:", "nl": "Aantal te ruilen:", "pl": "Ilość na wymianę:", "sv": "Antal för byte:", "tr": "Takas için adet:", "ru": "Количество для обмена:", "ja": "交換用の数量:"};
 Object.keys(TROCA_LBL).forEach(k => { if (T[k]) T[k].trocaLbl = TROCA_LBL[k]; });
+
+// Menu: partilhar o site e propor troca
+Object.assign(PT, {"menuShare": "Partilhar o site", "menuProp": "Propor troca", "toastLink": "Link copiado.", "toastMsg": "Mensagem copiada. Cola-a no Instagram.", "shareTxt": "Coleção de caricas metálicas. Vem ver!", "propMsg": "Olá! Vi o teu site de caricas_metalicas e gostava de propor uma troca. Interessa-me a tua nº ___ ."});
+const MENU_EXTRA = {"en": {"menuShare": "Share the site", "menuProp": "Propose a trade", "toastLink": "Link copied.", "toastMsg": "Message copied. Paste it on Instagram.", "shareTxt": "Metal bottle cap collection. Come take a look!", "propMsg": "Hi! I saw your caricas_metalicas website and I'd like to propose a trade. I'm interested in your no. ___ ."}, "es": {"menuShare": "Compartir el sitio", "menuProp": "Proponer intercambio", "toastLink": "Enlace copiado.", "toastMsg": "Mensaje copiado. Pégalo en Instagram.", "shareTxt": "Colección de chapas metálicas. ¡Ven a verla!", "propMsg": "¡Hola! Vi tu web de caricas_metalicas y me gustaría proponerte un intercambio. Me interesa tu nº ___ ."}, "fr": {"menuShare": "Partager le site", "menuProp": "Proposer un échange", "toastLink": "Lien copié.", "toastMsg": "Message copié. Colle-le sur Instagram.", "shareTxt": "Collection de capsules métalliques. Viens voir !", "propMsg": "Bonjour ! J'ai vu ton site caricas_metalicas et j'aimerais te proposer un échange. Ta n° ___ m'intéresse."}, "de": {"menuShare": "Seite teilen", "menuProp": "Tausch vorschlagen", "toastLink": "Link kopiert.", "toastMsg": "Nachricht kopiert. Füge sie in Instagram ein.", "shareTxt": "Kronkorken-Sammlung. Schau vorbei!", "propMsg": "Hallo! Ich habe deine Website caricas_metalicas gesehen und möchte einen Tausch vorschlagen. Ich interessiere mich für deine Nr. ___ ."}, "it": {"menuShare": "Condividi il sito", "menuProp": "Proponi scambio", "toastLink": "Link copiato.", "toastMsg": "Messaggio copiato. Incollalo su Instagram.", "shareTxt": "Collezione di tappi metallici. Vieni a vedere!", "propMsg": "Ciao! Ho visto il tuo sito caricas_metalicas e vorrei proporti uno scambio. Mi interessa il tuo n. ___ ."}, "nl": {"menuShare": "Site delen", "menuProp": "Ruil voorstellen", "toastLink": "Link gekopieerd.", "toastMsg": "Bericht gekopieerd. Plak het op Instagram.", "shareTxt": "Kroonkurkencollectie. Kom kijken!", "propMsg": "Hoi! Ik zag je website caricas_metalicas en wil graag een ruil voorstellen. Ik ben geïnteresseerd in jouw nr. ___ ."}, "pl": {"menuShare": "Udostępnij stronę", "menuProp": "Zaproponuj wymianę", "toastLink": "Link skopiowany.", "toastMsg": "Wiadomość skopiowana. Wklej ją na Instagramie.", "shareTxt": "Kolekcja kapsli. Zajrzyj!", "propMsg": "Cześć! Widziałem Twoją stronę caricas_metalicas i chciałbym zaproponować wymianę. Interesuje mnie Twój nr ___ ."}, "sv": {"menuShare": "Dela sidan", "menuProp": "Föreslå byte", "toastLink": "Länken kopierades.", "toastMsg": "Meddelandet kopierades. Klistra in det på Instagram.", "shareTxt": "Samling av kapsyler. Kom och titta!", "propMsg": "Hej! Jag såg din sida caricas_metalicas och vill gärna föreslå ett byte. Jag är intresserad av din nr ___ ."}, "tr": {"menuShare": "Siteyi paylaş", "menuProp": "Takas teklif et", "toastLink": "Bağlantı kopyalandı.", "toastMsg": "Mesaj kopyalandı. Instagram'a yapıştırın.", "shareTxt": "Metal kapak koleksiyonu. Gelin bakın!", "propMsg": "Merhaba! caricas_metalicas sitenizi gördüm ve takas teklif etmek istiyorum. Sizdeki no ___ ilgimi çekiyor."}, "ru": {"menuShare": "Поделиться сайтом", "menuProp": "Предложить обмен", "toastLink": "Ссылка скопирована.", "toastMsg": "Сообщение скопировано. Вставьте его в Instagram.", "shareTxt": "Коллекция металлических крышек. Заходите!", "propMsg": "Привет! Я увидел твой сайт caricas_metalicas и хочу предложить обмен. Меня интересует твоя № ___ ."}, "ja": {"menuShare": "サイトを共有", "menuProp": "交換を提案", "toastLink": "リンクをコピーしました。", "toastMsg": "メッセージをコピーしました。Instagramに貼り付けてください。", "shareTxt": "王冠コレクション。ぜひご覧ください!", "propMsg": "こんにちは!caricas_metalicasのサイトを見て、交換をお願いしたくご連絡しました。あなたの No. ___ が欲しいです。"}};
+Object.keys(MENU_EXTRA).forEach(k => { if (T[k]) Object.assign(T[k], MENU_EXTRA[k]); });
+
+// Propor troca por e-mail
+Object.assign(PT, {menuProp: "Propor troca (E-mail)", propSub: "Proposta de troca de caricas"});
+const PROP_MAIL = {"en": {"menuProp": "Propose a trade (Email)", "propSub": "Bottle cap trade proposal"}, "es": {"menuProp": "Proponer intercambio (correo)", "propSub": "Propuesta de intercambio de chapas"}, "fr": {"menuProp": "Proposer un échange (e-mail)", "propSub": "Proposition d'échange de capsules"}, "de": {"menuProp": "Tausch vorschlagen (E-Mail)", "propSub": "Kronkorken-Tauschvorschlag"}, "it": {"menuProp": "Proponi scambio (e-mail)", "propSub": "Proposta di scambio di tappi"}, "nl": {"menuProp": "Ruil voorstellen (e-mail)", "propSub": "Kroonkurken ruilvoorstel"}, "pl": {"menuProp": "Zaproponuj wymianę (e-mail)", "propSub": "Propozycja wymiany kapsli"}, "sv": {"menuProp": "Föreslå byte (e-post)", "propSub": "Förslag på kapsylbyte"}, "tr": {"menuProp": "Takas teklif et (e-posta)", "propSub": "Kapak takas teklifi"}, "ru": {"menuProp": "Предложить обмен (e-mail)", "propSub": "Предложение обмена крышками"}, "ja": {"menuProp": "交換を提案(メール)", "propSub": "王冠の交換提案"}};
+Object.keys(PROP_MAIL).forEach(k => { if (T[k]) Object.assign(T[k], PROP_MAIL[k]); });
 
 let lang = "pt";
 try { lang = localStorage.getItem("lang"); } catch (e) {}
@@ -1998,6 +2021,8 @@ menuLista.addEventListener("click", e => {
     else if (acao === "aleat") document.getElementById("btnAleat").click();
     else if (acao === "ordem") document.getElementById("btnOrdem").click();
     else if (acao === "sobre") document.getElementById("abrirSobre").click();
+    else if (acao === "share") partilharSite();
+    else if (acao === "prop") proporTroca();
     else if (acao === "priv") document.getElementById("abrirPrivacidade").click();
     else if (acao === "cook") document.getElementById("abrirCookies").click();
 });
@@ -2052,7 +2077,7 @@ function triploClique(el, fn, ev) {
 }
 
 
-/* ---- Administração oculta: 3 toques na data de atualização, no fim do menu (ou Ctrl+Shift+A) ---- */
+/* ---- Painel do administrador (oculto): 3 toques na data de atualização, no fim do menu (ou Ctrl+Shift+A) ---- */
 const modalAdmin = document.getElementById("modalAdmin");
 function guardarRepLocal() { try { localStorage.setItem("repAdmin", JSON.stringify(repLocal)); } catch (e) {} }
 function repAtuais() {
@@ -2065,18 +2090,27 @@ function admDefinir(num, qtd) {
     repLocal[String(parseInt(num, 10))] = Math.max(0, Math.min(999, qtd | 0));
     guardarRepLocal(); admAplicar();
 }
+// Campos só com números; ao focar, o conteúdo fica selecionado para escrever por cima
+function soNumeros(el) {
+    el.addEventListener("input", () => { const v = el.value.replace(/\D+/g, ""); if (v !== el.value) el.value = v; });
+    el.addEventListener("focus", () => { el._f = true; setTimeout(() => el.select(), 0); });
+    el.addEventListener("mouseup", e => { if (el._f) { e.preventDefault(); el._f = false; } });
+    el.addEventListener("blur", () => { el._f = false; });
+}
 function renderAdmin() {
     const cont = document.getElementById("admLista");
     cont.textContent = "";
     const at = repAtuais();
     const ks = Object.keys(at).sort((a, b) => a - b);
+    document.getElementById("admTotal").textContent = caricas.length;
+    document.getElementById("admRep").textContent = ks.length;
     if (!ks.length) { const v = document.createElement("div"); v.className = "adm-vazio"; v.textContent = "Sem caricas repetidas."; cont.append(v); return; }
     ks.forEach(k => {
         const l = document.createElement("div"); l.className = "adm-linha";
         const n = document.createElement("strong"); n.textContent = "Nº " + k;
         const q = document.createElement("div"); q.className = "adm-qtd";
         const menos = document.createElement("button"); menos.type = "button"; menos.className = "adm-mini"; menos.textContent = "−"; menos.setAttribute("aria-label", "Diminuir");
-        const inp = document.createElement("input"); inp.type = "number"; inp.min = "0"; inp.value = at[k]; inp.inputMode = "numeric";
+        const inp = document.createElement("input"); inp.type = "text"; inp.maxLength = 3; inp.value = at[k]; inp.inputMode = "numeric"; soNumeros(inp);
         const mais = document.createElement("button"); mais.type = "button"; mais.className = "adm-mini"; mais.textContent = "+"; mais.setAttribute("aria-label", "Aumentar");
         const del = document.createElement("button"); del.type = "button"; del.className = "adm-mini del"; del.textContent = "✕"; del.setAttribute("aria-label", "Remover das repetidas");
         menos.onclick = () => admDefinir(k, at[k] - 1);
@@ -2106,13 +2140,18 @@ function entrarAdmin() {
 document.getElementById("admEntrar").addEventListener("click", entrarAdmin);
 document.getElementById("admPass").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); entrarAdmin(); } });
 modalAdminPass.addEventListener("click", e => { if (e.target === modalAdminPass) fecharTudo(); });
+let admSnapshot = "{}";
 function abrirAdminPainel() {
     fecharTudo();
+    admSnapshot = JSON.stringify(repLocal);
     document.getElementById("admErro").textContent = "";
     renderAdmin();
     modalAdmin.style.display = "flex";
     document.body.style.overflow = "hidden";
 }
+soNumeros(document.getElementById("admNum"));
+soNumeros(document.getElementById("admQtd"));
+["admNum", "admQtd"].forEach(id => document.getElementById(id).addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("admSet").click(); } }));
 document.getElementById("admNum").addEventListener("input", e => {
     const q = repQtd(e.target.value);
     if (q > 0) document.getElementById("admQtd").value = q;
@@ -2122,17 +2161,21 @@ document.getElementById("admSet").addEventListener("click", () => {
     const qtd = parseInt(document.getElementById("admQtd").value, 10);
     const erro = document.getElementById("admErro");
     if (!(num > 0) || !caricas.some(c => Number(c) === num)) { erro.textContent = "Essa carica não existe na coleção."; return; }
-    if (!(qtd >= 0)) { erro.textContent = "Quantidade inválida."; return; }
+    if (!(qtd >= 0)) { erro.textContent = "Indica a quantidade."; return; }
     erro.textContent = qtd > 0 ? "" : "Com quantidade 0, a carica sai das repetidas.";
     admDefinir(num, qtd);
     document.getElementById("admNum").value = "";
-    document.getElementById("admQtd").value = 1;
+    document.getElementById("admQtd").value = "";
 });
-document.getElementById("admVer").addEventListener("click", () => { fecharTudo(); definirModoRep(true); });
 document.getElementById("admRepor").addEventListener("click", () => {
-    if (!confirm("Descartar as alterações feitas neste dispositivo e voltar ao repetidas.json do site?")) return;
-    repLocal = {}; try { localStorage.removeItem("repAdmin"); } catch (e) {}
-    admAplicar();
+    // Sair sem guardar: anula o que foi feito desde que o painel abriu
+    if (JSON.stringify(repLocal) !== admSnapshot) {
+        if (!confirm("Sair sem guardar? As alterações feitas desde que abriste o painel serão anuladas.")) return;
+        try { repLocal = JSON.parse(admSnapshot) || {}; } catch (e) { repLocal = {}; }
+        guardarRepLocal();
+        filtrar();
+    }
+    fecharTudo();
 });
 document.getElementById("admCopiar").addEventListener("click", () => {
     const erro = document.getElementById("admErro");
@@ -2143,15 +2186,52 @@ document.getElementById("admCopiar").addEventListener("click", () => {
         a.href = url; a.download = "repetidas.json";
         document.body.append(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        erro.textContent = "repetidas.json descarregado.";
+        erro.textContent = "Ficheiro repetidas.json descarregado.";
     } catch (e) { erro.textContent = "Não foi possível descarregar."; }
 });
-modalAdmin.addEventListener("click", e => { if (e.target === modalAdmin) fecharTudo(); });
+// O painel do administrador só fecha pelos botões (Guardar e sair / Descartar e sair)
 atualizarDataMenu();
 document.getElementById("menuLangFlag").innerHTML = bandeira(lang);
 { const lb0 = document.querySelector('#langMenu button[data-lang="' + lang + '"]'); document.getElementById("menuLangNome").textContent = lb0 ? lb0.textContent : ""; }
 document.querySelectorAll("#menuLangs button").forEach(b => b.classList.toggle("sel", b.dataset.lang === lang));
 document.addEventListener("keydown", e => { if (e.ctrlKey && e.shiftKey && (e.key === "A" || e.key === "a")) { e.preventDefault(); abrirAdmin(); } });
+
+
+// ---- Partilhar o site / Propor troca ----
+let msgToastTimer = null;
+function mostrarMensagem(txt) {
+    const el = document.getElementById("toast");
+    if (!el) return;
+    el.textContent = txt;
+    el.classList.add("show");
+    clearTimeout(msgToastTimer);
+    msgToastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+}
+function copiarTexto(txt) {
+    // devolve true se conseguiu iniciar a cópia
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).catch(() => {}); return true; } } catch (e) {}
+    try {
+        const ta = document.createElement("textarea");
+        ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.append(ta); ta.select();
+        const ok = document.execCommand("copy");
+        ta.remove();
+        return ok;
+    } catch (e) { return false; }
+}
+async function partilharSite() {
+    const url = location.origin && location.origin !== "null" ? location.origin + location.pathname : location.href.split("#")[0];
+    if (navigator.share) {
+        try { await navigator.share({ title: document.title, text: t("shareTxt"), url }); return; }
+        catch (e) { if (e && e.name === "AbortError") return; }
+    }
+    if (copiarTexto(url)) mostrarMensagem(t("toastLink"));
+}
+function proporTroca() {
+    // Abre o programa de e-mail com destinatário, assunto e mensagem já preenchidos
+    const corpo = t("propMsg").replace(/\n/g, "\r\n");
+    location.href = "mailto:jardimhelder@hotmail.com?subject=" + encodeURIComponent(t("propSub")) + "&body=" + encodeURIComponent(corpo);
+}
 
 let footerToastTimer = null;
 function mostrarUltimaAtualizacao() {
