@@ -635,31 +635,22 @@ footer {
 .modal-content.texto h2 { text-align: center; }
 
 
-/* Painel de administração (oculto): editar quantidades das repetidas */
-#modalAdmin .modal-content { max-width: 480px; text-align: left; max-height: 88vh; overflow-y: auto; padding: 24px 22px; }
-#modalAdmin h2 { text-align: center; margin: 0 0 4px; }
-#modalAdmin .adm-nota { font-size: 12px; line-height: 1.5; opacity: .75; margin: 0 0 14px; text-align: center; }
-.adm-resumo { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 0 0 12px; }
-.adm-resumo span { background: rgba(255,255,255,.07); border-radius: 999px; padding: 6px 14px; font-size: 13px; }
-.adm-resumo strong { color: #FCAF45; margin-left: 4px; }
-.adm-form { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 14px; }
-.adm-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; opacity: .85; flex: 1; min-width: 0; }
-.adm-form input, .adm-qtd input { text-align: center; width: 100%; box-sizing: border-box; padding: 9px 10px; border-radius: 10px; border: 1px solid rgba(252,175,69,.45); background: #121212; color: #fff; font: inherit; font-size: 15px; }
-.adm-btn { padding: 9px 14px; border: 0; border-radius: 10px; background: #FCAF45; color: #121212; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; white-space: nowrap; }
-.adm-btn.sec { background: rgba(255,255,255,.1); color: #fff; font-weight: 600; }
-.adm-erro { color: #ff8a80; font-size: 12px; min-height: 16px; margin: -6px 0 8px; }
-.adm-lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.adm-vazio { text-align: center; opacity: .6; font-size: 13px; padding: 10px 0; }
-.adm-linha { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.05); border-radius: 10px; padding: 6px 8px 6px 12px; }
-.adm-linha strong { flex: 1; font-size: 15px; }
-.adm-qtd { display: flex; align-items: center; gap: 4px; }
-.adm-qtd input { width: 54px; text-align: center; padding: 6px 4px; }
-.adm-mini { width: 32px; height: 32px; border: 0; border-radius: 8px; background: rgba(252,175,69,.2); color: #FCAF45; font-size: 18px; font-weight: 800; cursor: pointer; line-height: 1; }
-.adm-mini.del { background: rgba(255,90,90,.18); color: #ff8a80; }
-#modalAdmin .adm-sair { position: static; display: block; margin: 0; font-size: 14px; color: #121212; }
-.adm-aviso { text-align: center; font-size: 11px; line-height: 1.4; opacity: .7; margin: -2px 0 6px; }
-.adm-rodape { display: flex; flex-direction: column; gap: 8px; }
-.adm-rodape .adm-btn { width: 100%; padding: 11px 14px; }
+/* Caricas repetidas dentro da Área de controlo (botão 2) */
+#painelDonoOverlay .pd-resumo { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 8px; }
+#painelDonoOverlay .pd-resumo span { background: #e2e8f0; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; }
+#painelDonoOverlay .pd-resumo strong { color: #1d4ed8; margin-left: 4px; }
+#painelDonoOverlay .pd-form { display: flex; gap: 10px; }
+#painelDonoOverlay .pd-form .pd-lbl { flex: 1; min-width: 0; }
+#painelDonoOverlay .pd-centro { text-align: center; }
+#painelDonoOverlay .pd-erro { color: #b91c1c; font-size: 12px; font-weight: 600; min-height: 16px; margin: 4px 2px 0; }
+#painelDonoOverlay .adm-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+#painelDonoOverlay .adm-vazio { text-align: center; color: #64748b; font-size: 13px; padding: 10px 0; }
+#painelDonoOverlay .adm-linha { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 6px 8px 6px 12px; }
+#painelDonoOverlay .adm-linha strong { flex: 1; font-size: 15px; }
+#painelDonoOverlay .adm-qtd { display: flex; align-items: center; gap: 4px; }
+#painelDonoOverlay .adm-qtd input { width: 54px; box-sizing: border-box; text-align: center; padding: 6px 4px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #0f172a; font: inherit; font-size: 15px; font-weight: 700; }
+#painelDonoOverlay .adm-mini { width: 32px; height: 32px; border: 0; border-radius: 8px; background: #e2e8f0; color: #0f172a; font-size: 18px; font-weight: 800; cursor: pointer; line-height: 1; }
+#painelDonoOverlay .adm-mini.del { background: #fee2e2; color: #b91c1c; }
 
 /* Administrador (igual ao da AGAJOTA): 3 toques na data de atualização, no fim do menu, + senha */
     #painelDonoOverlay { position: fixed; inset: 0; z-index: 99997; background: rgba(15,23,42,.6); display: flex; align-items: center; justify-content: center; padding: 12px; }
@@ -693,7 +684,6 @@ footer {
 .pd-modo { display: inline-flex; gap: 6px; margin-left: 10px; vertical-align: middle; }
 .pd-modo button { width: 32px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: rgba(255,255,255,.14); color: #e2e8f0; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; line-height: 1; }
 .pd-modo button.on { background: #2563eb; color: #fff; cursor: default; }
-#modalAdmin .pd-modo button.on { background: #FCAF45; color: #121212; }
 
 /* Modal Sobre */
 .modal {
@@ -872,27 +862,6 @@ footer {
         </div>
         <p class="faltam" id="faltam" hidden></p>
         <p class="oferta" data-i18n="oferta">🫶 Aceito ofertas.</p>
-    </div>
-</div>
-
-<div id="modalAdmin" class="modal">
-    <div class="modal-content">
-        <h2>⚙️ Administrador <span class="pd-modo" role="group" aria-label="Modo do administrador"><button type="button" onclick="dnIrAdmin1()" title="Administrador 1: diagnóstico e ferramentas" aria-label="Administrador 1">1</button><button type="button" class="on" aria-current="true" title="Administrador 2: caricas repetidas" aria-label="Administrador 2">2</button></span></h2>
-        <div class="adm-resumo"><span>Total de caricas: <strong id="admTotal">0</strong></span><span>Repetidas: <strong id="admRep">0</strong></span></div>
-        <div class="adm-form">
-            <label>Nº da carica<input type="text" id="admNum" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></label>
-            <label>Quantidade para troca<input type="text" id="admQtd" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off"></label>
-            <button type="button" class="adm-btn" id="admSet">Adicionar</button>
-        </div>
-        <div class="adm-erro" id="admErro" aria-live="polite"></div>
-        <div class="adm-lista" id="admLista"></div>
-        <div class="adm-rodape">
-            <button type="button" class="adm-btn fechar-modal adm-sair">Guardar e sair</button>
-            <div class="adm-aviso">💾 As alterações ficam guardadas neste dispositivo.</div>
-            <button type="button" class="adm-btn" id="admCopiar">Descarregar ficheiro repetidas.json</button>
-            <div class="adm-aviso">Para todos os visitantes as verem, descarrega o ficheiro e substitui o <b>repetidas.json</b> no site.</div>
-            <button type="button" class="adm-btn" id="admRepor">Descartar e sair</button>
-        </div>
     </div>
 </div>
 
@@ -1318,7 +1287,6 @@ window.addEventListener("load", ajustarPadding);
 
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
-        if (document.getElementById("modalAdmin").style.display === "flex") return;
         const menuAberto = !menuLista.hidden;
         fecharMenu();
         const aberto = menuAberto || lbAberto() || [...document.querySelectorAll(".modal")].some(m => m.style.display === "flex");
@@ -2114,7 +2082,6 @@ function triploClique(el, fn, ev) {
 
 
 /* ---- Painel do administrador (oculto): 3 toques na data de atualização, no fim do menu (ou Ctrl+Shift+A) ---- */
-const modalAdmin = document.getElementById("modalAdmin");
 function guardarRepLocal() { try { localStorage.setItem("repAdmin", JSON.stringify(repLocal)); } catch (e) {} }
 function repAtuais() {
     const res = {};
@@ -2135,6 +2102,7 @@ function soNumeros(el) {
 }
 function renderAdmin() {
     const cont = document.getElementById("admLista");
+    if (!cont) return;
     cont.textContent = "";
     const at = repAtuais();
     const ks = Object.keys(at).sort((a, b) => a - b);
@@ -2184,7 +2152,7 @@ function pedirSenhaDono(aoValidar) {
     const c = pdCaixa('senhaDonoOverlay', 99998), ov = c.ov, caixa = c.caixa;
     const titulo = document.createElement('div');
     titulo.style.cssText = 'font-size:16px; font-weight:700; color:#0f172a; margin-bottom:12px;';
-    titulo.textContent = 'Administrador — introduza a senha';
+    titulo.textContent = 'Área de controlo — introduza a senha';
     const campo = document.createElement('input');
     campo.type = 'password'; campo.autocomplete = 'off'; campo.placeholder = 'Senha';
     campo.style.cssText = 'width:100%; box-sizing:border-box; padding:11px 12px; border:2px solid #cbd5e1; border-radius:10px; font-size:16px; text-align:center; color:#0f172a; background:#fff;';
@@ -2222,24 +2190,12 @@ function pdConfirmar(msg, aoConfirmar, rotulo) {
 // Abre o Administrador (3 toques na data de atualização, no fim do menu, ou Ctrl+Shift+A)
 function abrirAdmin() {
     fecharTudo();
-    pedirSenhaDono(function () { admSnapshot = JSON.stringify(repLocal); montarPainelDono(); });
+    pedirSenhaDono(montarPainelDono);
 }
 function fecharPainelDono() {
     const ov = document.getElementById('painelDonoOverlay');
     if (ov) ov.remove();
 }
-// Do Administrador 2 para o 1 (sem pedir a senha outra vez)
-function dnIrAdmin1() {
-    modalAdmin.style.display = "none";
-    document.body.style.overflow = "";
-    montarPainelDono();
-}
-// Administrador 2 = o painel das caricas repetidas
-function dnAbrirAdmin2() {
-    fecharPainelDono();
-    abrirAdminPainel();
-}
-
 function dnEsc(s) {
     return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
 }
@@ -2296,7 +2252,7 @@ async function dnColetar() {
         ['Caricas na coleção', String(caricas.length)],
         ['Repetidas (para troca)', String(nRep)]
     ];
-    if (dnRepDifere()) avisos.push('As repetidas deste dispositivo são diferentes das publicadas: descarregue o repetidas.json no Administrador 2 e substitua-o no servidor.');
+    if (dnRepDifere()) avisos.push('As repetidas deste dispositivo são diferentes das publicadas: descarregue o repetidas.json no botão 2 da Área de controlo e substitua-o no servidor.');
 
     const net = (navigator.connection && navigator.connection.effectiveType) ? ' (' + navigator.connection.effectiveType + ')' : '';
     const disp = [
@@ -2422,21 +2378,24 @@ function dnReporSite() {
 }
 
 /* data de atualização do site: aplicar no ecrã e descarregar o index corrigido */
+const DIAGNOSTICO_PWA = 'diagnostico-pwa.html';
+let dnModo = 1, dnDataEd = '';
+
 function dnFeedback(btn, txt) {
     const antes = btn.textContent;
     btn.textContent = txt;
     setTimeout(function () { btn.textContent = antes; }, 2000);
 }
 function dnLerData(btn) {
-    const d = document.getElementById('pdSiteData').value || '';
+    const d = (document.getElementById('pdSiteData') || {}).value || dnDataEd;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) { dnFeedback(btn, '❌ Escolha uma data válida'); return null; }
     return d;
 }
 function dnDataHoje() {
     const t = new Date();
-    const iso = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    dnDataEd = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
     const el = document.getElementById('pdSiteData');
-    if (el) el.value = iso;
+    if (el) el.value = dnDataEd;
 }
 function dnAplicarData(btn) {
     const d = dnLerData(btn); if (!d) return;
@@ -2444,6 +2403,7 @@ function dnAplicarData(btn) {
     dataAtual = new Date(d + 'T12:00:00');
     atualizarDataMenu();
     dnFeedback(btn, '✅ Aplicado');
+    dnColetar().then(function (x) { dnDados = x; });
 }
 async function dnDescarregarIndex(btn) {
     const d = dnLerData(btn); if (!d) return;
@@ -2464,12 +2424,81 @@ async function dnDescarregarIndex(btn) {
         dnFeedback(btn, '❌ Não foi possível (abra o site pelo endereço online)');
     }
 }
+function admDescarregarJson(btn) {
+    try {
+        const blob = new Blob([JSON.stringify(repAtuais(), null, 2) + "\n"], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "repetidas.json";
+        document.body.append(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        dnFeedback(btn, '✅ Descarregado');
+    } catch (e) { dnFeedback(btn, '❌ Não foi possível descarregar'); }
+}
+// Liga o formulário «Adicionar repetida» (criado de cada vez que o botão 2 é desenhado)
+function admLigarForm() {
+    const num = document.getElementById("admNum"), qtd = document.getElementById("admQtd"), set = document.getElementById("admSet");
+    if (!num || !qtd || !set) return;
+    soNumeros(num); soNumeros(qtd);
+    [num, qtd].forEach(function (el) { el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); set.click(); } }); });
+    num.addEventListener("input", function (e) {
+        const q = repQtd(e.target.value);
+        if (q > 0) qtd.value = q;
+    });
+    set.addEventListener("click", function () {
+        const n = parseInt(num.value, 10);
+        const q = parseInt(qtd.value, 10);
+        const erro = document.getElementById("admErro");
+        if (!(n > 0) || !caricas.some(function (c) { return Number(c) === n; })) { erro.textContent = "Essa carica não existe na coleção."; return; }
+        if (!(q >= 0)) { erro.textContent = "Indica a quantidade."; return; }
+        erro.textContent = q > 0 ? "" : "Com quantidade 0, a carica sai das repetidas.";
+        admDefinir(n, q);
+        num.value = ""; qtd.value = "";
+    });
+}
+function dnIrModo(n) {
+    dnModo = n;
+    const ov = document.getElementById('painelDonoOverlay');
+    if (ov) ov.querySelectorAll('.pd-modo button').forEach(function (b, i) {
+        b.classList.toggle('on', i + 1 === n);
+        if (i + 1 === n) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+    });
+    const c = document.getElementById('pdCorpo');
+    if (c) { c.scrollTop = 0; dnRender(c); }
+}
 
 function dnRender(c) {
     const pos = c.scrollTop;
-    const antSite = document.getElementById('pdSiteData');
-    const vSite = antSite ? antSite.value : ULTIMA_ATUALIZACAO;
     let h = '';
+    if (dnModo === 2) {
+        h += '<div class="pd-sec">Data de atualização do site</div>' +
+            '<div class="pd-card" style="padding:4px 12px 12px;">' +
+            '<label class="pd-lbl" for="pdSiteData">Data mostrada no fim do menu (☰)</label>' +
+            '<input id="pdSiteData" class="pd-input" type="date" value="' + dnEsc(dnDataEd) + '" oninput="dnDataEd = this.value">' +
+            '</div>' +
+            '<button type="button" class="pd-btn" onclick="dnDataHoje()">📅 Usar a data de hoje</button>';
+        h += '<div class="pd-sec">Caricas repetidas</div>' +
+            '<div class="pd-resumo"><span>Total de caricas: <strong id="admTotal">0</strong></span><span>Repetidas: <strong id="admRep">0</strong></span></div>' +
+            '<div class="pd-card" style="padding:4px 12px 12px;"><div class="pd-form">' +
+            '<label class="pd-lbl">Nº da carica<input type="text" id="admNum" class="pd-input pd-centro" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></label>' +
+            '<label class="pd-lbl">Quantidade para troca<input type="text" id="admQtd" class="pd-input pd-centro" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off"></label>' +
+            '</div></div>' +
+            '<button type="button" class="pd-btn pd-azul" id="admSet">➕ Adicionar</button>' +
+            '<div class="pd-erro" id="admErro" aria-live="polite"></div>' +
+            '<div class="adm-lista" id="admLista"></div>';
+        h += '<div class="pd-sec">Guardar alterações</div>' +
+            '<button type="button" class="pd-btn pd-azul" onclick="dnAplicarData(this)">✅ Aplicar neste ecrã</button>' +
+            '<div class="pd-nota">Mostra já a nova data, só para ver. As repetidas ficam guardadas neste dispositivo assim que as altera.</div>' +
+            '<button type="button" class="pd-btn pd-azul" onclick="dnDescarregarIndex(this)">⬇️ Descarregar index.html corrigido</button>' +
+            '<div class="pd-nota">Descarrega o index.html com a data de atualização já escrita. Depois é só substituir o ficheiro no servidor.</div>' +
+            '<button type="button" class="pd-btn pd-azul" onclick="admDescarregarJson(this)">⬇️ Descarregar repetidas.json</button>' +
+            '<div class="pd-nota">Para todos os visitantes verem as repetidas, descarregue o ficheiro e substitua o <b>repetidas.json</b> no servidor.</div>';
+        c.innerHTML = h;
+        admLigarForm();
+        renderAdmin();
+        c.scrollTop = pos;
+        return;
+    }
     h += '<div class="pd-sec">Avisos</div>';
     h += dnDados.avisos.length
         ? dnDados.avisos.map(function (a) { return '<div class="pd-aviso">⚠️ ' + dnEsc(a) + '</div>'; }).join('')
@@ -2478,95 +2507,43 @@ function dnRender(c) {
         h += '<div class="pd-sec">' + dnEsc(g.t) + '</div><div class="pd-card">' +
             g.l.map(function (r) { return '<div class="pd-row"><span>' + dnEsc(r[0]) + '</span><b>' + dnEsc(r[1]) + '</b></div>'; }).join('') + '</div>';
     });
-    h += '<div class="pd-sec">Data de atualização do site</div>' +
-        '<div class="pd-card" style="padding:4px 12px 12px;">' +
-        '<label class="pd-lbl" for="pdSiteData">Data mostrada no fim do menu</label>' +
-        '<input id="pdSiteData" class="pd-input" type="date" value="' + dnEsc(vSite) + '">' +
-        '</div>' +
-        '<button type="button" class="pd-btn" onclick="dnDataHoje()">📅 Usar a data de hoje</button>' +
-        '<button type="button" class="pd-btn pd-azul" onclick="dnAplicarData(this)">✅ Aplicar neste ecrã</button>' +
-        '<div class="pd-nota">Mostra já a nova data, só para ver. Não fica guardada no site.</div>' +
-        '<button type="button" class="pd-btn pd-azul" onclick="dnDescarregarIndex(this)">⬇️ Descarregar index.html corrigido</button>' +
-        '<div class="pd-nota">Descarrega o index.html com esta data já escrita. Depois é só substituir o ficheiro no servidor.</div>';
     h += '<div class="pd-sec">Ferramentas</div>' +
         '<button type="button" class="pd-btn pd-azul" onclick="dnCopiar(this)">📋 Copiar diagnóstico</button>' +
         '<div class="pd-nota">Copia tudo isto como texto, para colar numa mensagem.</div>' +
-        '<button type="button" class="pd-btn" onclick="dnAtualizar()">🔃 Atualizar diagnóstico</button>';
+        '<button type="button" class="pd-btn" onclick="dnAtualizar()">🔃 Atualizar diagnóstico</button>' +
+        '<a class="pd-btn pd-azul" style="text-decoration:none;" href="' + dnEsc(DIAGNOSTICO_PWA) + '" target="_blank" rel="noopener">🩺 Diagnóstico da app instalável</a>' +
+        '<div class="pd-nota">Verifica se o site pode ser instalado como app no telemóvel (manifesto, ícones e service worker). Abre ' + dnEsc(DIAGNOSTICO_PWA) + ' num novo separador.</div>';
     h += '<div class="pd-sec">Reposição</div>' +
         '<button type="button" class="pd-btn pd-amarelo" onclick="dnLimparCache()">🧽 Atualizar app (limpar cache)</button>' +
         '<div class="pd-nota">Mantém as definições. Útil quando aparece uma versão antiga do site.</div>' +
         '<button type="button" class="pd-btn pd-amarelo" onclick="dnReporDefinicoes()">↩️ Repor definições</button>' +
-        '<div class="pd-nota">Idioma, cabeçalho fixo e aviso de cookies voltam ao início.</div>' +
+        '<div class="pd-nota">Idioma, cabeçalho fixo e aviso de cookies voltam ao início. As repetidas mantêm-se.</div>' +
         '<button type="button" class="pd-btn pd-vermelho" onclick="dnReporSite()">⚠️ Repor site original</button>' +
-        '<div class="pd-nota">Apaga tudo o que está guardado neste dispositivo e recarrega a página.</div>';
+        '<div class="pd-nota">Apaga tudo o que está guardado neste dispositivo (incluindo as repetidas ainda não descarregadas) e recarrega a página.</div>';
     c.innerHTML = h;
     c.scrollTop = pos;
 }
 async function dnAtualizar() {
     dnDados = await dnColetar();
     const c = document.getElementById('pdCorpo');
-    if (c) dnRender(c);
+    if (c && dnModo === 1) dnRender(c);
 }
 function montarPainelDono() {
     fecharPainelDono();
+    dnModo = 1; dnDataEd = ULTIMA_ATUALIZACAO;
     const ov = document.createElement('div');
     ov.id = 'painelDonoOverlay';
-    ov.innerHTML = '<div role="dialog" aria-modal="true" aria-label="Administrador">' +
-        '<div class="pd-head"><span style="display:flex;align-items:center;"><strong>🛠️ Administrador</strong><span class="pd-modo" role="group" aria-label="Modo do administrador"><button type="button" class="on" aria-current="true" title="Administrador 1: diagnóstico e ferramentas" aria-label="Administrador 1">1</button><button type="button" onclick="dnAbrirAdmin2()" title="Administrador 2: caricas repetidas" aria-label="Administrador 2">2</button></span></span><span class="pd-x" onclick="fecharPainelDono()" aria-label="Fechar">×</span></div>' +
+    ov.innerHTML = '<div role="dialog" aria-modal="true" aria-label="Área de controlo">' +
+        '<div class="pd-head"><span style="display:flex;align-items:center;"><strong>🛠️ Área de controlo</strong>' +
+        '<span class="pd-modo" role="group" aria-label="Modo do administrador">' +
+        '<button type="button" class="on" aria-current="true" title="1: diagnóstico e ferramentas" aria-label="Administrador 1" onclick="dnIrModo(1)">1</button>' +
+        '<button type="button" title="2: data de atualização, caricas repetidas e guardar alterações" aria-label="Administrador 2" onclick="dnIrModo(2)">2</button>' +
+        '</span></span><span class="pd-x" onclick="fecharPainelDono()" aria-label="Fechar">×</span></div>' +
         '<div class="pd-body" id="pdCorpo">A recolher diagnóstico…</div></div>';
     ov.addEventListener('click', function (e) { if (e.target === ov) fecharPainelDono(); });
     document.body.appendChild(ov);
     dnAtualizar();
 }
-let admSnapshot = "{}";
-function abrirAdminPainel() {
-    fecharTudo();
-    document.getElementById("admErro").textContent = "";
-    renderAdmin();
-    modalAdmin.style.display = "flex";
-    document.body.style.overflow = "hidden";
-}
-soNumeros(document.getElementById("admNum"));
-soNumeros(document.getElementById("admQtd"));
-["admNum", "admQtd"].forEach(id => document.getElementById(id).addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("admSet").click(); } }));
-document.getElementById("admNum").addEventListener("input", e => {
-    const q = repQtd(e.target.value);
-    if (q > 0) document.getElementById("admQtd").value = q;
-});
-document.getElementById("admSet").addEventListener("click", () => {
-    const num = parseInt(document.getElementById("admNum").value, 10);
-    const qtd = parseInt(document.getElementById("admQtd").value, 10);
-    const erro = document.getElementById("admErro");
-    if (!(num > 0) || !caricas.some(c => Number(c) === num)) { erro.textContent = "Essa carica não existe na coleção."; return; }
-    if (!(qtd >= 0)) { erro.textContent = "Indica a quantidade."; return; }
-    erro.textContent = qtd > 0 ? "" : "Com quantidade 0, a carica sai das repetidas.";
-    admDefinir(num, qtd);
-    document.getElementById("admNum").value = "";
-    document.getElementById("admQtd").value = "";
-});
-document.getElementById("admRepor").addEventListener("click", () => {
-    // Sair sem guardar: anula o que foi feito desde que o painel abriu
-    if (JSON.stringify(repLocal) !== admSnapshot) {
-        if (!confirm("Sair sem guardar? As alterações feitas desde que abriste o painel serão anuladas.")) return;
-        try { repLocal = JSON.parse(admSnapshot) || {}; } catch (e) { repLocal = {}; }
-        guardarRepLocal();
-        filtrar();
-    }
-    fecharTudo();
-});
-document.getElementById("admCopiar").addEventListener("click", () => {
-    const erro = document.getElementById("admErro");
-    try {
-        const blob = new Blob([JSON.stringify(repAtuais(), null, 2) + "\n"], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = "repetidas.json";
-        document.body.append(a); a.click(); a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        erro.textContent = "Ficheiro repetidas.json descarregado.";
-    } catch (e) { erro.textContent = "Não foi possível descarregar."; }
-});
-// O painel do administrador só fecha pelos botões (Guardar e sair / Descartar e sair)
 atualizarDataMenu();
 document.getElementById("menuLangFlag").innerHTML = bandeira(lang);
 { const lb0 = document.querySelector('#langMenu button[data-lang="' + lang + '"]'); document.getElementById("menuLangNome").textContent = lb0 ? lb0.textContent : ""; }
