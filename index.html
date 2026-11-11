@@ -8,6 +8,18 @@
 <meta name="description" content="Coleção de caricas metálicas catalogada por número. Pesquisa e vê cada carica em @caricas_metalicas.">
 <meta name="theme-color" content="#121212">
 
+  <!-- Coletor de erros para a Área de controlo -->
+  <script>
+    window.__erros = [];
+    function __regErro(tipo, msg) { if (window.__erros.length < 30) window.__erros.push({ t: Date.now(), tipo: tipo, msg: String(msg).slice(0, 160) }); }
+    window.addEventListener('error', function (e) {
+      var t = e.target;
+      if (t && t !== window && (t.src || t.href)) __regErro('recurso', t.src || t.href);
+      else __regErro('erro', e.message || 'erro desconhecido');
+    }, true);
+    window.addEventListener('unhandledrejection', function (e) { __regErro('promessa', (e.reason && e.reason.message) || e.reason || 'rejeição'); });
+  </script>
+
 <!-- App instalável (PWA) -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
@@ -649,6 +661,40 @@ footer {
 .adm-rodape { display: flex; flex-direction: column; gap: 8px; }
 .adm-rodape .adm-btn { width: 100%; padding: 11px 14px; }
 
+/* Administrador (igual ao da AGAJOTA): 3 toques na data de atualização, no fim do menu, + senha */
+    #painelDonoOverlay { position: fixed; inset: 0; z-index: 99997; background: rgba(15,23,42,.6); display: flex; align-items: center; justify-content: center; padding: 12px; }
+    #painelDonoOverlay > div { width: 100%; max-width: 480px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; background: #f8fafc; color: #0f172a; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+    .pd-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #0f172a; color: #fff; font-size: 1rem; }
+    .pd-x { cursor: pointer; font-size: 26px; line-height: 1; padding: 0 4px; color: #cbd5e1; }
+    .pd-body { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 4px 14px 16px; text-align: left; }
+    .pd-sec { margin: 18px 0 8px; padding: 16px 2px 0; border-top: 2px solid #cbd5e1; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #64748b; }
+    .pd-sec:first-child { margin-top: 10px; padding-top: 0; border-top: 0; }
+    .pd-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 2px 12px; }
+    .pd-row { display: grid; grid-template-columns: 40% 1fr; gap: 8px; padding: 7px 0; border-bottom: 1px solid #eef2f7; font-size: 13px; word-break: break-word; }
+    .pd-row:last-child { border-bottom: 0; }
+    .pd-row span { color: #64748b; font-weight: 600; }
+    .pd-row b { font-weight: 700; }
+    .pd-aviso, .pd-ok { padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .pd-aviso { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .pd-ok { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .pd-btn { display: block; box-sizing: border-box; width: 100%; margin-top: 8px; padding: 11px 14px; border: 0; border-radius: 10px; background: #e2e8f0; color: #0f172a; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-align: left; }
+    .pd-btn:disabled { opacity: .6; cursor: default; }
+    .pd-azul { background: #2563eb; color: #fff; }
+    .pd-amarelo { background: #fde68a; color: #78350f; }
+    .pd-vermelho { background: #dc2626; color: #fff; }
+    .pd-nota { margin: 3px 4px 0; font-size: 12px; color: #64748b; line-height: 1.35; }
+    .pd-lbl { display: block; margin-top: 8px; font-size: 12px; font-weight: 700; color: #475569; }
+    .pd-input { display: block; box-sizing: border-box; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #0f172a; font: inherit; font-size: 15px; font-weight: 600; }
+    .pd-sug { margin: 0; padding: 4px 12px 4px 30px; font-size: 13px; line-height: 1.4; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; }
+    .pd-sug li { padding: 7px 0; border-bottom: 1px solid #eef2f7; }
+    .pd-sug li:last-child { border-bottom: 0; }
+
+/* Seletor de modo do Administrador: botões 1 e 2 no título */
+.pd-modo { display: inline-flex; gap: 6px; margin-left: 10px; vertical-align: middle; }
+.pd-modo button { width: 32px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: rgba(255,255,255,.14); color: #e2e8f0; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; line-height: 1; }
+.pd-modo button.on { background: #2563eb; color: #fff; cursor: default; }
+#modalAdmin .pd-modo button.on { background: #FCAF45; color: #121212; }
+
 /* Modal Sobre */
 .modal {
     display: none;
@@ -829,21 +875,9 @@ footer {
     </div>
 </div>
 
-<div id="modalAdminPass" class="modal">
-    <div class="modal-content" style="max-width:340px">
-        <span class="fechar-modal" role="button" aria-label="Fechar">&times;</span>
-        <h2>🔒 Administrador</h2>
-        <div class="adm-form" style="margin-top:14px">
-            <label>Palavra-passe<input type="password" id="admPass" autocomplete="off" inputmode="numeric"></label>
-            <button type="button" class="adm-btn" id="admEntrar">Entrar</button>
-        </div>
-        <div class="adm-erro" id="admPassErro" aria-live="polite"></div>
-    </div>
-</div>
-
 <div id="modalAdmin" class="modal">
     <div class="modal-content">
-        <h2>⚙️ Administrador</h2>
+        <h2>⚙️ Administrador <span class="pd-modo" role="group" aria-label="Modo do administrador"><button type="button" onclick="dnIrAdmin1()" title="Administrador 1: diagnóstico e ferramentas" aria-label="Administrador 1">1</button><button type="button" class="on" aria-current="true" title="Administrador 2: caricas repetidas" aria-label="Administrador 2">2</button></span></h2>
         <div class="adm-resumo"><span>Total de caricas: <strong id="admTotal">0</strong></span><span>Repetidas: <strong id="admRep">0</strong></span></div>
         <div class="adm-form">
             <label>Nº da carica<input type="text" id="admNum" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></label>
@@ -1062,7 +1096,7 @@ document.getElementById("contador").addEventListener("keydown", e => { if (modoR
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-const ULTIMA_ATUALIZACAO = "2026-11-03";
+let ULTIMA_ATUALIZACAO = "2026-11-11";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -2067,7 +2101,7 @@ modalSobre.addEventListener("click", (e) => {
     if (e.target === modalSobre) fecharTudo();
 });
 
-const dataAtual = new Date(ULTIMA_ATUALIZACAO + "T12:00:00");
+let dataAtual = new Date(ULTIMA_ATUALIZACAO + "T12:00:00");
 document.getElementById("ano").textContent = new Date().getFullYear();
 
 /* 3 cliques seguidos (em 1,5 s) para ativar a ação dos botões ocultos do rodapé */
@@ -2124,28 +2158,369 @@ function renderAdmin() {
         cont.append(l);
     });
 }
-// Palavra-passe do painel de administração (para alterar, muda aqui o valor)
+// Palavra-passe do administrador (para alterar, muda aqui o valor).
+// Como o site corre no navegador, serve para evitar toques acidentais e não é uma proteção forte.
 const ADMIN_PASS = "112";
-const modalAdminPass = document.getElementById("modalAdminPass");
+let dnDados = null;
+
+function pdCaixa(id, z) {
+    const antigo = document.getElementById(id); if (antigo) antigo.remove();
+    const ov = document.createElement('div');
+    ov.id = id;
+    ov.style.cssText = 'position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:' + z + '; display:flex; align-items:center; justify-content:center; padding:16px;';
+    const caixa = document.createElement('div');
+    caixa.style.cssText = 'background:#ffffff; border-radius:14px; padding:20px; max-width:340px; width:100%; box-shadow:0 10px 30px rgba(0,0,0,0.3); text-align:center; color:#0f172a;';
+    ov.appendChild(caixa);
+    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+    return { ov: ov, caixa: caixa };
+}
+function pdBotao(texto, fundo, cor, acao) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.style.cssText = 'flex:1; padding:11px 14px; border-radius:10px; border:none; font-size:15px; font-weight:700; cursor:pointer; background:' + fundo + '; color:' + cor + ';';
+    b.textContent = texto; b.onclick = acao; return b;
+}
+function pedirSenhaDono(aoValidar) {
+    const c = pdCaixa('senhaDonoOverlay', 99998), ov = c.ov, caixa = c.caixa;
+    const titulo = document.createElement('div');
+    titulo.style.cssText = 'font-size:16px; font-weight:700; color:#0f172a; margin-bottom:12px;';
+    titulo.textContent = 'Administrador — introduza a senha';
+    const campo = document.createElement('input');
+    campo.type = 'password'; campo.autocomplete = 'off'; campo.placeholder = 'Senha';
+    campo.style.cssText = 'width:100%; box-sizing:border-box; padding:11px 12px; border:2px solid #cbd5e1; border-radius:10px; font-size:16px; text-align:center; color:#0f172a; background:#fff;';
+    const erro = document.createElement('div');
+    erro.style.cssText = 'color:#dc2626; font-size:14px; font-weight:700; margin-top:8px; min-height:18px;';
+    const botoes = document.createElement('div');
+    botoes.style.cssText = 'display:flex; gap:10px; margin-top:12px;';
+    function validar() {
+        if (campo.value === ADMIN_PASS) { ov.remove(); aoValidar(); }
+        else { erro.textContent = 'Senha incorreta.'; campo.value = ''; campo.focus(); }
+    }
+    botoes.appendChild(pdBotao('Cancelar', '#e2e8f0', '#0f172a', function () { ov.remove(); }));
+    botoes.appendChild(pdBotao('Entrar', '#2563eb', '#ffffff', validar));
+    campo.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); validar(); }
+        else if (e.key === 'Escape') { e.stopPropagation(); ov.remove(); }
+    });
+    caixa.appendChild(titulo); caixa.appendChild(campo); caixa.appendChild(erro); caixa.appendChild(botoes);
+    document.body.appendChild(ov);
+    campo.focus();
+}
+function pdConfirmar(msg, aoConfirmar, rotulo) {
+    const c = pdCaixa('pdConfirmarOverlay', 99999), ov = c.ov, caixa = c.caixa;
+    const t = document.createElement('div');
+    t.style.cssText = 'font-size:15px; font-weight:600; color:#0f172a; line-height:1.4;';
+    t.textContent = msg;
+    const botoes = document.createElement('div');
+    botoes.style.cssText = 'display:flex; gap:10px; margin-top:16px;';
+    botoes.appendChild(pdBotao('Cancelar', '#e2e8f0', '#0f172a', function () { ov.remove(); }));
+    botoes.appendChild(pdBotao(rotulo || 'Confirmar', '#2563eb', '#ffffff', function () { ov.remove(); aoConfirmar(); }));
+    caixa.appendChild(t); caixa.appendChild(botoes);
+    document.body.appendChild(ov);
+}
+
+// Abre o Administrador (3 toques na data de atualização, no fim do menu, ou Ctrl+Shift+A)
 function abrirAdmin() {
     fecharTudo();
-    document.getElementById("admPass").value = "";
-    document.getElementById("admPassErro").textContent = "";
-    modalAdminPass.style.display = "flex";
-    document.body.style.overflow = "hidden";
-    setTimeout(() => document.getElementById("admPass").focus(), 50);
+    pedirSenhaDono(function () { admSnapshot = JSON.stringify(repLocal); montarPainelDono(); });
 }
-function entrarAdmin() {
-    if (document.getElementById("admPass").value === ADMIN_PASS) abrirAdminPainel();
-    else { document.getElementById("admPassErro").textContent = "Palavra-passe errada."; document.getElementById("admPass").select(); }
+function fecharPainelDono() {
+    const ov = document.getElementById('painelDonoOverlay');
+    if (ov) ov.remove();
 }
-document.getElementById("admEntrar").addEventListener("click", entrarAdmin);
-document.getElementById("admPass").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); entrarAdmin(); } });
-modalAdminPass.addEventListener("click", e => { if (e.target === modalAdminPass) fecharTudo(); });
+// Do Administrador 2 para o 1 (sem pedir a senha outra vez)
+function dnIrAdmin1() {
+    modalAdmin.style.display = "none";
+    document.body.style.overflow = "";
+    montarPainelDono();
+}
+// Administrador 2 = o painel das caricas repetidas
+function dnAbrirAdmin2() {
+    fecharPainelDono();
+    abrirAdminPainel();
+}
+
+function dnEsc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+}
+function dnBytes(n) {
+    if (!isFinite(n)) return '?';
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+    if (n < 1073741824) return (n / 1048576).toFixed(1) + ' MB';
+    return (n / 1073741824).toFixed(2) + ' GB';
+}
+function dnBrowser() {
+    const u = navigator.userAgent; let b = 'Desconhecido', m;
+    if ((m = u.match(/Edg\/(\d+)/))) b = 'Edge ' + m[1];
+    else if ((m = u.match(/OPR\/(\d+)/))) b = 'Opera ' + m[1];
+    else if ((m = u.match(/SamsungBrowser\/(\d+)/))) b = 'Samsung Internet ' + m[1];
+    else if ((m = u.match(/(?:Chrome|CriOS)\/(\d+)/))) b = 'Chrome ' + m[1];
+    else if ((m = u.match(/(?:Firefox|FxiOS)\/(\d+)/))) b = 'Firefox ' + m[1];
+    else if ((m = u.match(/Version\/(\d+).*Safari/))) b = 'Safari ' + m[1];
+    let so = '';
+    if (/Android/.test(u)) { m = u.match(/Android ([\d.]+)/); so = 'Android ' + (m ? m[1] : ''); }
+    else if (/iPhone|iPad|iPod/.test(u)) so = 'iOS';
+    else if (/Windows/.test(u)) so = 'Windows';
+    else if (/Mac OS X/.test(u)) so = 'macOS';
+    else if (/Linux/.test(u)) so = 'Linux';
+    return so ? b + ' · ' + so : b;
+}
+function dnDataAtualizacao() {
+    const d = new Date(ULTIMA_ATUALIZACAO + 'T12:00:00');
+    return isNaN(d) ? ULTIMA_ATUALIZACAO : d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+// true se as repetidas deste dispositivo diferem das publicadas no repetidas.json
+function dnRepDifere() {
+    const a = repAtuais(), b = {};
+    Object.keys(repPublicadas).forEach(function (k) { const q = parseInt(repPublicadas[k], 10); if (q > 0) b[String(parseInt(k, 10))] = q; });
+    const ka = Object.keys(a), kb = Object.keys(b);
+    return ka.length !== kb.length || ka.some(function (k) { return a[k] !== b[k]; });
+}
+
+/* recolhe o diagnóstico (só lê; não altera nada) */
+async function dnColetar() {
+    const avisos = [];
+    let ls = null; try { ls = localStorage; } catch (e) {}
+    const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    const cons = lerConsentimento();
+    const nRep = Object.keys(repAtuais()).length;
+
+    const app = [
+        ['Última atualização', dnDataAtualizacao()],
+        ['Aberta como', standalone ? 'App instalada' : 'Browser'],
+        ['Endereço', location.protocol === 'file:' ? 'ficheiro local' : location.host + location.pathname],
+        ['Idioma do site', lang],
+        ['Cookies', cons === 'sim' ? 'aceites' : cons === 'nao' ? 'recusados' : 'por responder'],
+        ['Cabeçalho fixo', cabPinado ? 'ligado' : 'desligado'],
+        ['Caricas na coleção', String(caricas.length)],
+        ['Repetidas (para troca)', String(nRep)]
+    ];
+    if (dnRepDifere()) avisos.push('As repetidas deste dispositivo são diferentes das publicadas: descarregue o repetidas.json no Administrador 2 e substitua-o no servidor.');
+
+    const net = (navigator.connection && navigator.connection.effectiveType) ? ' (' + navigator.connection.effectiveType + ')' : '';
+    const disp = [
+        ['Ecrã', innerWidth + ' × ' + innerHeight + ' px · ×' + (window.devicePixelRatio || 1)],
+        ['Browser', dnBrowser()],
+        ['Idioma · fuso', navigator.language + ' · ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '?')],
+        ['Rede', (navigator.onLine ? 'online' : 'offline') + net]
+    ];
+    if (!navigator.onLine) avisos.push('Sem ligação à internet neste momento.');
+
+    let sw;
+    if (location.protocol === 'file:') sw = 'não aplicável (ficheiro local)';
+    else if (!('serviceWorker' in navigator)) sw = 'não suportado';
+    else {
+        try {
+            const r = await navigator.serviceWorker.getRegistrations();
+            sw = r.length ? 'ativo (' + r.length + ')' : 'nenhum registado';
+            if (!r.length) avisos.push('O service worker não está registado (confirme que o ficheiro sw.js está no servidor).');
+        } catch (e) { sw = 'erro ao ler'; }
+    }
+    let cch;
+    if ('caches' in window) {
+        try { const nomes = await caches.keys(); cch = nomes.length ? nomes.join(', ') : 'nenhuma'; } catch (e) { cch = 'erro ao ler'; }
+    } else cch = 'não suportado';
+
+    const arm = [];
+    if (ls) {
+        const ks = Object.keys(ls); let tot = 0;
+        ks.forEach(function (k) { tot += k.length + (ls.getItem(k) || '').length; });
+        arm.push(['Dados locais', ks.length + ' chave(s) · ' + dnBytes(tot * 2)]);
+        ks.forEach(function (k) { const v = ls.getItem(k) || ''; arm.push(['· ' + k, v.length > 40 ? v.slice(0, 40) + '…' : v]); });
+    } else arm.push(['Dados locais', 'indisponíveis']);
+    if (navigator.storage && navigator.storage.estimate) {
+        try {
+            const e = await navigator.storage.estimate();
+            if (e.quota) {
+                arm.push(['Espaço usado', dnBytes(e.usage) + ' de ' + dnBytes(e.quota)]);
+                if (e.usage / e.quota > 0.8) avisos.push('O armazenamento do browser está quase cheio.');
+            }
+        } catch (x) {}
+    }
+    arm.push(['Service worker', sw]);
+    arm.push(['Cache da app', cch]);
+
+    const ads = [];
+    const ins = document.querySelector('ins.adsbygoogle');
+    const adEst = ins ? ins.getAttribute('data-ad-status') : null;
+    const pubId = String(ADSENSE_CLIENT).replace(/^ca-/, '');
+    ads.push(['Consentimento', cons === 'sim' ? 'aceite (anúncios permitidos)' : cons === 'nao' ? 'recusado (anúncios bloqueados)' : 'por responder (anúncios por carregar)']);
+    ads.push(['Bloco de anúncio (slot)', ADSENSE_SLOT ? 'definido' : 'não definido']);
+    if (!ADSENSE_SLOT) avisos.push('O bloco de anúncio (ADSENSE_SLOT) não está definido, por isso não aparecem anúncios.');
+    ads.push(['Script do Google', adsScriptPronto ? 'carregou' : adsCarregado ? 'ainda não carregou' : 'não pedido']);
+    if (adsCarregado && !adsScriptPronto) avisos.push('O script do AdSense não carregou (bloqueador de anúncios, rede ou conta ainda sem aprovação).');
+    ads.push(['Espaço do anúncio', adEst === 'filled' ? 'com anúncio' : adEst === 'unfilled' ? 'sem anúncio devolvido' : ins ? 'à espera do Google' : 'nenhum na página']);
+    if (location.protocol === 'file:') ads.push(['ads.txt', 'não aplicável (ficheiro local)']);
+    else {
+        try {
+            const rt = await fetch(location.origin + '/ads.txt', { cache: 'no-store' });
+            const tx = rt.ok ? await rt.text() : '';
+            if (!rt.ok) { ads.push(['ads.txt', 'não encontrado (' + rt.status + ')']); avisos.push('O ads.txt não responde em ' + location.origin + '/ads.txt.'); }
+            else if (tx.indexOf(pubId) < 0) { ads.push(['ads.txt', 'existe, mas sem o ID ' + pubId]); avisos.push('O ads.txt não contém o ID de editor do AdSense.'); }
+            else ads.push(['ads.txt', 'responde e contém o ID de editor']);
+        } catch (x) { ads.push(['ads.txt', 'não foi possível verificar']); }
+    }
+
+    const er = window.__erros || [];
+    const erros = er.length
+        ? er.slice(-8).map(function (x) { return [new Date(x.t).toLocaleTimeString('pt-PT'), (x.tipo === 'recurso' ? 'Não carregou: ' : x.tipo === 'promessa' ? 'Falha: ' : 'Erro: ') + x.msg]; })
+        : [['—', 'Nenhum erro desde que a página abriu']];
+    if (er.length) avisos.push(er.length + ' erro(s) desde que a página abriu (ver abaixo).');
+
+    return { avisos: avisos, grupos: [
+        { t: 'Aplicação', l: app }, { t: 'Dispositivo', l: disp },
+        { t: 'Armazenamento', l: arm }, { t: 'AdSense', l: ads }, { t: 'Erros desde que abriu', l: erros }
+    ] };
+}
+
+function dnTexto() {
+    let t = '@caricas_metalicas — diagnóstico (' + new Date().toLocaleString('pt-PT') + ')\n';
+    if (!dnDados) return t;
+    t += '\nAvisos: ' + (dnDados.avisos.length ? '\n- ' + dnDados.avisos.join('\n- ') : 'nenhum') + '\n';
+    dnDados.grupos.forEach(function (g) {
+        t += '\n[' + g.t + ']\n' + g.l.map(function (r) { return r[0] + ': ' + r[1]; }).join('\n') + '\n';
+    });
+    return t;
+}
+async function dnCopiar(btn) {
+    const t = dnTexto(); let ok = false;
+    try { await navigator.clipboard.writeText(t); ok = true; }
+    catch (e) {
+        try {
+            const ta = document.createElement('textarea');
+            ta.value = t; ta.style.cssText = 'position:fixed; opacity:0;';
+            document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove();
+        } catch (x) {}
+    }
+    const antes = btn.textContent;
+    btn.textContent = ok ? '✅ Copiado' : '❌ Não foi possível copiar';
+    setTimeout(function () { btn.textContent = antes; }, 1800);
+}
+
+/* reposições */
+async function dnApagarCaches() {
+    try { if ('serviceWorker' in navigator) { const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(function (x) { return x.unregister(); })); } } catch (e) {}
+    try { if ('caches' in window) { const k = await caches.keys(); await Promise.all(k.map(function (x) { return caches.delete(x); })); } } catch (e) {}
+}
+function dnLimparCache() {
+    pdConfirmar('Limpar a cache e recarregar a app? As definições mantêm-se.', async function () { await dnApagarCaches(); location.reload(); }, 'Limpar');
+}
+function dnReporDefinicoes() {
+    pdConfirmar('Repor as definições? O idioma volta a português, o cabeçalho fixo volta a ligar-se e o aviso de cookies pode voltar a aparecer. As alterações às repetidas mantêm-se.', function () {
+        try { ['lang', 'cabPino', 'caricas-app-instalada', 'cookies'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+        location.reload();
+    }, 'Repor');
+}
+function dnReporSite() {
+    pdConfirmar('Repor o site ao estado original? Apaga tudo o que está guardado neste dispositivo (definições, cache e alterações às repetidas ainda não descarregadas) e recarrega a página.', async function () {
+        try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}
+        await dnApagarCaches();
+        try { history.replaceState(null, ''); } catch (e) {}
+        location.reload();
+    }, 'Repor tudo');
+}
+
+/* data de atualização do site: aplicar no ecrã e descarregar o index corrigido */
+function dnFeedback(btn, txt) {
+    const antes = btn.textContent;
+    btn.textContent = txt;
+    setTimeout(function () { btn.textContent = antes; }, 2000);
+}
+function dnLerData(btn) {
+    const d = document.getElementById('pdSiteData').value || '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) { dnFeedback(btn, '❌ Escolha uma data válida'); return null; }
+    return d;
+}
+function dnDataHoje() {
+    const t = new Date();
+    const iso = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    const el = document.getElementById('pdSiteData');
+    if (el) el.value = iso;
+}
+function dnAplicarData(btn) {
+    const d = dnLerData(btn); if (!d) return;
+    ULTIMA_ATUALIZACAO = d;
+    dataAtual = new Date(d + 'T12:00:00');
+    atualizarDataMenu();
+    dnFeedback(btn, '✅ Aplicado');
+}
+async function dnDescarregarIndex(btn) {
+    const d = dnLerData(btn); if (!d) return;
+    try {
+        const r = await fetch(location.href.split('#')[0], { cache: 'no-store' });
+        if (!r.ok) throw 0;
+        let src = await r.text();
+        let achou = 0;
+        src = src.replace(/((?:const|let)\s+ULTIMA_ATUALIZACAO\s*=\s*")[^"]*(")/, function (m, a, b) { achou++; return a + d + b; });
+        if (achou !== 1) throw 0;
+        const url = URL.createObjectURL(new Blob([src], { type: 'text/html;charset=utf-8' }));
+        const a = document.createElement('a');
+        a.href = url; a.download = 'index.html';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+        dnFeedback(btn, '✅ Descarregado');
+    } catch (e) {
+        dnFeedback(btn, '❌ Não foi possível (abra o site pelo endereço online)');
+    }
+}
+
+function dnRender(c) {
+    const pos = c.scrollTop;
+    const antSite = document.getElementById('pdSiteData');
+    const vSite = antSite ? antSite.value : ULTIMA_ATUALIZACAO;
+    let h = '';
+    h += '<div class="pd-sec">Avisos</div>';
+    h += dnDados.avisos.length
+        ? dnDados.avisos.map(function (a) { return '<div class="pd-aviso">⚠️ ' + dnEsc(a) + '</div>'; }).join('')
+        : '<div class="pd-ok">✅ Sem avisos</div>';
+    dnDados.grupos.forEach(function (g) {
+        h += '<div class="pd-sec">' + dnEsc(g.t) + '</div><div class="pd-card">' +
+            g.l.map(function (r) { return '<div class="pd-row"><span>' + dnEsc(r[0]) + '</span><b>' + dnEsc(r[1]) + '</b></div>'; }).join('') + '</div>';
+    });
+    h += '<div class="pd-sec">Data de atualização do site</div>' +
+        '<div class="pd-card" style="padding:4px 12px 12px;">' +
+        '<label class="pd-lbl" for="pdSiteData">Data mostrada no fim do menu</label>' +
+        '<input id="pdSiteData" class="pd-input" type="date" value="' + dnEsc(vSite) + '">' +
+        '</div>' +
+        '<button type="button" class="pd-btn" onclick="dnDataHoje()">📅 Usar a data de hoje</button>' +
+        '<button type="button" class="pd-btn pd-azul" onclick="dnAplicarData(this)">✅ Aplicar neste ecrã</button>' +
+        '<div class="pd-nota">Mostra já a nova data, só para ver. Não fica guardada no site.</div>' +
+        '<button type="button" class="pd-btn pd-azul" onclick="dnDescarregarIndex(this)">⬇️ Descarregar index.html corrigido</button>' +
+        '<div class="pd-nota">Descarrega o index.html com esta data já escrita. Depois é só substituir o ficheiro no servidor.</div>';
+    h += '<div class="pd-sec">Ferramentas</div>' +
+        '<button type="button" class="pd-btn pd-azul" onclick="dnCopiar(this)">📋 Copiar diagnóstico</button>' +
+        '<div class="pd-nota">Copia tudo isto como texto, para colar numa mensagem.</div>' +
+        '<button type="button" class="pd-btn" onclick="dnAtualizar()">🔃 Atualizar diagnóstico</button>';
+    h += '<div class="pd-sec">Reposição</div>' +
+        '<button type="button" class="pd-btn pd-amarelo" onclick="dnLimparCache()">🧽 Atualizar app (limpar cache)</button>' +
+        '<div class="pd-nota">Mantém as definições. Útil quando aparece uma versão antiga do site.</div>' +
+        '<button type="button" class="pd-btn pd-amarelo" onclick="dnReporDefinicoes()">↩️ Repor definições</button>' +
+        '<div class="pd-nota">Idioma, cabeçalho fixo e aviso de cookies voltam ao início.</div>' +
+        '<button type="button" class="pd-btn pd-vermelho" onclick="dnReporSite()">⚠️ Repor site original</button>' +
+        '<div class="pd-nota">Apaga tudo o que está guardado neste dispositivo e recarrega a página.</div>';
+    c.innerHTML = h;
+    c.scrollTop = pos;
+}
+async function dnAtualizar() {
+    dnDados = await dnColetar();
+    const c = document.getElementById('pdCorpo');
+    if (c) dnRender(c);
+}
+function montarPainelDono() {
+    fecharPainelDono();
+    const ov = document.createElement('div');
+    ov.id = 'painelDonoOverlay';
+    ov.innerHTML = '<div role="dialog" aria-modal="true" aria-label="Administrador">' +
+        '<div class="pd-head"><span style="display:flex;align-items:center;"><strong>🛠️ Administrador</strong><span class="pd-modo" role="group" aria-label="Modo do administrador"><button type="button" class="on" aria-current="true" title="Administrador 1: diagnóstico e ferramentas" aria-label="Administrador 1">1</button><button type="button" onclick="dnAbrirAdmin2()" title="Administrador 2: caricas repetidas" aria-label="Administrador 2">2</button></span></span><span class="pd-x" onclick="fecharPainelDono()" aria-label="Fechar">×</span></div>' +
+        '<div class="pd-body" id="pdCorpo">A recolher diagnóstico…</div></div>';
+    ov.addEventListener('click', function (e) { if (e.target === ov) fecharPainelDono(); });
+    document.body.appendChild(ov);
+    dnAtualizar();
+}
 let admSnapshot = "{}";
 function abrirAdminPainel() {
     fecharTudo();
-    admSnapshot = JSON.stringify(repLocal);
     document.getElementById("admErro").textContent = "";
     renderAdmin();
     modalAdmin.style.display = "flex";
