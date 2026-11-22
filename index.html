@@ -99,6 +99,9 @@
     };
     window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedido = e; lembrar(false); });
     window.addEventListener('appinstalled', function () { pedido = null; lembrar(true); });
+    /* Para o menu: oculta «Instalar app» quando a app já está instalada; ao tocar, instala ou explica */
+    window.appJaInstalada = function () { return emApp() || (!pedido && (lembrada() || provavel())); };
+    window.instalarOuEstado = function () { if (pedido) window.instalarApp(); else window.mostrarEstadoApp(); };
     window.instalarApp = function () {
         if (!pedido) return;
         var p = pedido; pedido = null;
@@ -259,11 +262,11 @@ h1 {
 #menuBtn { padding: 0; cursor: pointer; }
 .menu-lista {
     position: absolute; top: 44px; left: 0; z-index: 1100;
-    width: 270px; max-width: calc(100vw - 20px); padding: 6px;
+    width: 300px; max-width: calc(100vw - 20px); padding: 6px;
     background: #1e1e1e; border: 1px solid rgba(252,175,69,0.4); border-radius: 12px;
     box-shadow: 0 12px 32px rgba(0,0,0,0.5);
 }
-.menu-lista[hidden] { display: none; }
+.menu-lista[hidden], .menu-lista > button[hidden] { display: none; }
 .menu-lista > button, .menu-lista > a {
     display: flex; align-items: center; gap: 12px; width: 100%;
     padding: 8px 10px; border: 0; border-radius: 10px; background: none;
@@ -275,7 +278,20 @@ h1 {
 .menu-lista .mi-estado { margin-left: auto; color: #FCAF45; font-weight: 800; visibility: hidden; }
 .menu-lista > button.on { color: #FCAF45; }
 .menu-lista > button.on .mi-estado { visibility: visible; }
-.menu-lista > button.menu-upd { justify-content: center; padding: 6px 10px; font-size: 12px; font-weight: 400; color: #9a9a9a; text-align: center; }
+.menu-lista > button.menu-upd { justify-content: flex-start; padding: 0 10px 4px; font-size: 11px; line-height: 1.5; font-weight: 400; color: #9a9a9a; text-align: left; white-space: nowrap; }
+.menu-lista > .menu-credito { padding: 2px 10px 0; font-size: 11px; line-height: 1.5; color: #9a9a9a; white-space: nowrap; }
+.menu-lista > button.menu-logout { background: rgba(239,68,68,.16); color: #fecaca; border: 1px solid rgba(248,113,113,.55); font-weight: 800; }
+.menu-lista > button.menu-logout:hover, .menu-lista > button.menu-logout:focus-visible { background: rgba(239,68,68,.32); color: #fff; }
+.menu-lista .f5 { display: none; }
+@media (hover: hover) and (pointer: fine) { .menu-lista .f5 { display: inline; color: #9a9a9a; font-weight: 400; } }
+.saida-app { position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center; padding: 24px; background: #121212; color: #fff; }
+.saida-app.show { display: flex; }
+.saida-app .saida-c { width: 100%; max-width: 360px; text-align: center; }
+.saida-app h2 { margin: 0 0 8px; font-size: 24px; }
+.saida-app p { margin: 0 0 22px; line-height: 1.5; color: #cfcfcf; }
+.saida-app a, .saida-app button { display: block; width: 100%; margin-top: 10px; padding: 14px; border-radius: 14px; border: 0; font: inherit; font-weight: 800; font-size: 16px; text-align: center; text-decoration: none; cursor: pointer; }
+.saida-app a { background: #FCAF45; color: #1b1b1b; }
+.saida-app button { background: rgba(255,255,255,.12); color: #fff; }
 .menu-lista > button.menu-upd:hover { background: none; color: #bdbdbd; }
 #menuTroca .mi-estado { margin-left: 8px; }
 .menu-lista .mi-ord { margin-left: auto; color: #FCAF45; font-weight: 800; font-size: 13px; }
@@ -844,6 +860,15 @@ footer {
     .carica.rep .numero { gap: 2px; }
 }
 </style>
+<style id="menu-padrao">
+/* Menu padrão: cor, tamanho, fonte e ícones iguais aos da Calculadora de Juros (Mobile) */
+.menu-lista { width: 290px; max-width: calc(100vw - 20px); }
+.menu-lista > button, .menu-lista > a { min-height: 44px; padding: 6px 12px; font-size: 1.05rem; font-weight: 700; }
+.menu-lista .mi:not(.mi-ig) { width: 26px; height: 26px; background: none; }
+.menu-lista .mi svg { width: 22px; height: 22px; }
+.menu-lista .mi.mi-ig svg { width: 18px; height: 18px; }
+.menu-lista > button.menu-upd { min-height: 0; }
+</style>
 </head>
 <body>
 
@@ -871,9 +896,9 @@ footer {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
         <div class="menu-lista" id="menuLista" role="menu" hidden>
-            <button type="button" role="menuitem" data-acao="troca" id="menuTroca"><span class="mi" aria-hidden="true">🔁</span><span data-i18n="menuTroca">Repetidas</span><span class="mi-ord" id="menuTrocaN"></span><span class="mi-estado" aria-hidden="true">✓</span></button>
-            <button type="button" role="menuitem" data-acao="aleat"><span class="mi" aria-hidden="true">🎲</span><span data-i18n="aleatAria">Carica aleatória</span></button>
-            <button type="button" role="menuitem" data-acao="ordem"><span class="mi" aria-hidden="true">⇅</span><span data-i18n="ordAria">Inverter a ordem</span><span class="mi-ord" id="menuOrdEstado">Z→A</span></button>
+            <button type="button" role="menuitem" data-acao="troca" id="menuTroca"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#34d399"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span><span data-i18n="menuTroca">Repetidas</span><span class="mi-ord" id="menuTrocaN"></span><span class="mi-estado" aria-hidden="true">✓</span></button>
+            <button type="button" role="menuitem" data-acao="aleat"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#fbbf24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r=".6"/><circle cx="15.5" cy="8.5" r=".6"/><circle cx="8.5" cy="15.5" r=".6"/><circle cx="15.5" cy="15.5" r=".6"/><circle cx="12" cy="12" r=".6"/></svg></span><span data-i18n="aleatAria">Carica aleatória</span></button>
+            <button type="button" role="menuitem" data-acao="ordem"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#60a5fa"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/></svg></span><span data-i18n="ordAria">Inverter a ordem</span><span class="mi-ord" id="menuOrdEstado">Z→A</span></button>
             <button type="button" role="menuitem" data-acao="idioma" id="menuIdioma" aria-expanded="false"><span class="mi" id="menuLangFlag" aria-hidden="true"></span><span data-i18n="idioma">Idioma</span><span class="mi-ord" id="menuLangNome"></span></button>
             <div class="menu-langs" id="menuLangs" hidden>
                 <button type="button" role="menuitem" data-acao="lang" data-lang="pt">Português</button>
@@ -891,11 +916,16 @@ footer {
             </div>
             <hr class="menu-sep">
             <a role="menuitem" href="https://www.instagram.com/caricas_metalicas/" target="_blank" rel="noopener"><span class="mi mi-ig" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"/></svg></span><span>Instagram</span></a>
-            <button type="button" role="menuitem" data-acao="share"><span class="mi" aria-hidden="true">📤</span><span data-i18n="menuShare">Partilhar o site</span></button>
-            <button type="button" role="menuitem" data-acao="prop"><span class="mi" aria-hidden="true">✉️</span><span data-i18n="menuProp">Propor troca (E-mail)</span></button>
+            <button type="button" role="menuitem" data-acao="prop"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#60a5fa"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span data-i18n="menuProp">Propor troca (E-mail)</span></button>
+            <button type="button" role="menuitem" data-acao="sobre"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#60a5fa"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span><span data-i18n="sobre">Sobre</span></button>
             <hr class="menu-sep">
-            <button type="button" role="menuitem" data-acao="sobre"><span class="mi" aria-hidden="true">ℹ️</span><span data-i18n="sobre">Sobre</span></button>
+            <button type="button" role="menuitem" data-acao="instalar" id="menuInstalar"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#60a5fa"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><span data-i18n="menuInst">Instalar app</span></button>
+            <button type="button" role="menuitem" data-acao="share"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#a78bfa"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></span><span data-i18n="menuShare">Partilhar o site</span></button>
+            <button type="button" role="menuitem" data-acao="atualizar"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#34d399"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span><span><span data-i18n="menuAtual">Atualizar</span><span class="f5"> (F5)</span></span></button>
             <hr class="menu-sep">
+            <button type="button" role="menuitem" data-acao="sair" class="menu-logout"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></span><span data-i18n="menuLogout">Logout</span></button>
+            <hr class="menu-sep">
+            <div class="menu-credito"><span data-i18n="devPor">Desenvolvido por:</span> Helder Jardim Fernandes</div>
             <button type="button" role="menuitem" data-acao="upd" id="menuUpd" class="menu-upd"></button>
         </div>
     </div>
@@ -1065,7 +1095,7 @@ document.getElementById("contador").addEventListener("keydown", e => { if (modoR
 const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
-let ULTIMA_ATUALIZACAO = "2026-11-11";
+let ULTIMA_ATUALIZACAO = "2026-11-22";
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -1902,6 +1932,23 @@ PT.trocaLbl = "Quantidade para troca:";
 const TROCA_LBL = {"en": "Quantity for trading:", "es": "Cantidad para intercambio:", "fr": "Quantité à échanger :", "de": "Menge zum Tauschen:", "it": "Quantità da scambiare:", "nl": "Aantal te ruilen:", "pl": "Ilość na wymianę:", "sv": "Antal för byte:", "tr": "Takas için adet:", "ru": "Количество для обмена:", "ja": "交換用の数量:"};
 Object.keys(TROCA_LBL).forEach(k => { if (T[k]) T[k].trocaLbl = TROCA_LBL[k]; });
 
+// Menu (padrão dos sites): instalar, atualizar, logout e rodapé
+Object.assign(PT, {menuInst: "Instalar app", menuAtual: "Atualizar", menuLogout: "Logout", devPor: "Desenvolvido por:", saidaTit: "Sessão terminada", saidaMsg: "O navegador não permite que esta página se feche sozinha. Já pode fechar esta janela ou a app.", saidaHome: "Abrir a página inicial", saidaVoltar: "Voltar ao site"});
+const MENU_PADRAO = {
+  "en": {menuInst: "Install app", menuAtual: "Refresh", menuLogout: "Logout", devPor: "Developed by:", saidaTit: "Session ended", saidaMsg: "The browser does not let this page close itself. You can now close this window or the app.", saidaHome: "Open the home page", saidaVoltar: "Back to the site"},
+  "es": {menuInst: "Instalar app", menuAtual: "Actualizar", menuLogout: "Cerrar sesión", devPor: "Desarrollado por:", saidaTit: "Sesión terminada", saidaMsg: "El navegador no permite que esta página se cierre sola. Ya puede cerrar esta ventana o la app.", saidaHome: "Abrir la página de inicio", saidaVoltar: "Volver al sitio"},
+  "fr": {menuInst: "Installer l'app", menuAtual: "Actualiser", menuLogout: "Déconnexion", devPor: "Développé par :", saidaTit: "Session terminée", saidaMsg: "Le navigateur ne permet pas à cette page de se fermer toute seule. Vous pouvez maintenant fermer cette fenêtre ou l'app.", saidaHome: "Ouvrir la page d'accueil", saidaVoltar: "Retour au site"},
+  "de": {menuInst: "App installieren", menuAtual: "Aktualisieren", menuLogout: "Abmelden", devPor: "Entwickelt von:", saidaTit: "Sitzung beendet", saidaMsg: "Der Browser erlaubt es dieser Seite nicht, sich selbst zu schließen. Sie können dieses Fenster oder die App jetzt schließen.", saidaHome: "Startseite öffnen", saidaVoltar: "Zurück zur Seite"},
+  "it": {menuInst: "Installa l'app", menuAtual: "Aggiorna", menuLogout: "Esci", devPor: "Sviluppato da:", saidaTit: "Sessione terminata", saidaMsg: "Il browser non permette a questa pagina di chiudersi da sola. Ora puoi chiudere questa finestra o l'app.", saidaHome: "Apri la pagina iniziale", saidaVoltar: "Torna al sito"},
+  "nl": {menuInst: "App installeren", menuAtual: "Vernieuwen", menuLogout: "Uitloggen", devPor: "Ontwikkeld door:", saidaTit: "Sessie beëindigd", saidaMsg: "De browser laat deze pagina zichzelf niet sluiten. U kunt dit venster of de app nu sluiten.", saidaHome: "Startpagina openen", saidaVoltar: "Terug naar de site"},
+  "pl": {menuInst: "Zainstaluj aplikację", menuAtual: "Odśwież", menuLogout: "Wyloguj", devPor: "Opracował:", saidaTit: "Sesja zakończona", saidaMsg: "Przeglądarka nie pozwala tej stronie zamknąć się samej. Możesz teraz zamknąć to okno lub aplikację.", saidaHome: "Otwórz stronę główną", saidaVoltar: "Wróć do strony"},
+  "sv": {menuInst: "Installera appen", menuAtual: "Uppdatera", menuLogout: "Logga ut", devPor: "Utvecklad av:", saidaTit: "Sessionen avslutad", saidaMsg: "Webbläsaren låter inte sidan stänga sig själv. Du kan nu stänga fönstret eller appen.", saidaHome: "Öppna startsidan", saidaVoltar: "Tillbaka till sidan"},
+  "tr": {menuInst: "Uygulamayı yükle", menuAtual: "Yenile", menuLogout: "Çıkış", devPor: "Geliştiren:", saidaTit: "Oturum sona erdi", saidaMsg: "Tarayıcı bu sayfanın kendini kapatmasına izin vermiyor. Artık bu pencereyi veya uygulamayı kapatabilirsiniz.", saidaHome: "Ana sayfayı aç", saidaVoltar: "Siteye dön"},
+  "ru": {menuInst: "Установить приложение", menuAtual: "Обновить", menuLogout: "Выйти", devPor: "Разработчик:", saidaTit: "Сеанс завершён", saidaMsg: "Браузер не позволяет этой странице закрыться самой. Теперь можно закрыть это окно или приложение.", saidaHome: "Открыть главную страницу", saidaVoltar: "Вернуться на сайт"},
+  "ja": {menuInst: "アプリをインストール", menuAtual: "更新", menuLogout: "ログアウト", devPor: "開発:", saidaTit: "セッション終了", saidaMsg: "ブラウザの制限により、このページは自動的に閉じられません。このウィンドウまたはアプリを閉じてください。", saidaHome: "ホームページを開く", saidaVoltar: "サイトに戻る"}
+};
+Object.keys(MENU_PADRAO).forEach(k => { if (T[k]) Object.assign(T[k], MENU_PADRAO[k]); });
+
 // Menu: partilhar o site e propor troca
 Object.assign(PT, {"menuShare": "Partilhar o site", "menuProp": "Propor troca", "toastLink": "Link copiado.", "toastMsg": "Mensagem copiada. Cola-a no Instagram.", "shareTxt": "Coleção de caricas metálicas. Vem ver!", "propMsg": "Olá! Vi o teu site de caricas_metalicas e gostava de propor uma troca. Interessa-me a tua nº ___ ."});
 const MENU_EXTRA = {"en": {"menuShare": "Share the site", "menuProp": "Propose a trade", "toastLink": "Link copied.", "toastMsg": "Message copied. Paste it on Instagram.", "shareTxt": "Metal bottle cap collection. Come take a look!", "propMsg": "Hi! I saw your caricas_metalicas website and I'd like to propose a trade. I'm interested in your no. ___ ."}, "es": {"menuShare": "Compartir el sitio", "menuProp": "Proponer intercambio", "toastLink": "Enlace copiado.", "toastMsg": "Mensaje copiado. Pégalo en Instagram.", "shareTxt": "Colección de chapas metálicas. ¡Ven a verla!", "propMsg": "¡Hola! Vi tu web de caricas_metalicas y me gustaría proponerte un intercambio. Me interesa tu nº ___ ."}, "fr": {"menuShare": "Partager le site", "menuProp": "Proposer un échange", "toastLink": "Lien copié.", "toastMsg": "Message copié. Colle-le sur Instagram.", "shareTxt": "Collection de capsules métalliques. Viens voir !", "propMsg": "Bonjour ! J'ai vu ton site caricas_metalicas et j'aimerais te proposer un échange. Ta n° ___ m'intéresse."}, "de": {"menuShare": "Seite teilen", "menuProp": "Tausch vorschlagen", "toastLink": "Link kopiert.", "toastMsg": "Nachricht kopiert. Füge sie in Instagram ein.", "shareTxt": "Kronkorken-Sammlung. Schau vorbei!", "propMsg": "Hallo! Ich habe deine Website caricas_metalicas gesehen und möchte einen Tausch vorschlagen. Ich interessiere mich für deine Nr. ___ ."}, "it": {"menuShare": "Condividi il sito", "menuProp": "Proponi scambio", "toastLink": "Link copiato.", "toastMsg": "Messaggio copiato. Incollalo su Instagram.", "shareTxt": "Collezione di tappi metallici. Vieni a vedere!", "propMsg": "Ciao! Ho visto il tuo sito caricas_metalicas e vorrei proporti uno scambio. Mi interessa il tuo n. ___ ."}, "nl": {"menuShare": "Site delen", "menuProp": "Ruil voorstellen", "toastLink": "Link gekopieerd.", "toastMsg": "Bericht gekopieerd. Plak het op Instagram.", "shareTxt": "Kroonkurkencollectie. Kom kijken!", "propMsg": "Hoi! Ik zag je website caricas_metalicas en wil graag een ruil voorstellen. Ik ben geïnteresseerd in jouw nr. ___ ."}, "pl": {"menuShare": "Udostępnij stronę", "menuProp": "Zaproponuj wymianę", "toastLink": "Link skopiowany.", "toastMsg": "Wiadomość skopiowana. Wklej ją na Instagramie.", "shareTxt": "Kolekcja kapsli. Zajrzyj!", "propMsg": "Cześć! Widziałem Twoją stronę caricas_metalicas i chciałbym zaproponować wymianę. Interesuje mnie Twój nr ___ ."}, "sv": {"menuShare": "Dela sidan", "menuProp": "Föreslå byte", "toastLink": "Länken kopierades.", "toastMsg": "Meddelandet kopierades. Klistra in det på Instagram.", "shareTxt": "Samling av kapsyler. Kom och titta!", "propMsg": "Hej! Jag såg din sida caricas_metalicas och vill gärna föreslå ett byte. Jag är intresserad av din nr ___ ."}, "tr": {"menuShare": "Siteyi paylaş", "menuProp": "Takas teklif et", "toastLink": "Bağlantı kopyalandı.", "toastMsg": "Mesaj kopyalandı. Instagram'a yapıştırın.", "shareTxt": "Metal kapak koleksiyonu. Gelin bakın!", "propMsg": "Merhaba! caricas_metalicas sitenizi gördüm ve takas teklif etmek istiyorum. Sizdeki no ___ ilgimi çekiyor."}, "ru": {"menuShare": "Поделиться сайтом", "menuProp": "Предложить обмен", "toastLink": "Ссылка скопирована.", "toastMsg": "Сообщение скопировано. Вставьте его в Instagram.", "shareTxt": "Коллекция металлических крышек. Заходите!", "propMsg": "Привет! Я увидел твой сайт caricas_metalicas и хочу предложить обмен. Меня интересует твоя № ___ ."}, "ja": {"menuShare": "サイトを共有", "menuProp": "交換を提案", "toastLink": "リンクをコピーしました。", "toastMsg": "メッセージをコピーしました。Instagramに貼り付けてください。", "shareTxt": "王冠コレクション。ぜひご覧ください!", "propMsg": "こんにちは!caricas_metalicasのサイトを見て、交換をお願いしたくご連絡しました。あなたの No. ___ が欲しいです。"}};
@@ -1990,6 +2037,25 @@ langMenu.querySelectorAll("button").forEach(b => b.addEventListener("click", () 
 }));
 document.addEventListener("click", () => { langMenu.hidden = true; });
 
+// Atualizar (F5) e Logout (tenta fechar a janela/app; se o navegador não deixar, mostra o ecrã de despedida)
+function atualizarApp() {
+    const recarregar = () => location.reload();
+    if ("serviceWorker" in navigator) navigator.serviceWorker.getRegistration().then(r => r ? r.update() : null).then(recarregar, recarregar);
+    else recarregar();
+}
+function fecharSaidaApp() { const el = document.getElementById("saidaApp"); if (el) el.classList.remove("show"); }
+function sairDaApp() {
+    try { window.close(); } catch (e) {}
+    try { window.open("", "_self"); window.close(); } catch (e) {}
+    setTimeout(() => {
+        const el = document.getElementById("saidaApp");
+        if (!el) return;
+        el.classList.add("show");
+        const v = document.getElementById("saidaVoltar"); if (v) v.focus();
+    }, 300);
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharSaidaApp(); });
+
 // Menu (três traços)
 const menuBtn = document.getElementById("menuBtn");
 const menuLista = document.getElementById("menuLista");
@@ -1998,6 +2064,8 @@ menuBtn.addEventListener("click", e => {
     e.stopPropagation();
     langMenu.hidden = true;
     const abre = menuLista.hidden;
+    const inst = document.getElementById("menuInstalar");
+    if (inst) inst.hidden = typeof appJaInstalada === "function" && appJaInstalada();
     menuLista.hidden = !abre;
     menuBtn.setAttribute("aria-expanded", String(abre));
 });
@@ -2026,6 +2094,9 @@ menuLista.addEventListener("click", e => {
     else if (acao === "ordem") document.getElementById("btnOrdem").click();
     else if (acao === "sobre") document.getElementById("abrirSobre").click();
     else if (acao === "share") partilharSite();
+    else if (acao === "instalar") window.instalarOuEstado();
+    else if (acao === "atualizar") atualizarApp();
+    else if (acao === "sair") sairDaApp();
     else if (acao === "prop") proporTroca();
     else if (acao === "priv") document.getElementById("abrirPrivacidade").click();
     else if (acao === "cook") document.getElementById("abrirCookies").click();
@@ -2624,5 +2695,13 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
 }
 </script>
 
+<div id="saidaApp" class="saida-app notranslate" translate="no" role="dialog" aria-modal="true" aria-labelledby="saidaTitulo">
+    <div class="saida-c">
+        <h2 id="saidaTitulo" data-i18n="saidaTit">Sessão terminada</h2>
+        <p data-i18n="saidaMsg">O navegador não permite que esta página se feche sozinha. Já pode fechar esta janela ou a app.</p>
+        <a href="https://gard3npt.github.io/" data-i18n="saidaHome">Abrir a página inicial</a>
+        <button type="button" id="saidaVoltar" onclick="fecharSaidaApp()" data-i18n="saidaVoltar">Voltar ao site</button>
+    </div>
+</div>
 </body>
 </html>
