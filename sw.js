@@ -1,10 +1,10 @@
 /* Service worker de @caricas_metalicas
    - Página e caricas.json: rede primeiro (para veres sempre as caricas mais recentes); sem ligação usa a cópia guardada.
    - Fotos das caricas (pasta caricas/): ficam guardadas depois de vistas, até um máximo, para abrirem mais depressa.
-   - Ícones e restantes ficheiros do site: cache primeiro.
+   - Manifesto: rede primeiro. Ícones e restantes ficheiros do site: mostra a cópia guardada e atualiza-a em segundo plano.
    - Anúncios, Instagram e outros endereços externos passam direto, sem serem guardados.
-   Quando mudares ficheiros da app (index, ícones, manifesto), sobe o número da VERSAO para limpar caches antigas. */
-const VERSAO = 'v3';
+   Atualiza sozinho: basta substituir o index.html no site (não é preciso mexer neste ficheiro). */
+const VERSAO = 'v4';
 const CACHE_APP = 'caricas-app-' + VERSAO;
 const CACHE_FOTOS = 'caricas-fotos-v1';   // não depende da VERSAO: as fotos mantêm-se entre versões
 const MAX_FOTOS = 150;
@@ -42,7 +42,7 @@ function limitar(cache, max) {
 }
 
 function redePrimeiro(req, chave) {
-  return fetch(req).then(function (r) {
+  return fetch(req.url, { cache: 'no-cache' }).then(function (r) {
     if (r && r.ok) {
       const copia = r.clone();
       caches.open(CACHE_APP).then(function (c) { c.put(chave || req, copia); });
@@ -62,7 +62,7 @@ self.addEventListener('fetch', function (e) {
   // Páginas: rede primeiro
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req).then(function (r) {
+      fetch(req.url, { cache: 'no-cache' }).then(function (r) {
         if (r && r.ok) {
           const copia = r.clone();
           caches.open(CACHE_APP).then(function (c) { c.put('index.html', copia); });
@@ -75,8 +75,8 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // Lista das caricas: rede primeiro
-  if (url.pathname.slice(-12) === 'caricas.json') {
+  // Lista das caricas e manifesto: rede primeiro
+  if (url.pathname.slice(-12) === 'caricas.json' || /manifest\.webmanifest$/.test(url.pathname)) {
     e.respondWith(redePrimeiro(req));
     return;
   }
@@ -97,16 +97,17 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // Restantes ficheiros do site: cache primeiro
+  // Restantes ficheiros do site: mostra a cópia guardada já e atualiza-a em segundo plano
   e.respondWith(
     caches.match(req).then(function (r) {
-      return r || fetch(req).then(function (resp) {
+      const rede = fetch(req.url, { cache: 'no-cache' }).then(function (resp) {
         if (resp && resp.ok) {
           const copia = resp.clone();
           caches.open(CACHE_APP).then(function (c) { c.put(req, copia); });
         }
         return resp;
-      });
+      }).catch(function () { return r || Response.error(); });
+      return r || rede;
     })
   );
 });
