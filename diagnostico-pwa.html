@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#121212">
+<title>Diagnóstico da app instalável</title>
+<style>
+:root { --fundo: #121212; --card: #1e1e1e; --borda: #333; --texto: #f1f1f1; --suave: #9aa0a6; --ok: #34d399; --av: #fbbf24; --er: #f87171; --azul: #60a5fa; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.4; }
+main { max-width: 560px; margin: 0 auto; padding: 18px 14px 40px; }
+h1 { margin: 6px 0 2px; font-size: 1.35rem; }
+.sub { margin: 0 0 14px; color: var(--suave); font-size: .9rem; }
+.resumo { padding: 14px; border-radius: 14px; font-weight: 700; margin-bottom: 6px; border: 1px solid var(--borda); background: var(--card); }
+.resumo.ok { border-color: var(--ok); color: var(--ok); }
+.resumo.av { border-color: var(--av); color: var(--av); }
+.resumo.er { border-color: var(--er); color: var(--er); }
+.sec { margin: 18px 0 6px; font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--suave); }
+.card { background: var(--card); border: 1px solid var(--borda); border-radius: 14px; overflow: hidden; }
+.lin { display: flex; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--borda); }
+.lin:first-child { border-top: 0; }
+.lin .e { flex: 0 0 auto; width: 1.4em; text-align: center; }
+.lin .t { font-weight: 700; font-size: .95rem; }
+.lin .d { margin-top: 1px; font-size: .82rem; color: var(--suave); word-break: break-word; }
+.btn { display: block; width: 100%; margin-top: 10px; padding: 13px; border: 1px solid var(--borda); border-radius: 12px; background: var(--card); color: var(--texto); font: inherit; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer; }
+.btn.azul { border-color: var(--azul); color: var(--azul); }
+.btn[hidden] { display: none; }
+.nota { margin: 6px 2px 0; font-size: .78rem; color: var(--suave); }
+</style>
+</head>
+<body>
+<main>
+    <h1>🩺 Diagnóstico da app instalável</h1>
+    <p class="sub" id="sub">A verificar…</p>
+    <div class="resumo" id="resumo">A verificar…</div>
+    <div id="out"></div>
+
+    <div class="sec">Ferramentas</div>
+    <button type="button" class="btn azul" id="bInstalar" hidden>📲 Instalar a app</button>
+    <button type="button" class="btn" id="bRepetir">🔃 Repetir o diagnóstico</button>
+    <button type="button" class="btn" id="bCopiar">📋 Copiar o diagnóstico</button>
+    <p class="nota">Copia tudo como texto, para colar numa mensagem.</p>
+    <a class="btn" href="./">← Voltar ao site</a>
+</main>
+
+<script>
+(function () {
+    'use strict';
+
+    var pedidoInstalar = null;
+    window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedidoInstalar = e; });
+    window.addEventListener('appinstalled', function () { pedidoInstalar = null; });
+
+    var res = [];
+    function add(grupo, estado, titulo, detalhe) { res.push({ g: grupo, e: estado, t: titulo, d: detalhe || '' }); }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function $(id) { return document.getElementById(id); }
+    function pausa(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    var params = new URLSearchParams(location.search);   /* opcional: ?m=caminho/manifesto&s=caminho/sw.js */
+    function mesmoSite(p, omissao) {
+        try { var u = new URL(p || omissao, location.href); return u.origin === location.origin ? u : new URL(omissao, location.href); }
+        catch (e) { return new URL(omissao, location.href); }
+    }
+    function nomeNavegador(ua) {
+        if (/SamsungBrowser/.test(ua)) return 'Samsung Internet';
+        if (/Edg\//.test(ua)) return 'Edge';
+        if (/OPR\//.test(ua)) return 'Opera';
+        if (/Firefox\/|FxiOS/.test(ua)) return 'Firefox';
+        if (/CriOS/.test(ua)) return 'Chrome (iPhone/iPad)';
+        if (/Chrome\//.test(ua)) return 'Chrome';
+        if (/Safari\//.test(ua)) return 'Safari';
+        return 'desconhecido';
+    }
+    var EMOJI = { ok: '✅', av: '⚠️', erro: '❌', info: 'ℹ️' };
+
+    function buscar(url) {
+        return fetch(url, { cache: 'no-store' }).catch(function () { return null; });
+    }
+    function carregarImagem(url) {
+        return new Promise(function (resolve) {
+            var i = new Image();
+            i.onload = function () { resolve({ ok: true, w: i.naturalWidth, h: i.naturalHeight }); };
+            i.onerror = function () { resolve({ ok: false }); };
+            i.src = url + (url.indexOf('?') > -1 ? '&' : '?') + 'diag=' + Date.now();
+        });
+    }
+    function nomeCurto(url) {
+        try { var u = new URL(url); return u.pathname; } catch (e) { return url; }
+    }
+
+    async function verificarIcone(grupo, titulo, url, tamanhoDeclarado) {
+        var r = await carregarImagem(url);
+        if (!r.ok) { add(grupo, 'erro', titulo, 'Não abre: ' + nomeCurto(url) + ' (confirme se o ficheiro está nesse caminho)'); return false; }
+        var dim = r.w + '×' + r.h;
+        var m = /^(\d+)x(\d+)$/i.exec((tamanhoDeclarado || '').split(' ')[0] || '');
+        if (m && (+m[1] !== r.w || +m[2] !== r.h)) {
+            add(grupo, 'av', titulo, nomeCurto(url) + ' tem ' + dim + ', mas o manifesto declara ' + tamanhoDeclarado + '.');
+        } else {
+            add(grupo, 'ok', titulo, nomeCurto(url) + ' · ' + dim);
+        }
+        return true;
+    }
+
+    async function correr() {
+        res = [];
+        $('resumo').className = 'resumo';
+        $('resumo').textContent = 'A verificar…';
+        $('out').innerHTML = '';
+
+        /* 1. Ambiente */
+        var G = 'Ambiente';
+        if (location.protocol === 'file:') {
+            add(G, 'erro', 'Ficheiro local', 'Abra esta página a partir do site publicado (https), não do ficheiro guardado no dispositivo.');
+        } else if (window.isSecureContext) {
+            add(G, 'ok', 'Ligação segura', location.origin);
+        } else {
+            add(G, 'erro', 'Ligação não segura', 'A instalação exige https (ou localhost).');
+        }
+        var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+        add(G, 'info', 'Modo de abertura', standalone ? 'A correr como app instalada.' : 'A correr no navegador.');
+        var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua);
+        add(G, 'info', 'Navegador: ' + nomeNavegador(ua), ua);
+        if (/FBAN|FBAV|Instagram|Line\/|MicroMessenger|Snapchat|TikTok|BytedanceWebview|GSA\/|; wv\)/.test(ua)) {
+            add(G, 'erro', 'A página está aberta dentro de outra aplicação', 'Os navegadores embutidos (Instagram, Facebook, WhatsApp, Gmail…) não permitem instalar. Abra o endereço diretamente no Chrome.');
+        }
+        if (ios) add(G, 'av', 'iPhone/iPad', 'Não existe botão «Instalar». Toque em Partilhar e depois em «Adicionar ao ecrã principal».');
+        if (/Firefox\//.test(ua) && !ios) add(G, 'av', 'Firefox', 'O Firefox pode não oferecer a instalação completa. Experimente no Chrome.');
+
+        /* 2. Página principal: manifesto e ícones declarados */
+        G = 'Página principal';
+        var indexUrl = new URL('./', location.href).href;
+        var manifestoUrl = new URL('manifest.webmanifest', location.href).href;
+        var doc = null;
+        var ri = await buscar(indexUrl);
+        if (!ri || !ri.ok) {
+            add(G, 'erro', 'Não foi possível abrir a página principal', indexUrl);
+        } else {
+            try { doc = new DOMParser().parseFromString(await ri.text(), 'text/html'); } catch (e) { doc = null; }
+        }
+        if (doc) {
+            var lm = doc.querySelector('link[rel~="manifest"]');
+            if (lm && lm.getAttribute('href')) {
+                manifestoUrl = new URL(lm.getAttribute('href'), indexUrl).href;
+                add(G, 'ok', 'Declara o manifesto', nomeCurto(manifestoUrl));
+            } else {
+                add(G, 'erro', 'Não declara o manifesto', 'Falta a linha <link rel="manifest"> no index.html.');
+            }
+            var ls = doc.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"], link[rel="shortcut icon"]');
+            if (!ls.length) add(G, 'av', 'Sem favicon nem ícone para iPhone', 'Falta <link rel="icon"> / <link rel="apple-touch-icon">.');
+            for (var k = 0; k < ls.length; k++) {
+                var h = ls[k].getAttribute('href');
+                if (!h) continue;
+                var rel = (ls[k].getAttribute('rel') || '').indexOf('apple') > -1 ? 'Ícone do iPhone' : 'Favicon';
+                await verificarIcone(G, rel, new URL(h, indexUrl).href, '');
+            }
+        }
+
+        /* 3. Manifesto */
+        G = 'Manifesto';
+        if (params.get('m')) manifestoUrl = mesmoSite(params.get('m'), 'manifest.webmanifest').href;
+        var man = null, rm = await buscar(manifestoUrl);
+        if (!rm || !rm.ok) {
+            add(G, 'erro', 'Manifesto não encontrado' + (rm ? ' (HTTP ' + rm.status + ')' : ''), nomeCurto(manifestoUrl));
+        } else {
+            try { man = JSON.parse(await rm.text()); } catch (e) { add(G, 'erro', 'Manifesto inválido', 'O ficheiro não é um JSON válido: ' + e.message); }
+        }
+        if (man) {
+            add(G, (man.name || man.short_name) ? 'ok' : 'erro', 'Nome', [man.name, man.short_name].filter(Boolean).join(' · ') || 'Falta "name" ou "short_name".');
+            var disp = man.display || 'browser';
+            add(G, ['standalone', 'fullscreen', 'minimal-ui'].indexOf(disp) > -1 ? 'ok' : 'erro', 'Modo de apresentação', disp);
+
+            var start = man.start_url ? new URL(man.start_url, manifestoUrl) : null;
+            var ambito = new URL(man.scope || '.', manifestoUrl);
+            if (!start) {
+                add(G, 'av', 'Endereço de arranque', 'Falta "start_url".');
+            } else if (start.origin !== ambito.origin || start.href.indexOf(ambito.href) !== 0) {
+                add(G, 'erro', 'Endereço de arranque fora do âmbito', start.pathname + ' não está dentro de ' + ambito.pathname);
+            } else {
+                add(G, 'ok', 'Endereço de arranque e âmbito', start.pathname + ' · âmbito ' + ambito.pathname);
+            }
+            if (start) {
+                var idApp = new URL(man.id || man.start_url, start.origin);
+                if (idApp.pathname === '/') {
+                    add(G, 'erro', 'Identidade da app (id) igual à da raiz', idApp.href + ' — fica igual à de qualquer outro site deste endereço, e o navegador diz «já está instalada». Use um id próprio, por exemplo ' + ambito.pathname);
+                } else {
+                    add(G, man.id ? 'ok' : 'av', 'Identidade da app (id)', idApp.href + (man.id ? '' : ' (sem "id" no manifesto; foi deduzido do start_url)'));
+                }
+            }
+
+            var icons = Array.isArray(man.icons) ? man.icons : [];
+            var tem192 = false, tem512 = false, temMask = false;
+            if (!icons.length) add(G, 'erro', 'Sem ícones', 'O manifesto não tem a lista "icons".');
+            for (var j = 0; j < icons.length; j++) {
+                var ic = icons[j];
+                if (!ic || !ic.src) continue;
+                var url = new URL(ic.src, manifestoUrl).href;
+                var finalidade = ic.purpose || 'any';
+                var abre = await verificarIcone('Ícones do manifesto', (ic.sizes || '?') + ' · ' + finalidade, url, ic.sizes);
+                if (abre) {
+                    if (/\b192x192\b/.test(ic.sizes || '') && /\bany\b/.test(finalidade)) tem192 = true;
+                    if (/\b512x512\b/.test(ic.sizes || '') && /\bany\b/.test(finalidade)) tem512 = true;
+                    if (/\bmaskable\b/.test(finalidade)) temMask = true;
+                }
+            }
+            if (icons.length) {
+                if (!tem192) add('Ícones do manifesto', 'erro', 'Falta o ícone 192×192', 'Obrigatório para a instalação.');
+                if (!tem512) add('Ícones do manifesto', 'erro', 'Falta o ícone 512×512', 'Obrigatório para a instalação.');
+                if (!temMask) add('Ícones do manifesto', 'av', 'Sem ícone "maskable"', 'No Android o ícone pode aparecer pequeno, dentro de um círculo branco.');
+            }
+        }
+
+        /* 4. Service worker */
+        G = 'Service worker';
+        if (!('serviceWorker' in navigator)) {
+            add(G, 'erro', 'Não suportado', 'Este navegador não suporta service workers.');
+        } else {
+            var reg = null;
+            try { reg = await navigator.serviceWorker.getRegistration(); } catch (e) { reg = null; }
+            if (!reg) {
+                add(G, 'erro', 'Não registado', 'Abra primeiro a página principal do site, espere uns segundos e volte a esta página.');
+            } else {
+                var w = reg.active || reg.waiting || reg.installing;
+                var estado = w ? w.state : '?';
+                add(G, estado === 'activated' ? 'ok' : 'av', 'Registado', 'Âmbito ' + nomeCurto(reg.scope) + ' · estado: ' + estado);
+                if (w && w.scriptURL) {
+                    var rs = await buscar(w.scriptURL);
+                    add(G, rs && rs.ok ? 'ok' : 'erro', 'Ficheiro do service worker', nomeCurto(w.scriptURL) + (rs && rs.ok ? '' : ' não abre'));
+                }
+                if (reg.waiting) add(G, 'av', 'Há uma versão nova à espera', 'Feche todos os separadores e a app, e abra de novo para a ativar.');
+                add(G, navigator.serviceWorker.controller ? 'ok' : 'info', 'Controla esta página', navigator.serviceWorker.controller ? 'Sim' : 'Ainda não: recarregue a página uma vez.');
+            }
+        }
+
+        /* 4b. Ficheiros que o service worker guarda ao instalar */
+        if ('serviceWorker' in navigator) {
+            var swUrl = mesmoSite(params.get('s'), 'sw.js');
+            try {
+                var regSw = await navigator.serviceWorker.getRegistration();
+                var wSw = regSw && (regSw.active || regSw.waiting || regSw.installing);
+                if (wSw && wSw.scriptURL && !params.get('s')) swUrl = new URL(wSw.scriptURL);
+            } catch (e) { /* usa o endereço por omissão */ }
+            var rsw = await buscar(swUrl.href), txt = rsw && rsw.ok ? await rsw.text() : '';
+            if (!txt) {
+                add(G, 'erro', 'Ficheiro do service worker não encontrado' + (rsw ? ' (HTTP ' + rsw.status + ')' : ''), nomeCurto(swUrl.href));
+            } else {
+                var vistos = {}, caminhos = [], re = /['"]((?:\.\/|\/)?[\w\-.\/]*)['"]/g, x;
+                while ((x = re.exec(txt))) {
+                    var c = x[1];
+                    if (!c || vistos[c]) continue;
+                    if (!(c === './' || /\.(html|png|svg|ico|jpg|jpeg|webp|json|webmanifest|css|js)$/i.test(c))) continue;
+                    vistos[c] = true; caminhos.push(c);
+                }
+                var falta = 0, todos = /addAll\s*\(/.test(txt);
+                for (var q = 0; q < caminhos.length; q++) {
+                    var alvoSw = new URL(caminhos[q], swUrl), rr = await buscar(alvoSw.href);
+                    if (!rr || !rr.ok) {
+                        falta++;
+                        add(G, todos ? 'erro' : 'av', 'Ficheiro guardado pelo service worker em falta' + (rr ? ' (HTTP ' + rr.status + ')' : ''),
+                            nomeCurto(alvoSw.href) + (todos ? ' — com addAll, basta faltar um para a instalação falhar toda.' : ' — não impede a instalação, mas não fica guardado para uso sem rede.'));
+                    }
+                }
+                if (!falta) add(G, 'ok', 'Ficheiros guardados pelo service worker', caminhos.length + ' endereços, todos existem');
+            }
+        }
+
+        /* 5. Armazenamento para uso sem rede */
+        G = 'Uso sem rede';
+        if (!('caches' in window)) {
+            add(G, 'av', 'Cache não suportada', '');
+        } else {
+            try {
+                var nomes = await caches.keys();
+                add(G, nomes.length ? 'ok' : 'av', 'Caches guardadas', nomes.length ? nomes.join(', ') : 'Nenhuma ainda.');
+                var guardado = await caches.match(indexUrl);
+                add(G, guardado ? 'ok' : 'av', 'Página principal guardada', guardado ? 'Abre mesmo sem internet.' : 'Ainda não está guardada.');
+            } catch (e) { add(G, 'av', 'Erro ao ler a cache', e.message); }
+        }
+
+        /* 6. Instalação */
+        G = 'Instalação';
+        for (var t = 0; t < 20 && !pedidoInstalar && !standalone; t++) await pausa(500);   /* até 10 s */
+        if (standalone) {
+            add(G, 'ok', 'App já instalada', 'Está a usar a app instalada.');
+        } else if (pedidoInstalar) {
+            add(G, 'ok', 'Pode ser instalada', 'O navegador oferece a instalação: use o botão "Instalar a app".');
+        } else {
+            add(G, 'av', 'O navegador não ofereceu a instalação em 10 s', 'Se os pontos acima estão todos ✅, o mais provável é o navegador achar que já existe uma instalação (procure o ícone no ecrã ou na lista de aplicações), ou o telemóvel ter uma política que o impede. No iPhone use Partilhar → Adicionar ao ecrã principal.');
+        }
+
+        mostrar();
+    }
+
+    function mostrar() {
+        var erros = res.filter(function (r) { return r.e === 'erro'; }).length;
+        var avisos = res.filter(function (r) { return r.e === 'av'; }).length;
+        var rs = $('resumo');
+        if (erros) { rs.className = 'resumo er'; rs.textContent = '❌ ' + erros + (erros === 1 ? ' problema encontrado' : ' problemas encontrados') + (avisos ? ' e ' + avisos + (avisos === 1 ? ' aviso' : ' avisos') : ''); }
+        else if (avisos) { rs.className = 'resumo av'; rs.textContent = '⚠️ ' + avisos + (avisos === 1 ? ' aviso' : ' avisos') + ', sem problemas graves'; }
+        else { rs.className = 'resumo ok'; rs.textContent = '✅ Tudo em ordem: a app pode ser instalada'; }
+        $('sub').textContent = new Date().toLocaleString('pt-PT') + ' · ' + location.origin;
+
+        var ordem = [], porGrupo = {};
+        res.forEach(function (r) { if (!porGrupo[r.g]) { porGrupo[r.g] = []; ordem.push(r.g); } porGrupo[r.g].push(r); });
+        $('out').innerHTML = ordem.map(function (g) {
+            return '<div class="sec">' + esc(g) + '</div><div class="card">' + porGrupo[g].map(function (r) {
+                return '<div class="lin"><span class="e">' + EMOJI[r.e] + '</span><div><div class="t">' + esc(r.t) + '</div>' +
+                    (r.d ? '<div class="d">' + esc(r.d) + '</div>' : '') + '</div></div>';
+            }).join('') + '</div>';
+        }).join('');
+        $('bInstalar').hidden = !pedidoInstalar;
+    }
+
+    function copiar() {
+        var linhas = ['Diagnóstico da app — ' + location.origin + ' — ' + new Date().toLocaleString('pt-PT')];
+        res.forEach(function (r) { linhas.push('[' + r.g + '] ' + EMOJI[r.e] + ' ' + r.t + (r.d ? ' — ' + r.d : '')); });
+        var texto = linhas.join('\n'), b = $('bCopiar'), antes = b.textContent;
+        function feito(t) { b.textContent = t; setTimeout(function () { b.textContent = antes; }, 2000); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto).then(function () { feito('✅ Copiado'); }, function () { window.prompt('Copie o texto:', texto); });
+        } else { window.prompt('Copie o texto:', texto); }
+    }
+
+    $('bRepetir').addEventListener('click', correr);
+    $('bCopiar').addEventListener('click', copiar);
+    $('bInstalar').addEventListener('click', function () {
+        if (!pedidoInstalar) return;
+        pedidoInstalar.prompt();
+        pedidoInstalar.userChoice.then(function () { pedidoInstalar = null; $('bInstalar').hidden = true; });
+    });
+
+    correr();
+})();
+</script>
+</body>
+</html>

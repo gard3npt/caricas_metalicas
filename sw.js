@@ -4,13 +4,13 @@
    - Ícones e restantes ficheiros do site: cache primeiro.
    - Anúncios, Instagram e outros endereços externos passam direto, sem serem guardados.
    Quando mudares ficheiros da app (index, ícones, manifesto), sobe o número da VERSAO para limpar caches antigas. */
-const VERSAO = 'v2';
+const VERSAO = 'v3';
 const CACHE_APP = 'caricas-app-' + VERSAO;
 const CACHE_FOTOS = 'caricas-fotos-v1';   // não depende da VERSAO: as fotos mantêm-se entre versões
 const MAX_FOTOS = 150;
 const FICHEIROS_APP = [
   './', 'index.html', 'manifest.webmanifest', 'caricas.json',
-  'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'favicon.png'
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon.png'
 ];
 
 self.addEventListener('install', function (e) {
