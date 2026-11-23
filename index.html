@@ -863,7 +863,8 @@ footer {
 <style id="menu-padrao">
 /* Menu padrão: cor, tamanho, fonte e ícones iguais aos da Calculadora de Juros (Mobile) */
 .menu-lista { width: 290px; max-width: calc(100vw - 20px); }
-.menu-lista > button, .menu-lista > a { min-height: 44px; padding: 6px 12px; font-size: 1.05rem; font-weight: 700; }
+.menu-lista > button, .menu-lista > a { min-height: 40px; padding: 5px 12px; font-size: 1.05rem; font-weight: 400; }
+.menu-lista > button.menu-logout { font-weight: 400; }
 .menu-lista .mi:not(.mi-ig) { width: 26px; height: 26px; background: none; }
 .menu-lista .mi svg { width: 22px; height: 22px; }
 .menu-lista .mi.mi-ig svg { width: 18px; height: 18px; }
@@ -920,8 +921,8 @@ footer {
             <button type="button" role="menuitem" data-acao="sobre"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#60a5fa"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span><span data-i18n="sobre">Sobre</span></button>
             <hr class="menu-sep">
             <button type="button" role="menuitem" data-acao="instalar" id="menuInstalar"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#60a5fa"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span><span data-i18n="menuInst">Instalar app</span></button>
-            <button type="button" role="menuitem" data-acao="share"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#a78bfa"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></span><span data-i18n="menuShare">Partilhar o site</span></button>
-            <button type="button" role="menuitem" data-acao="atualizar"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#34d399"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span><span><span data-i18n="menuAtual">Atualizar</span><span class="f5"> (F5)</span></span></button>
+            <button type="button" role="menuitem" data-acao="share"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#a78bfa"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></span><span data-i18n="menuShare">Partilhar</span></button>
+            <button type="button" role="menuitem" data-acao="atualizar"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#34d399"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span><span><span data-i18n="menuAtual">Atualizar</span></span></button>
             <hr class="menu-sep">
             <button type="button" role="menuitem" data-acao="sair" class="menu-logout"><span class="mi" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></span><span data-i18n="menuLogout">Logout</span></button>
             <hr class="menu-sep">
@@ -1096,6 +1097,27 @@ const ADSENSE_CLIENT = "ca-pub-4094039418988922";
 const ADSENSE_SLOT = "8572050117";
 const LINHAS_ENTRE_ANUNCIOS = 5; // 1 anúncio de 5 em 5 linhas
 let ULTIMA_ATUALIZACAO = "2026-11-22";
+// Normalmente false (data automática). Fica true só nas atualizações em que se escreveu uma data à mão na área de controlo.
+let DATA_MANUAL = false;
+/* A data é automática: vem da data de modificação do index.html no servidor (cabeçalho Last-Modified).
+   Se o servidor não a indicar, usa-se ULTIMA_ATUALIZACAO. Uma data aplicada na área de controlo prevalece. */
+let dataAuto = '';
+let dataForcada = DATA_MANUAL;
+function dataAtualizacaoEfetiva() { return (!dataForcada && dataAuto) ? dataAuto : ULTIMA_ATUALIZACAO; }
+function dataParaIso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+async function obterDataAutomatica() {
+    try {
+        let d = null;
+        if (/^https?:$/.test(location.protocol)) {
+            const r = await fetch(location.href.split('#')[0], { method: 'HEAD', cache: 'no-store' });
+            const lm = r.ok ? r.headers.get('Last-Modified') : null;
+            if (lm) d = new Date(lm);
+        } else if (document.lastModified) {
+            d = new Date(document.lastModified);
+        }
+        if (d && !isNaN(d)) { dataAuto = dataParaIso(d); if (typeof atualizarDataMenu === 'function') atualizarDataMenu(); }
+    } catch (e) { /* sem data do servidor: fica a de ULTIMA_ATUALIZACAO */ }
+}
 
 function obterPasta(numero) {
     const n = parseInt(numero);
@@ -1950,9 +1972,11 @@ const MENU_PADRAO = {
 Object.keys(MENU_PADRAO).forEach(k => { if (T[k]) Object.assign(T[k], MENU_PADRAO[k]); });
 
 // Menu: partilhar o site e propor troca
-Object.assign(PT, {"menuShare": "Partilhar o site", "menuProp": "Propor troca", "toastLink": "Link copiado.", "toastMsg": "Mensagem copiada. Cola-a no Instagram.", "shareTxt": "Coleção de caricas metálicas. Vem ver!", "propMsg": "Olá! Vi o teu site de caricas_metalicas e gostava de propor uma troca. Interessa-me a tua nº ___ ."});
+Object.assign(PT, {"menuShare": "Partilhar", "menuProp": "Propor troca", "toastLink": "Link copiado.", "toastMsg": "Mensagem copiada. Cola-a no Instagram.", "shareTxt": "Coleção de caricas metálicas. Vem ver!", "propMsg": "Olá! Vi o teu site de caricas_metalicas e gostava de propor uma troca. Interessa-me a tua nº ___ ."});
 const MENU_EXTRA = {"en": {"menuShare": "Share the site", "menuProp": "Propose a trade", "toastLink": "Link copied.", "toastMsg": "Message copied. Paste it on Instagram.", "shareTxt": "Metal bottle cap collection. Come take a look!", "propMsg": "Hi! I saw your caricas_metalicas website and I'd like to propose a trade. I'm interested in your no. ___ ."}, "es": {"menuShare": "Compartir el sitio", "menuProp": "Proponer intercambio", "toastLink": "Enlace copiado.", "toastMsg": "Mensaje copiado. Pégalo en Instagram.", "shareTxt": "Colección de chapas metálicas. ¡Ven a verla!", "propMsg": "¡Hola! Vi tu web de caricas_metalicas y me gustaría proponerte un intercambio. Me interesa tu nº ___ ."}, "fr": {"menuShare": "Partager le site", "menuProp": "Proposer un échange", "toastLink": "Lien copié.", "toastMsg": "Message copié. Colle-le sur Instagram.", "shareTxt": "Collection de capsules métalliques. Viens voir !", "propMsg": "Bonjour ! J'ai vu ton site caricas_metalicas et j'aimerais te proposer un échange. Ta n° ___ m'intéresse."}, "de": {"menuShare": "Seite teilen", "menuProp": "Tausch vorschlagen", "toastLink": "Link kopiert.", "toastMsg": "Nachricht kopiert. Füge sie in Instagram ein.", "shareTxt": "Kronkorken-Sammlung. Schau vorbei!", "propMsg": "Hallo! Ich habe deine Website caricas_metalicas gesehen und möchte einen Tausch vorschlagen. Ich interessiere mich für deine Nr. ___ ."}, "it": {"menuShare": "Condividi il sito", "menuProp": "Proponi scambio", "toastLink": "Link copiato.", "toastMsg": "Messaggio copiato. Incollalo su Instagram.", "shareTxt": "Collezione di tappi metallici. Vieni a vedere!", "propMsg": "Ciao! Ho visto il tuo sito caricas_metalicas e vorrei proporti uno scambio. Mi interessa il tuo n. ___ ."}, "nl": {"menuShare": "Site delen", "menuProp": "Ruil voorstellen", "toastLink": "Link gekopieerd.", "toastMsg": "Bericht gekopieerd. Plak het op Instagram.", "shareTxt": "Kroonkurkencollectie. Kom kijken!", "propMsg": "Hoi! Ik zag je website caricas_metalicas en wil graag een ruil voorstellen. Ik ben geïnteresseerd in jouw nr. ___ ."}, "pl": {"menuShare": "Udostępnij stronę", "menuProp": "Zaproponuj wymianę", "toastLink": "Link skopiowany.", "toastMsg": "Wiadomość skopiowana. Wklej ją na Instagramie.", "shareTxt": "Kolekcja kapsli. Zajrzyj!", "propMsg": "Cześć! Widziałem Twoją stronę caricas_metalicas i chciałbym zaproponować wymianę. Interesuje mnie Twój nr ___ ."}, "sv": {"menuShare": "Dela sidan", "menuProp": "Föreslå byte", "toastLink": "Länken kopierades.", "toastMsg": "Meddelandet kopierades. Klistra in det på Instagram.", "shareTxt": "Samling av kapsyler. Kom och titta!", "propMsg": "Hej! Jag såg din sida caricas_metalicas och vill gärna föreslå ett byte. Jag är intresserad av din nr ___ ."}, "tr": {"menuShare": "Siteyi paylaş", "menuProp": "Takas teklif et", "toastLink": "Bağlantı kopyalandı.", "toastMsg": "Mesaj kopyalandı. Instagram'a yapıştırın.", "shareTxt": "Metal kapak koleksiyonu. Gelin bakın!", "propMsg": "Merhaba! caricas_metalicas sitenizi gördüm ve takas teklif etmek istiyorum. Sizdeki no ___ ilgimi çekiyor."}, "ru": {"menuShare": "Поделиться сайтом", "menuProp": "Предложить обмен", "toastLink": "Ссылка скопирована.", "toastMsg": "Сообщение скопировано. Вставьте его в Instagram.", "shareTxt": "Коллекция металлических крышек. Заходите!", "propMsg": "Привет! Я увидел твой сайт caricas_metalicas и хочу предложить обмен. Меня интересует твоя № ___ ."}, "ja": {"menuShare": "サイトを共有", "menuProp": "交換を提案", "toastLink": "リンクをコピーしました。", "toastMsg": "メッセージをコピーしました。Instagramに貼り付けてください。", "shareTxt": "王冠コレクション。ぜひご覧ください!", "propMsg": "こんにちは!caricas_metalicasのサイトを見て、交換をお願いしたくご連絡しました。あなたの No. ___ が欲しいです。"}};
 Object.keys(MENU_EXTRA).forEach(k => { if (T[k]) Object.assign(T[k], MENU_EXTRA[k]); });
+const SHARE_CURTO = {"en": "Share", "es": "Compartir", "fr": "Partager", "de": "Teilen", "it": "Condividi", "nl": "Delen", "pl": "Udostępnij", "sv": "Dela", "tr": "Paylaş", "ru": "Поделиться", "ja": "共有"};
+Object.keys(SHARE_CURTO).forEach(k => { if (T[k]) T[k].menuShare = SHARE_CURTO[k]; });
 
 // Propor troca por e-mail
 Object.assign(PT, {menuProp: "Propor troca (E-mail)", propSub: "Proposta de troca de caricas"});
@@ -1998,9 +2022,11 @@ document.querySelectorAll("#langMenu button").forEach(b => { b.innerHTML = bande
 function atualizarDataMenu() {
     const el = document.getElementById("menuUpd");
     if (!el) return;
-    const d = new Date(ULTIMA_ATUALIZACAO + "T12:00:00");
+    const d = new Date(dataAtualizacaoEfetiva() + "T12:00:00");
+    try { dataAtual = new Date(dataAtualizacaoEfetiva() + "T12:00:00"); } catch (e) {}
     el.textContent = t("upd") + d.toLocaleDateString(LANGS[lang], { day: "numeric", month: "long", year: "numeric" });
 }
+obterDataAutomatica();
 function aplicarIdioma() {
     document.documentElement.lang = LANGS[lang];
     document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -2038,10 +2064,19 @@ langMenu.querySelectorAll("button").forEach(b => b.addEventListener("click", () 
 document.addEventListener("click", () => { langMenu.hidden = true; });
 
 // Atualizar (F5) e Logout (tenta fechar a janela/app; se o navegador não deixar, mostra o ecrã de despedida)
-function atualizarApp() {
-    const recarregar = () => location.reload();
-    if ("serviceWorker" in navigator) navigator.serviceWorker.getRegistration().then(r => r ? r.update() : null).then(recarregar, recarregar);
-    else recarregar();
+async function atualizarApp() {
+    /* Atualizar (igual em todos os sites): pede à rede a versão mais recente e limpa o service worker e as caches.
+       A sessão e as definições mantêm-se. Se não houver ligação, não apaga nada. */
+    try {
+        const r = await fetch(location.href.split('#')[0], { cache: 'reload' });
+        if (!r.ok) throw new Error('http ' + r.status);
+    } catch (e) {
+        window.alert('Sem ligação à internet: não foi possível atualizar. Tente de novo quando estiver ligado.');
+        return;
+    }
+    try { if ('serviceWorker' in navigator) { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(function (x) { return x.unregister(); })); } } catch (e) {}
+    try { if ('caches' in window) { const ks = await caches.keys(); await Promise.all(ks.filter(function (k) { return !/^caricas-fotos/.test(k); }).map(function (k) { return caches.delete(k); })); } } catch (e) {}
+    location.reload();
 }
 function fecharSaidaApp() { const el = document.getElementById("saidaApp"); if (el) el.classList.remove("show"); }
 function sairDaApp() {
@@ -2294,8 +2329,8 @@ function dnBrowser() {
     return so ? b + ' · ' + so : b;
 }
 function dnDataAtualizacao() {
-    const d = new Date(ULTIMA_ATUALIZACAO + 'T12:00:00');
-    return isNaN(d) ? ULTIMA_ATUALIZACAO : d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
+    const d = new Date(dataAtualizacaoEfetiva() + 'T12:00:00');
+    return isNaN(d) ? dataAtualizacaoEfetiva() : d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 // true se as repetidas deste dispositivo diferem das publicadas no repetidas.json
 function dnRepDifere() {
@@ -2439,18 +2474,11 @@ function dnReporDefinicoes() {
         location.reload();
     }, 'Repor');
 }
-function dnReporSite() {
-    pdConfirmar('Repor o site ao estado original? Apaga tudo o que está guardado neste dispositivo (definições, cache e alterações às repetidas ainda não descarregadas) e recarrega a página.', async function () {
-        try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}
-        await dnApagarCaches();
-        try { history.replaceState(null, ''); } catch (e) {}
-        location.reload();
-    }, 'Repor tudo');
-}
+
 
 /* data de atualização do site: aplicar no ecrã e descarregar o index corrigido */
 const DIAGNOSTICO_PWA = 'diagnostico-pwa.html';
-let dnModo = 1, dnDataEd = '';
+let dnModo = 1, dnDataEd = '', dnDataManual = false;
 
 function dnFeedback(btn, txt) {
     const antes = btn.textContent;
@@ -2470,8 +2498,7 @@ function dnDataHoje() {
 }
 function dnAplicarData(btn) {
     const d = dnLerData(btn); if (!d) return;
-    ULTIMA_ATUALIZACAO = d;
-    dataAtual = new Date(d + 'T12:00:00');
+    if (dnDataManual) { ULTIMA_ATUALIZACAO = d; dataForcada = true; } else { ULTIMA_ATUALIZACAO = dataParaIso(new Date()); dataForcada = false; }
     atualizarDataMenu();
     dnFeedback(btn, '✅ Aplicado');
     dnColetar().then(function (x) { dnDados = x; });
@@ -2483,8 +2510,12 @@ async function dnDescarregarIndex(btn) {
         if (!r.ok) throw 0;
         let src = await r.text();
         let achou = 0;
-        src = src.replace(/((?:const|let)\s+ULTIMA_ATUALIZACAO\s*=\s*")[^"]*(")/, function (m, a, b) { achou++; return a + d + b; });
+        const dEscrita = dnDataManual ? d : dataParaIso(new Date());
+        src = src.replace(/((?:const|let)\s+ULTIMA_ATUALIZACAO\s*=\s*")[^"]*(")/, function (m, a, b) { achou++; return a + dEscrita + b; });
         if (achou !== 1) throw 0;
+        let achouMan = 0;
+        src = src.replace(/(let\s+DATA_MANUAL\s*=\s*)(?:true|false)(;)/, function (m, a, b) { achouMan++; return a + (dnDataManual ? 'true' : 'false') + b; });
+        if (achouMan !== 1) throw 0;
         const url = URL.createObjectURL(new Blob([src], { type: 'text/html;charset=utf-8' }));
         const a = document.createElement('a');
         a.href = url; a.download = 'index.html';
@@ -2545,9 +2576,10 @@ function dnRender(c) {
         h += '<div class="pd-sec">Data de atualização do site</div>' +
             '<div class="pd-card" style="padding:4px 12px 12px;">' +
             '<label class="pd-lbl" for="pdSiteData">Data mostrada no fim do menu (☰)</label>' +
-            '<input id="pdSiteData" class="pd-input" type="date" value="' + dnEsc(dnDataEd) + '" oninput="dnDataEd = this.value">' +
+            '<input id="pdSiteData" class="pd-input" type="date" value="' + dnEsc(dnDataEd) + '" oninput="dnDataEd = this.value; dnDataManual = true">' +
             '</div>' +
-            '<button type="button" class="pd-btn" onclick="dnDataHoje()">📅 Usar a data de hoje</button>';
+            '<button type="button" class="pd-btn" onclick="dnDataHoje(); dnDataManual = false">📅 Usar a data de hoje</button>' +
+        '<div class="pd-nota">A data é automática: vem da data do ficheiro no servidor. Só escreva uma data se quiser forçá-la.</div>';
         h += '<div class="pd-sec">Caricas repetidas</div>' +
             '<div class="pd-resumo"><span>Total de caricas: <strong id="admTotal">0</strong></span><span>Repetidas: <strong id="admRep">0</strong></span></div>' +
             '<div class="pd-card" style="padding:4px 12px 12px;"><div class="pd-form">' +
@@ -2581,16 +2613,12 @@ function dnRender(c) {
     h += '<div class="pd-sec">Ferramentas</div>' +
         '<button type="button" class="pd-btn pd-azul" onclick="dnCopiar(this)">📋 Copiar diagnóstico</button>' +
         '<div class="pd-nota">Copia tudo isto como texto, para colar numa mensagem.</div>' +
-        '<button type="button" class="pd-btn" onclick="dnAtualizar()">🔃 Atualizar diagnóstico</button>' +
+        '<button type="button" class="pd-btn" onclick="dnAtualizar()">🔃 Repetir diagnóstico</button>' +
         '<a class="pd-btn pd-azul" style="text-decoration:none;" href="' + dnEsc(DIAGNOSTICO_PWA) + '" target="_blank" rel="noopener">🩺 Diagnóstico da app instalável</a>' +
         '<div class="pd-nota">Verifica se o site pode ser instalado como app no telemóvel (manifesto, ícones e service worker). Abre ' + dnEsc(DIAGNOSTICO_PWA) + ' num novo separador.</div>';
     h += '<div class="pd-sec">Reposição</div>' +
-        '<button type="button" class="pd-btn pd-amarelo" onclick="dnLimparCache()">🧽 Atualizar app (limpar cache)</button>' +
-        '<div class="pd-nota">Mantém as definições. Útil quando aparece uma versão antiga do site.</div>' +
         '<button type="button" class="pd-btn pd-amarelo" onclick="dnReporDefinicoes()">↩️ Repor definições</button>' +
-        '<div class="pd-nota">Idioma, cabeçalho fixo e aviso de cookies voltam ao início. As repetidas mantêm-se.</div>' +
-        '<button type="button" class="pd-btn pd-vermelho" onclick="dnReporSite()">⚠️ Repor site original</button>' +
-        '<div class="pd-nota">Apaga tudo o que está guardado neste dispositivo (incluindo as repetidas ainda não descarregadas) e recarrega a página.</div>';
+        '<div class="pd-nota">Idioma, cabeçalho fixo e aviso de cookies voltam ao início. As repetidas mantêm-se.</div>';
     c.innerHTML = h;
     c.scrollTop = pos;
 }
@@ -2601,7 +2629,7 @@ async function dnAtualizar() {
 }
 function montarPainelDono() {
     fecharPainelDono();
-    dnModo = 1; dnDataEd = ULTIMA_ATUALIZACAO;
+    dnModo = 1; dnDataManual = false; dnDataEd = dataAtualizacaoEfetiva();
     const ov = document.createElement('div');
     ov.id = 'painelDonoOverlay';
     ov.innerHTML = '<div role="dialog" aria-modal="true" aria-label="Área de controlo">' +
